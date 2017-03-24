@@ -23,6 +23,25 @@ create table mm_Asiakas_Osoite(
 );
 
 create table Tilaus(
+	tilaus_id serial primary key,
+	asiakas_id integer references Asiakas( asiakas_id ),
+	ts_tilauksen_teko timestamp not null,
+	unique( asiakas_id, ts_tilauksen_teko ),
+	ts_tilauksen_toimitus timestamp,
+	osoite_id integer references Osoite( osoite_id )
+);
+
+create type Ongelma_enum as enum( 'violence', 'customer_not_found', 'no_payment');
+create table Ongelma(
+	tilaus_id integer references Tilaus( tilaus_id ),
+	ongelman_tyyppi Ongelma_enum not null,
+	ts_ongelma timestamp not null,
+	ongelman_kuvaus varchar(2000),
+	primary key( tilaus_id, ongelman_tyyppi )
+);
+
+/*
+create table Tilaus(
 	ts_tilauksen_teko timestamp not null,
 	asiakas_id integer references Asiakas( asiakas_id ),
 	osoite_id integer references Osoite( osoite_id ),
@@ -42,13 +61,14 @@ create table Ongelma(
 	primary key( ts_tilauksen_teko, asiakas_id, ongelman_tyyppi )
 );
 
---create table Tilaus(
---	tilaus_id serial primary key,
---	asiakas_id integer references asiakas( asiakas_id ) -- Viiteavain Asiakas-tauluun
---  name varchar(50) NOT NULL,
---  played boolean DEFAULT FALSE,
---  description varchar(400),
---  published DATE,
---  publisher varchar(50),
---  added DATE
+create table Tilaus(
+  tilaus_id serial primary key,
+  asiakas_id integer references asiakas( asiakas_id ) -- Viiteavain Asiakas-tauluun
+  name varchar(50) NOT NULL,
+  played boolean DEFAULT FALSE,
+  description varchar(400),
+  published DATE,
+  publisher varchar(50),
+  added DATE
 --);
+*/
