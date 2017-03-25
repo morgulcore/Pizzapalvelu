@@ -62,3 +62,20 @@ insert into Ongelma values
 	( 2, 'violence', timestamp '2017-01-22 15:33:16',
 		'Maksettuaan tilauksen asiakas löi tilauksen toimittajaa' ),
 	( 5, 'customer_not_found', timestamp '2017-02-14 10:45:41', null );
+
+insert into Tuotetyyppi ( tuotekategoria, tuotenimi, tuotekuvaus ) values
+	( 'pizza', 'Carnivore',
+		'Tosimiehen pizza! Syötyäsi tämän joudut ohitusleikkaukseen!' ),
+	( 'vegaanipizza', 'Herbivore', 'Ituhipin valinta.' );
+
+insert into Tuote values
+	-- "Values of the numeric, int, and bigint data types can be cast to money.
+	-- Conversion from the real and double precision data types can be done by
+	-- casting to numeric first."
+	-- https://www.postgresql.org/docs/9.1/static/datatype-money.html
+	-- On siis tarpeen castata liukulukuarvo monivaiheisesti moneyksi.
+	-- On syytä muistaa sekin, että "oikeassa" eli tuotantokäyttöön
+	-- tarkoitetussa järjestelmässä hintoja ei pidä esittää liukulukuina,
+	-- koska tästä voi seurata pyöristysvirheitä.
+	( 1, 'pieni', 4.50 ),
+	( 1, 'iso', 7.80 );

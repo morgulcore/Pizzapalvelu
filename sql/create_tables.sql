@@ -52,7 +52,33 @@ create type Ongelma_enum as enum( 'violence', 'customer_not_found', 'no_payment'
 create table Ongelma(
 	tilaus_id integer references Tilaus( tilaus_id ),
 	ongelman_tyyppi Ongelma_enum not null,
-	ts_ongelma timestamp not null,
+	ts_ongelma timestamp not null, -- Ongelman ilmenemisen ajankohta
 	ongelman_kuvaus varchar(2000),
 	primary key( tilaus_id, ongelman_tyyppi )
+);
+
+-- Määritellään tuotekategorian ilmaisemiseen oma tietotyyppinsä
+create type Tuotekategoria_enum as enum(
+	'pizza', 'vegaanipizza', 'virvoitusjuoma', 'olut', 'muu' );
+create table Tuotetyyppi(
+	tuotetyyppi_id serial primary key,
+	-- Olisi fiksumpaa, jos jokainen tuote voisi kuulua useampaan kuin yhteen
+	-- tuotekategoriaan (esim. kategoriat pizza ja vegaani). Yksinkertaisuuden
+	-- nimissä toteutan tuotekategorian kuitenkin pelkkänä kenttänä.
+	tuotekategoria Tuotekategoria_enum not null,
+	tuotenimi varchar(50) not null,
+	tuotekuvaus varchar(1000),
+	kuva_tuotteesta varchar(80)
+		default '~/htdocs/pizzapalvelu/images/default.jpg'
+);
+
+-- Jokaisesta tuotetyypistä on yksi tai useampi versio
+create type Tuoteversio_enum as enum( 'pieni', 'tavallinen', 'iso' );
+create table Tuote( -- Tuotetta voi ajatella sen tuotetyypin "ilmentymänä"
+	tuotetyyppi_id integer references Tuotetyyppi( tuotetyyppi_id ),
+	tuoteversio Tuoteversio_enum not null,
+	-- Tuotteen hinta (ilman vuorokaudenajasta riippuvaa hintamuunnosta).
+	-- Hinta voi olla korkeintaan 9999,99. Desimaaleja on kaksi.
+	hinta numeric(6, 2) not null,
+	primary key( tuotetyyppi_id, tuoteversio )
 );

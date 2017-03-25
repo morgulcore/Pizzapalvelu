@@ -5,3 +5,7 @@ drop table if exists mm_Asiakas_Osoite cascade;
 drop table if exists Tilaus cascade;
 drop type if exists Ongelma_enum cascade;
 drop table if exists Ongelma cascade;
+drop type if exists Tuotekategoria_enum cascade;
+drop table if exists Tuotetyyppi cascade;
+drop type if exists Tuoteversio_enum cascade;
+drop table if exists Tuote cascade;
