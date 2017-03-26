@@ -63,10 +63,18 @@ insert into Ongelma values
 		'Maksettuaan tilauksen asiakas löi tilauksen toimittajaa' ),
 	( 5, 'customer_not_found', timestamp '2017-02-14 10:45:41', null );
 
+	-- Kentät: tuotekategoria, yohintakerroin, ongelmahintakerroin
+insert into Hintamuunnos values
+	( 'pizza', 1.2, 1.4 ),
+	( 'vegaanipizza', 1.3, 1.4 ),
+	( 'virvoitusjuoma', 1.0, 1.4 ),
+	( 'olut', 1.0, 2.0 ),
+	( 'muu', 1.0, 1.4 );
+
 insert into Tuotetyyppi ( tuotekategoria, tuotenimi, tuotekuvaus ) values
 	( 'pizza', 'Carnivore',
-		'Tosimiehen pizza! Syötyäsi tämän joudut ohitusleikkaukseen!' ),
-	( 'vegaanipizza', 'Herbivore', 'Ituhipin valinta.' );
+		'Tosimiehen pizza! Syötyäsi tämän pääset ohitusleikkaukseen!' ),
+	( 'vegaanipizza', 'Herbivore', 'Nälkäisen ituhipin valinta' );
 
 insert into Tuote values
 	-- "Values of the numeric, int, and bigint data types can be cast to money.
@@ -78,4 +86,23 @@ insert into Tuote values
 	-- tarkoitetussa järjestelmässä hintoja ei pidä esittää liukulukuina,
 	-- koska tästä voi seurata pyöristysvirheitä.
 	( 1, 'pieni', 4.50 ),
-	( 1, 'iso', 7.80 );
+	( 1, 'iso', 7.80 ),
+	( 2, 'pieni', 5.10 );
+
+insert into Tilattu_tuote ( tilaus_id, tuotetyyppi_id, tuoteversio, lukumaara )
+	values
+	( 1, 1, 'iso', 1 ),
+	( 1, 2, 'pieni', 2 );
+
+-- 'valkosipuli', 'oregano', 'chili'
+-- lisuke_id, kuvaus_lisukkeesta
+insert into Lisuke values
+	( 'valkosipuli', 'Laadukas luomuvalkosipulimurska lisukkeeksi pizzoihin' ),
+	( 'oregano', 'Perinteinen pizzamauste' ),
+	( 'chili', 'Lisäpotkua pizzaan tuoreella chilimurskalla' );
+
+-- lisuke_id, tilaus_id, tuotelaskuri
+insert into mm_Lisuke_Tilattu_tuote values
+	( 'valkosipuli', 1, 1 ),
+	( 'chili', 1, 1 ),
+	( 'chili', 1, 2 );
