@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+	<h1>Luo uusi asiakastili</h1>
+
+	<form method="post" action="{{base_path}}/asiakas/uusi">
+	<div class="form-group">
+		<label>Käyttäjätunnus</label>
+		<input name="ktunnus" class="form-control" type="text">
+	</div>
+
+	<form method="post" action="{{base_path}}/asiakas/uusi">
+	<div class="form-group">
+		<label>Salasana</label>
+		<input name="salasana" class="form-control" type="text">
+	</div>
+
+	<div class="form-group">
+		<label>Etunimi</label>
+		<input name="etunimi" class="form-control" type="text">
+	</div>
+
+	<div class="form-group">
+		<label>Sukunimi</label>
+		<input name="sukunimi" class="form-control" type="text">
+	</div>
+
+	<div class="form-group">
+		<button type="submit" class="btn btn-primary">Lähetä tiedot</button>
+	</div>
+	</form>
+
+{% endblock %}

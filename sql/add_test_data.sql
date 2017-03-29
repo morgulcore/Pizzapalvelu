@@ -1,5 +1,6 @@
 insert into Kayttaja values
-	( 'mruusu', 'tsoha2017', 0 ),
+	( 'admin', 'henrik1975', 1 ), -- Ensimmäisenä ylläpidon käyttäjätunnus
+	( 'mruusu', 'tsoha2017', 0 ), -- Loput käyttäjätunnukset liittyvät asiakkaisiin
 	( 'jporkkana', 'tsoha2017', 0 ),
 	( 'skurpitsa', 'tsoha2017', 0 ),
 	( 'nvadelma', 'tsoha2017', 0 ),
@@ -8,8 +9,7 @@ insert into Kayttaja values
 	( 'smansikka', 'tsoha2017', 0 ),
 	( 'mmansikka', 'tsoha2017', 0 ),
 	( 'sruusu', 'tsoha2017', 0 ),
-	( 'pnauris', 'tsoha2017', 0 ),
-	( 'nobody', null, 0 );
+	( 'pnauris', 'tsoha2017', 0 );
 
 insert into Asiakas ( ktunnus, etunimi, sukunimi, puhelinnumero, sahkopostiosoite )
 	values

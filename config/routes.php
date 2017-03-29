@@ -1,14 +1,19 @@
 <?php
 
 $routes->get( '/',
-	function() { HelloWorldController::index(); } );
-$routes->get( '/tuotteet',
-	function() { HelloWorldController::tuotteet(); } );
-
-$routes->get( '/login',
-	function() { UserController::login(); } );
-$routes->post( '/login',
-	function() { UserController::handle_login(); } );
-
+	function() { EtusivuController::index(); } );
 $routes->get('/hiekkalaatikko',
-	function() { HelloWorldController::sandbox(); } );
+	function() { EtusivuController::sandbox(); } );
+
+$routes->get( '/tuote',
+	function() { TuoteController::index(); } );
+
+$routes->get( '/asiakas/uusi',
+	function() { AsiakasController::uusi(); } );
+$routes->post( '/asiakas/uusi',
+	function() { AsiakasController::rekisteroi(); } );
+
+$routes->get( '/kayttaja/login',
+	function() { KayttajaController::login(); } );
+$routes->post( '/kayttaja/login',
+	function() { KayttajaController::handle_login(); } );
