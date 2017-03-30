@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="page-header">
+		<h1>Asiakkaan esittelysivu</h1>
+	</div>
+
+	{% if asiakas != null %}
+		<p>{{asiakas.ktunnus}}</p>
+	{% else %}
+		<p>Olio 'asiakas' on null</p>
+	{% endif %}
+{% endblock %}

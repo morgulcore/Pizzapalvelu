@@ -13,6 +13,12 @@ class AsiakasController extends BaseController {
 		View::make( 'asiakas/index.html', array( 'asiakkaat' => $asiakkaat ) );
 	}
 
+	// Renderöidään asiakkaan esittelysivu
+	public static function esittely( $asiakas_id ) {
+		$asiakas = Asiakas::find( $asiakas_id );
+		View::make( 'asiakas/esittely.html', array( 'asiakas' => $asiakas ) );
+	}
+
 	// Rekisteröidään uusi asiakastili ja siihen liittyvä käyttäjätunnus
 	public static function rekisteroi() {
 		$params = $_POST;

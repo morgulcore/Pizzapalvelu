@@ -40,6 +40,54 @@ class Asiakas extends BaseModel {
 		return $asiakkaat;
 	}
 
+	// Haetaan tietokannasta asiakas_id:tä vastaava asiakas. Huomaa, että
+	// tässä yhteydessä haetaan tietoa Asiakas-taulun lisäksi myös
+	// Kayttaja-taulusta
+	public static function find( $asiakas_id ) {
+		$query = DB::connection()->prepare( 'select Asiakas.asiakas_id, Asiakas.etunimi, Asiakas.sukunimi, Asiakas.puhelinnumero, Asiakas.sahkopostiosoite, Kayttaja.ktunnus, Kayttaja.salasana, Kayttaja.tyyppi from ( Asiakas inner join Kayttaja on Asiakas.ktunnus = Kayttaja.ktunnus ) where asiakas_id = :asiakas_id limit 1;' );
+		$query->execute( array( 'asiakas_id' => $asiakas_id ) );
+		$row = $query->fetch();
+
+		if( $row ) {
+			$asiakas = new Asiakas( array(
+				'asiakas_id' => $row[ 'asiakas_id' ],
+				'ktunnus' => $row[ 'ktunnus' ],
+				'etunimi' => $row[ 'etunimi' ],
+				'sukunimi' => $row[ 'sukunimi' ],
+				'puhelinnumero' => $row[ 'puhelinnumero' ],
+				'sahkopostiosoite' => $row[ 'sahkopostiosoite' ],
+				'salasana' => $row[ 'salasana' ],
+				'tyyppi' => $row[ 'tyyppi' ]
+			) );
+
+			return $asiakas;
+		}
+
+		return null;
+	}
+
+	/*
+	// Palauttaa taulun Käyttäjä olion, jonka avain on $ktunnus
+	public static function find( $ktunnus ) {
+		$query = DB::connection()->prepare(
+			'select * from Kayttaja where ktunnus = :ktunnus limit 1' );
+		$query->execute( array( 'ktunnus' => $ktunnus ) );
+		$row = $query->fetch();
+
+		if( $row ) {
+			$kayttaja = new Kayttaja( array(
+				'ktunnus' => $row[ 'ktunnus' ],
+				'salasana' => $row[ 'salasana' ],
+				'tyyppi' => $row[ 'tyyppi' ]
+			) );
+
+			return $kayttaja;
+		}
+
+		return null;
+	}
+	*/
+
 	// Tallennetaan Asiakas-olio tietokantaan
 	public function save() {
 		$kayttaja = new Kayttaja( array(

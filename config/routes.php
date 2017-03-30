@@ -14,6 +14,8 @@ $routes->get( '/asiakas/uusi',
 	function() { AsiakasController::uusi(); } );
 $routes->post( '/asiakas/uusi',
 	function() { AsiakasController::rekisteroi(); } );
+$routes->get( '/asiakas/:asiakas_id',
+	function( $asiakas_id ) { AsiakasController::esittely( $asiakas_id ); } );
 
 $routes->get( '/kayttaja/login',
 	function() { KayttajaController::login(); } );
