@@ -2,24 +2,28 @@
 
 class AsiakasController extends BaseController {
 
+	// LISÄYSNÄKYMÄ:
 	// Renderöidään lomake, jolla uusi asiakas rekisteröidään tietokantaan
 	public static function uusi() {
 		View::make( 'asiakas/uusi.html' );
 	}
 
+	// LISTAUSNÄKYMÄ:
 	// Listataan kaikkien asiakkaiden tiedot ylläpidon tarkastelua varten
 	public static function index() {
 		$asiakkaat = Asiakas::all();
 		View::make( 'asiakas/index.html', array( 'asiakkaat' => $asiakkaat ) );
 	}
 
+	// ESITTELYNÄKYMÄ:
 	// Renderöidään asiakkaan esittelysivu
 	public static function esittely( $asiakas_id ) {
 		$asiakas = Asiakas::find( $asiakas_id );
 		View::make( 'asiakas/esittely.html', array( 'asiakas' => $asiakas ) );
 	}
 
-	// Rekisteröidään uusi asiakastili ja siihen liittyvä käyttäjätunnus
+	// Rekisteröidään uusi asiakastili ja siihen liittyvä käyttäjätunnus.
+	// Tarvittavat tiedot on saatu käyttäjän lähettämästä lomakkeesta.
 	public static function rekisteroi() {
 		$params = $_POST;
 

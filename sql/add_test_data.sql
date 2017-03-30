@@ -15,13 +15,13 @@ insert into Asiakas ( ktunnus, etunimi, sukunimi, puhelinnumero, sahkopostiosoit
 	values
     ( 'mruusu', 'Minna', 'Ruusu', null, null ),
     ( 'jporkkana', 'Juuso', 'Porkkana', '040 123 4567', null ),
-    ( 'skurpitsa', 'Santeri', 'Kurpitsa', null, null ),
-    ( 'nvadelma', 'Niko', 'Vadelma', null, null ),
+    ( 'skurpitsa', 'Santeri', 'Kurpitsa', null, 'santeri.kurpitsa@virasto.fi' ),
+    ( 'nvadelma', 'Niko', 'Vadelma', null, 'vattu@pikaposti.fi' ),
     ( 'therne', 'Tauno', 'Herne', null, null ),
-    ( 'tmansikka', 'Tero', 'Mansikka', null, 'tero.mansikka@mansikka.fi' ),
-    ( 'smansikka', 'Saara', 'Mansikka', null, null ),
-    ( 'mmansikka', 'Minttu', 'Mansikka', null, null ),
-    ( 'sruusu', 'Sini', 'Ruusu', null, null ),
+    ( 'tmansikka', 'Tero', 'Mansikka', '040 987 6543', 'tero.mansikka@mansikka.fi' ),
+    ( 'smansikka', 'Saara', 'Mansikka', null, 'saara.mansikka@mansikka.fi' ),
+    ( 'mmansikka', 'Minttu', 'Mansikka', null, 'minttu.mansikka@mansikka.fi' ),
+    ( 'sruusu', 'Sini', 'Ruusu', null, 'ruusunen@kohtalo.fi' ),
     ( 'pnauris', 'Pekka', 'Nauris', null, null );
 
 insert into Osoite ( lahiosoite, postinumero, postitoimipaikka ) values

@@ -66,28 +66,6 @@ class Asiakas extends BaseModel {
 		return null;
 	}
 
-	/*
-	// Palauttaa taulun Käyttäjä olion, jonka avain on $ktunnus
-	public static function find( $ktunnus ) {
-		$query = DB::connection()->prepare(
-			'select * from Kayttaja where ktunnus = :ktunnus limit 1' );
-		$query->execute( array( 'ktunnus' => $ktunnus ) );
-		$row = $query->fetch();
-
-		if( $row ) {
-			$kayttaja = new Kayttaja( array(
-				'ktunnus' => $row[ 'ktunnus' ],
-				'salasana' => $row[ 'salasana' ],
-				'tyyppi' => $row[ 'tyyppi' ]
-			) );
-
-			return $kayttaja;
-		}
-
-		return null;
-	}
-	*/
-
 	// Tallennetaan Asiakas-olio tietokantaan
 	public function save() {
 		$kayttaja = new Kayttaja( array(

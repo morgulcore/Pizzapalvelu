@@ -1,12 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-	<div class="page-header">
-		<h1>Asiakkaan esittelysivu</h1>
-	</div>
-
 	{% if asiakas != null %}
-		<p>{{asiakas.ktunnus}}</p>
+		<div class="page-header">
+			<h1>{{asiakas.etunimi}} {{asiakas.sukunimi}}
+				({{asiakas.ktunnus}})</h1>
+			{% if asiakas.sahkopostiosoite != null %}
+				<a href="mailto:{{asiakas.sahkopostiosoite}}">{{asiakas.sahkopostiosoite}}</a>
+			{% else %}
+				<p>(asiakkaalla ei ole sähköpostiosoitetta)</p>
+			{% endif %}
+		</div>
+		<p>
+			<button class="btn btn-danger">Poista</button>
+			<a href="#" class="btn btn-default">Muokkaa</a>
+		</p>
+		<ul>
+			<li><strong>Toimittamattomat tilaukset:</strong>
+				<a href="#">123</a> <a href="#">124</a> <a href="#">127</a>
+				(staattisia arvoja, aidot linkit keskeneräisiin tilauksiin
+				toteutetaan myöhemmin</li>
+			<li><strong>Toimitettuja tilauksia yhteensä:</strong>
+				0 (staattinen arvo, Tilaus-malli toteutettava ensin)</li>
+			<li><strong>Ongelmia yhteensä:</strong> <label class="label label-danger">
+				3</label> (staattinen arvo, Tilaus- ja Ongelma-mallit toteutettava ensin)</li>
+		</ul>
 	{% else %}
-		<p>Olio 'asiakas' on null</p>
+		<div class="alert alert-danger">
+			Käytettiin ilmeisesti olematonta asiakas_id:tä</div>
 	{% endif %}
 {% endblock %}
