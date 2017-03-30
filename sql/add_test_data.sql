@@ -3,7 +3,7 @@ insert into Kayttaja values
 	( 'mruusu', 'tsoha2017', 0 ), -- Loput käyttäjätunnukset liittyvät asiakkaisiin
 	( 'jporkkana', 'tsoha2017', 0 ),
 	( 'skurpitsa', 'tsoha2017', 0 ),
-	( 'nvadelma', 'tsoha2017', 0 ),
+	( 'nvadelma', 'tsoha2017', 1 ),
 	( 'therne', 'tsoha2017', 0 ),
 	( 'tmansikka', 'tsoha2017', 0 ),
 	( 'smansikka', 'tsoha2017', 0 ),

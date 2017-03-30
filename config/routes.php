@@ -8,6 +8,8 @@ $routes->get('/hiekkalaatikko',
 $routes->get( '/tuote',
 	function() { TuoteController::index(); } );
 
+$routes->get( '/asiakas',
+	function() { AsiakasController::index(); } );
 $routes->get( '/asiakas/uusi',
 	function() { AsiakasController::uusi(); } );
 $routes->post( '/asiakas/uusi',

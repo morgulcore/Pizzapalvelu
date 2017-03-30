@@ -28,6 +28,7 @@ class Kayttaja extends BaseModel {
 		}
 	}
 
+	// Hakee tietokannasta kaikki taulun Kayttaja oliot (rivit)
 	public static function all() {
 		$query = DB::connection()->prepare( 'select * from Kayttaja' );
 		$query->execute();
@@ -46,6 +47,7 @@ class Kayttaja extends BaseModel {
 		return $kayttajat;
 	}
 
+	// Palauttaa taulun Käyttäjä olion, jonka avain on $ktunnus
 	public static function find( $ktunnus ) {
 		$query = DB::connection()->prepare(
 			'select * from Kayttaja where ktunnus = :ktunnus limit 1' );

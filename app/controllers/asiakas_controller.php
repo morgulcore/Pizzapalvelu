@@ -7,6 +7,12 @@ class AsiakasController extends BaseController {
 		View::make( 'asiakas/uusi.html' );
 	}
 
+	// Listataan kaikkien asiakkaiden tiedot ylläpidon tarkastelua varten
+	public static function index() {
+		$asiakkaat = Asiakas::all();
+		View::make( 'asiakas/index.html', array( 'asiakkaat' => $asiakkaat ) );
+	}
+
 	// Rekisteröidään uusi asiakastili ja siihen liittyvä käyttäjätunnus
 	public static function rekisteroi() {
 		$params = $_POST;
@@ -55,23 +61,4 @@ class AsiakasController extends BaseController {
 			. '! Voit nyt kirjautua sisään luomallasi käyttäjätunnuksella '
 			. $params[ 'ktunnus' ] . '.' ) );
 	}
-
-	/*
-	public static function handle_login() {
-		$params = $_POST;
-
-		$kayttaja = Kayttaja::authenticate(
-			$params[ 'username' ], $params[ 'password' ] );
-
-		if( !$kayttaja ) {
-			View::make( 'kayttaja/login.html', array(
-				'error' => 'Väärä käyttäjätunnus tai salasana!',
-				'username' => $params[ 'username' ] ) );
-		} else {
-			$_SESSION[ 'user' ] = $kayttaja->ktunnus;
-
-			Redirect::to( '/', array('message' => 'Tervetuloa takaisin, '
-				. $kayttaja->ktunnus . '!' ) );
-		}
-	} */
 }

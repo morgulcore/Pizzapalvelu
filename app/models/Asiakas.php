@@ -3,15 +3,22 @@
 class Asiakas extends BaseModel {
 	// Attribuutit
 	public $asiakas_id, $ktunnus, $etunimi, $sukunimi,
-		$puhelinnumero, $sahkopostiosoite;
+		$puhelinnumero, $sahkopostiosoite,
+		// Tietokantatoteutuksessa seuraavat kaksi kenttää eivät löydy
+		// taulusta Asiakas, vaan taulusta Kayttaja. En tiedä, onko ihan
+		// korrektia hämärtää malliolioiden ja taulujen yksi yhteen
+		// -vastaavuutta tällä tavalla, mutta kokeilen nyt kuitenkin.
+		$salasana, $tyyppi;
 
 	// Konstruktori
 	public function __construct( $attributes ) {
 		parent::__construct( $attributes );
 	}
 
+	// Haetaan tietokannasta kaikki Asiakas-oliot. Jokaiseen asiakkaaseen
+	// liittyy täsmälleen yksi Kayttaja-olio, joten haetaan samalla nekin.
 	public static function all() {
-		$query = DB::connection()->prepare( 'select * from Asiakas' );
+		$query = DB::connection()->prepare( 'select Asiakas.asiakas_id, Asiakas.etunimi, Asiakas.sukunimi, Asiakas.puhelinnumero, Asiakas.sahkopostiosoite, Kayttaja.ktunnus, Kayttaja.salasana, Kayttaja.tyyppi from Asiakas inner join Kayttaja on Asiakas.ktunnus = Kayttaja.ktunnus;' );
 		$query->execute();
 		$rows = $query->fetchAll();
 
@@ -24,7 +31,9 @@ class Asiakas extends BaseModel {
 				'etunimi' => $row[ 'etunimi' ],
 				'sukunimi' => $row[ 'sukunimi' ],
 				'puhelinnumero' => $row[ 'puhelinnumero' ],
-				'sahkopostiosoite' => $row[ 'sahkopostiosoite' ]
+				'sahkopostiosoite' => $row[ 'sahkopostiosoite' ],
+				'salasana' => $row[ 'salasana' ],
+				'tyyppi' => $row[ 'tyyppi' ]
 			) );
 		}
 
@@ -52,26 +61,4 @@ class Asiakas extends BaseModel {
 		$row = $query->fetch();
 		$this->asiakas_id = $row[ 'asiakas_id' ];
 	}
-
-	/*
-	// Uuden käyttäjätunnuksen tallentaminen tietokantaan
-	public function save() {
-		// Ei tehdä muuta kuin palautetaan null, jos tallennettava
-		// käyttäjätunnus on jo tietokannassa
-		if( Kayttaja::find( $this->ktunnus ) ) {
-			return null;
-		}
-
-		$query = DB::connection()->prepare(
-			'INSERT INTO Kayttaja ( ktunnus, salasana, tyyppi ) '
-				. 'VALUES ( :ktunnus, :salasana, :tyyppi )' );
-		$query->execute( array( 'ktunnus' => $this->ktunnus,
-			'salasana' => $this->salasana, 'tyyppi' => $this->tyyppi ) );
-		// Haetaan kyselyn tuottama rivi
-		// $row = $query->fetch();
-
-		// Palautetaan ei-null merkiksi siitä, että tietokantaan lisättiin
-		// uusi käyttäjätunnus
-		return $this;
-    } */
 }
