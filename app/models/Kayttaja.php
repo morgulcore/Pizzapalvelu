@@ -58,6 +58,23 @@ class Kayttaja extends BaseModel {
 		return $virheilmoitukset;
 	}
 
+	// Käyttäjä-olion poistamiseen tietokannasta
+	public function poista() {
+		// Varmistetaan, että poistettavaksi tarkoitettu olio
+		// on tallennettuna tietokantaan
+		if( self::find( $this->ktunnus ) == null ) {
+			return null;
+		}
+
+		$query = DB::connection()->prepare(
+			'delete from Kayttaja where ktunnus = :ktunnus;' );
+		$query->execute( array(
+			'ktunnus' => $this->ktunnus
+		) );
+
+		return $this;
+	}
+
 	// Uuden käyttäjätunnuksen tallentaminen tietokantaan
 	public function save() {
 		// Ei tehdä muuta kuin palautetaan null, jos tallennettava

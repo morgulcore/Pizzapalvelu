@@ -30,6 +30,23 @@ class Asiakas extends BaseModel {
 		return $errors;
 	}
 
+	// Poistetaan Asiakas-olio tietokannasta
+	public function poista() {
+		// Varmistetaan, että poistettavaksi tarkoitettu olio
+		// on tallennettuna tietokantaan
+		if( self::find( $this->asiakas_id ) == null ) {
+			return null;
+		}
+
+		$query = DB::connection()->prepare(
+			'delete from Asiakas where asiakas_id = :asiakas_id;' );
+		$query->execute( array(
+			'asiakas_id' => $this->asiakas_id
+		) );
+
+		return $this;
+	}
+
 	// Tallennetaan Asiakas-olio tietokantaan
 	public function save() {
 		$kayttaja = new Kayttaja( array(
@@ -39,7 +56,7 @@ class Asiakas extends BaseModel {
 		$query = DB::connection()->prepare(
 			'insert into Asiakas ( ktunnus, etunimi, sukunimi, puhelinnumero, '
 			. 'sahkopostiosoite ) values ( :ktunnus, :etunimi, :sukunimi, '
-			. ':puhelinnumero, :sahkopostiosoite ) returning asiakas_id' );
+			. ':puhelinnumero, :sahkopostiosoite ) returning asiakas_id;' );
 		$query->execute( array(
 			'ktunnus' => $this->ktunnus,
 			'etunimi' => $this->etunimi,

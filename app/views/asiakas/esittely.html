@@ -11,7 +11,11 @@
 			{% endif %}
 		</div>
 		<p>
-			<button class="btn btn-danger">Poista</button>
+			<form method="post"
+				action="{{base_path}}/asiakas/{{asiakas.asiakas_id}}/poista"
+				style="display: inline-block;">
+				<button type="submit" class="btn btn-danger">Poista</button>
+			</form>
 			<a href="#" class="btn btn-default">Muokkaa</a>
 		</p>
 		<ul>

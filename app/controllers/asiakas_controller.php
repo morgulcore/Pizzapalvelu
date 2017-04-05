@@ -22,6 +22,35 @@ class AsiakasController extends BaseController {
 		View::make( 'asiakas/esittely.html', array( 'asiakas' => $asiakas ) );
 	}
 
+	public static function poista( $asiakas_id ) {
+		$poistettava_asiakas = Asiakas::find( $asiakas_id );
+		if( $poistettava_asiakas == null ) {
+			// Mitään ei poisteta, jos poistettavaa ei löydy. Pitäisi
+			// vielä laittaa jokin virheilmoitus.
+			return;
+		}
+
+		// Tietokannasta pitäisi pakostakin löytyä asiakastiliä
+		// vastaava käyttäjätunnus
+		$poistettava_kayttaja = Kayttaja::find( $poistettava_asiakas->ktunnus );
+
+		// Poistetaan asiakastili
+		$poistettava_asiakas->poista();
+		// Poistetaan vastaava käyttäjätunnus
+		$poistettava_kayttaja->poista();
+
+		// Ohjataan käyttäjä kirjautumissivulle, jotta hän voi kirjautua
+		// sisään juuri luomallaan käyttäjätunnuksella
+		Redirect::to( '/asiakas', array(
+			'poisto_onnistui' => 'Poistettiin '
+				. $poistettava_asiakas->etunimi . ' '
+				. $poistettava_asiakas->sukunimi . ' ('
+				. $poistettava_asiakas->asiakas_id . ', '
+				. $poistettava_asiakas->ktunnus . ')' ) );
+
+		//return $poistettava_asiakas;
+	}
+
 	// Rekisteröidään uusi asiakastili ja siihen liittyvä käyttäjätunnus.
 	// Tarvittavat tiedot on saatu käyttäjän lähettämästä lomakkeesta.
 	public static function rekisteroi() {

@@ -4,6 +4,10 @@
 		<h1>Asiakasrekisterimme kaiken kansan tarkasteltavaksi</h1>
 	</div>
 
+	{% if poisto_onnistui is defined %}
+		<div class="alert alert-success">{{poisto_onnistui}}</div>
+	{% endif %}
+
 	<p>
 		<a href="{{base_path}}/asiakas/uusi" class="btn btn-success">
 			Lisää asiakas</a>
