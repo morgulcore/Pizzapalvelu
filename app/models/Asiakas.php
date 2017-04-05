@@ -13,6 +13,43 @@ class Asiakas extends BaseModel {
 	// Konstruktori
 	public function __construct( $attributes ) {
 		parent::__construct( $attributes );
+		// Seuraava attribuutti on määritelty BaseModelissa
+		$this->validaattorit = array(
+			'validoi_etunimi', 'validoi_sukunimi' );
+	}
+
+	public function validoi_etunimi() {
+		$errors = BaseModel::merkkijono_on_erisnimi(
+			"Etunimi: ", $this->etunimi );
+		return $errors;
+	}
+
+	public function validoi_sukunimi() {
+		$errors = BaseModel::merkkijono_on_erisnimi(
+			"Sukunimi: ", $this->sukunimi );
+		return $errors;
+	}
+
+	// Tallennetaan Asiakas-olio tietokantaan
+	public function save() {
+		$kayttaja = new Kayttaja( array(
+			'ktunnus' => $this->ktunnus, 'salasana' => null, 'tyyppi' => 0 ) );
+		$kayttaja->save();
+
+		$query = DB::connection()->prepare(
+			'insert into Asiakas ( ktunnus, etunimi, sukunimi, puhelinnumero, '
+			. 'sahkopostiosoite ) values ( :ktunnus, :etunimi, :sukunimi, '
+			. ':puhelinnumero, :sahkopostiosoite ) returning asiakas_id' );
+		$query->execute( array(
+			'ktunnus' => $this->ktunnus,
+			'etunimi' => $this->etunimi,
+			'sukunimi' => $this->sukunimi,
+			'puhelinnumero' => $this->puhelinnumero,
+			'sahkopostiosoite' => $this->sahkopostiosoite
+		) );
+
+		$row = $query->fetch();
+		$this->asiakas_id = $row[ 'asiakas_id' ];
 	}
 
 	// Haetaan tietokannasta kaikki Asiakas-oliot. Jokaiseen asiakkaaseen
@@ -64,27 +101,5 @@ class Asiakas extends BaseModel {
 		}
 
 		return null;
-	}
-
-	// Tallennetaan Asiakas-olio tietokantaan
-	public function save() {
-		$kayttaja = new Kayttaja( array(
-			'ktunnus' => $this->ktunnus, 'salasana' => null, 'tyyppi' => 0 ) );
-		$kayttaja->save();
-
-		$query = DB::connection()->prepare(
-			'insert into Asiakas ( ktunnus, etunimi, sukunimi, puhelinnumero, '
-			. 'sahkopostiosoite ) values ( :ktunnus, :etunimi, :sukunimi, '
-			. ':puhelinnumero, :sahkopostiosoite ) returning asiakas_id' );
-		$query->execute( array(
-			'ktunnus' => $this->ktunnus,
-			'etunimi' => $this->etunimi,
-			'sukunimi' => $this->sukunimi,
-			'puhelinnumero' => $this->puhelinnumero,
-			'sahkopostiosoite' => $this->sahkopostiosoite
-		) );
-
-		$row = $query->fetch();
-		$this->asiakas_id = $row[ 'asiakas_id' ];
 	}
 }

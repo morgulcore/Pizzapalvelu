@@ -3,26 +3,40 @@
 
 	<h1>Luo uusi asiakastili</h1>
 
+	{% if virheilmoitukset %}
+		<div class="alert alert-danger">
+			<ul>
+				{% for virheilmoitus in virheilmoitukset %}
+					<li>{{virheilmoitus}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
 	<form method="post" action="{{base_path}}/asiakas/uusi">
 	<div class="form-group">
 		<label>Käyttäjätunnus</label>
-		<input name="ktunnus" class="form-control" type="text">
+		<input name="ktunnus" class="form-control"
+			value="{{kentat.ktunnus}}" type="text">
 	</div>
 
 	<form method="post" action="{{base_path}}/asiakas/uusi">
 	<div class="form-group">
 		<label>Salasana</label>
-		<input name="salasana" class="form-control" type="text">
+		<input name="salasana" class="form-control"
+			value="{{kentat.salasana}}" type="password">
 	</div>
 
 	<div class="form-group">
 		<label>Etunimi</label>
-		<input name="etunimi" class="form-control" type="text">
+		<input name="etunimi" class="form-control"
+			value="{{kentat.etunimi}}" type="text">
 	</div>
 
 	<div class="form-group">
 		<label>Sukunimi</label>
-		<input name="sukunimi" class="form-control" type="text">
+		<input name="sukunimi" class="form-control"
+			value="{{kentat.sukunimi}}" type="text">
 	</div>
 
 	<div class="form-group">

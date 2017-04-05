@@ -26,48 +26,56 @@ class AsiakasController extends BaseController {
 	// Tarvittavat tiedot on saatu käyttäjän lähettämästä lomakkeesta.
 	public static function rekisteroi() {
 		$params = $_POST;
+		$kentat = array(
+			'ktunnus' => $params[ 'ktunnus' ],
+			'salasana' => $params[ 'salasana' ],
+			'etunimi' => $params[ 'etunimi' ],
+			'sukunimi' => $params[ 'sukunimi' ]
+		);
 
+		// Jokaista asiakasta vastaa yksi käyttäjätunnus
 		$uusi_kayttaja = new Kayttaja( array(
 			'ktunnus' => $params[ 'ktunnus' ],
 			'salasana' => $params[ 'salasana' ],
 			'tyyppi' => 0 ) );
-
-		// Asiakastilin luominen keskeytetään, jos molemmissa nimikentissä
-		// ei ole tekstiä
-		if( $params[ 'etunimi' ] == null || $params[ 'sukunimi' ] == null ) {
-			Redirect::to( '/', array(
-				'message' => 'Etu- ja sukunimesi ovat pakollisia tietoja' ) );
-			return;
-		}
-
-		// Käyttäjätunnuksen tiedot tallennetaan sillä ehdolla, että
-		// vastaavannimistä käyttäjätunnusta ei ole jo olemassa
-		if( !$uusi_kayttaja->save() ) {
-			Redirect::to( '/', array(
-				'message' => 'Käyttäjätunnus ' . $params[ 'ktunnus' ]
-				. ' on jo olemassa' ) );
-			return;
-		}
+		$kayttajavirheilmoitukset = $uusi_kayttaja->virheilmoitukset();
 
 		// Luodaan Asiakas-olio
 		$uusi_asiakas = new Asiakas( array(
 			'ktunnus' => $params[ 'ktunnus' ],
 			'etunimi' => $params[ 'etunimi' ],
 			'sukunimi' => $params[ 'sukunimi' ] ) );
+		$asiakasvirheilmoitukset = $uusi_asiakas->virheilmoitukset();
+
+		// Asiakas- ja käyttäjävirheilmoitukset samassa nipussa
+		$virheilmoitukset = array_merge(
+			$kayttajavirheilmoitukset, $asiakasvirheilmoitukset );
+
+		if( count( $virheilmoitukset ) > 0 ) {
+			View::make( 'asiakas/uusi.html', array(
+				'virheilmoitukset' => $virheilmoitukset,
+				'kentat' => $kentat ) );
+			return;
+		}
+
+		// Käyttäjätunnuksen tiedot tallennetaan sillä ehdolla, että
+		// vastaavannimistä käyttäjätunnusta ei ole jo olemassa
+		if( ! $uusi_kayttaja->save() ) {
+			$virheilmoitukset[] = 'Käyttäjätunnus: ' . $uusi_kayttaja->ktunnus
+				. ' on jo olemassa';
+			View::make( 'asiakas/uusi.html', array(
+				'virheilmoitukset' => $virheilmoitukset,
+				'kentat' => $kentat ) );
+			return;
+		}
 
 		// Tallennetaan Asiakas-olio tietokantaan
 		$uusi_asiakas->save();
 
-		// Vielä täytyy asettaa salasana asiakastiliä vastaavalle
-		// käyttäjätunnukselle
-		$query = DB::connection()->prepare(
-			'update Kayttaja set salasana = :salasana where ktunnus = :ktunnus' );
-		$query->execute( array(
-			'ktunnus' => $params[ 'ktunnus' ],
-			'salasana' => $params[ 'salasana' ] ) );
-
-		Redirect::to( '/', array(
-			'message' => 'Tervetuloa asiakkaaksi, ' . $params[ 'etunimi' ]
+		// Ohjataan käyttäjä kirjautumissivulle, jotta hän voi kirjautua
+		// sisään juuri luomallaan käyttäjätunnuksella
+		Redirect::to( '/kayttaja/login', array(
+			'welcome' => 'Tervetuloa asiakkaaksi, ' . $params[ 'etunimi' ]
 			. '! Voit nyt kirjautua sisään luomallasi käyttäjätunnuksella '
 			. $params[ 'ktunnus' ] . '.' ) );
 	}

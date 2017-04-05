@@ -7,21 +7,14 @@ class EtusivuController extends BaseController {
 	}
 
 	public static function sandbox() {
-		// Testaa koodiasi täällä
-		// View::make('helloworld.html');
-		// $asiakkaat = Asiakas::all();
-		// $kayttajat = Kayttaja::all();
-		// $tero = Kayttaja::find( 'tmansikka' );
-		// $olematon = Kayttaja::find( 'olematon' );
-		// Kint::dump( $kayttajat );
 		$uusi_asiakas = new Asiakas( array(
 			'ktunnus' => 'jkristus',
-			'etunimi' => 'Jeesus',
+			'etunimi' => 'Xx',
 			'sukunimi' => 'Kristus',
 			'puhelinnumero' => '040 123 4567',
 			'sahkopostiosoite' => 'jeesus.kristus@heaven.com'
 		) );
-		$uusi_asiakas->save();
-		Kint::dump( $uusi_asiakas );
+		$virheet = $uusi_asiakas->virheilmoitukset();
+		Kint::dump( $virheet );
 	}
 }

@@ -3,6 +3,10 @@
 
 <h1>Kirjaudu sisään</h1>
 
+{% if welcome is defined %}
+	<div class="alert alert-success">{{welcome}}</div>
+{% endif %}
+
 <form method="post" action="{{base_path}}/kayttaja/login">
 <div class="form-group">
 	<label>Käyttäjätunnus</label>
