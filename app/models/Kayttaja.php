@@ -58,6 +58,20 @@ class Kayttaja extends BaseModel {
 		return $virheilmoitukset;
 	}
 
+	// Päivittää Kayttaja-olion tiedot tietokantaan. Huomaa, että vain
+	// salasana- ja tyyppi-kenttien arvot voidaan päivittää tämän
+	// funktion avulla.
+	public function paivita() {
+		$query = DB::connection()->prepare(
+			'update Kayttaja set salasana = :salasana, tyyppi = :tyyppi '
+				. 'where ktunnus = :ktunnus;' );
+		$query->execute( array(
+			'ktunnus' => $this->ktunnus,
+			'salasana' => $this->salasana,
+			'tyyppi' => $this->tyyppi
+		) );
+	}
+
 	// Käyttäjä-olion poistamiseen tietokannasta
 	public function poista() {
 		// Varmistetaan, että poistettavaksi tarkoitettu olio

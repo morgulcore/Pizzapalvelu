@@ -10,13 +10,23 @@
 				<p>(asiakkaalla ei ole sähköpostiosoitetta)</p>
 			{% endif %}
 		</div>
+
+		{% if paivitys_onnistui_viesti is defined %}
+			<div class="alert alert-success">{{paivitys_onnistui_viesti}}</div>
+		{% endif %}
+
 		<p>
 			<form method="post"
 				action="{{base_path}}/asiakas/{{asiakas.asiakas_id}}/poista"
 				style="display: inline-block;">
 				<button type="submit" class="btn btn-danger">Poista</button>
 			</form>
-			<a href="#" class="btn btn-default">Muokkaa</a>
+			<form method="get"
+				action="{{base_path}}/asiakas/{{asiakas.asiakas_id}}/muokkaa"
+				style="display: inline-block;">
+				<button type="submit" class="btn btn-default">Muokkaa</button>
+			</form>
+			<!-- <a href="#" class="btn btn-default">Muokkaa</a> -->
 		</p>
 		<ul>
 			<li><strong>Toimittamattomat tilaukset:</strong>

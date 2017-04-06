@@ -2,20 +2,63 @@
 
 class AsiakasController extends BaseController {
 
-	// LISÄYSNÄKYMÄ:
 	// Renderöidään lomake, jolla uusi asiakas rekisteröidään tietokantaan
 	public static function uusi() {
 		View::make( 'asiakas/uusi.html' );
 	}
 
-	// LISTAUSNÄKYMÄ:
+	// Asiakkaan tietojen muokkaus (lomakkeen esittäminen)
+	public static function muokkaa( $asiakas_id ) {
+		$asiakas = Asiakas::find( $asiakas_id );
+		View::make( 'asiakas/muokkaa.html', array( 'asiakas' => $asiakas ) );
+	}
+
+	// Asiakkaan tietojen päivitys (tiedot lomakkeen kautta)
+	public static function paivita() {
+		$params = $_POST;
+		$kentat = array(
+			'asiakas_id' => $params[ 'asiakas_id' ],
+			'ktunnus' => $params[ 'ktunnus' ],
+			'etunimi' => $params[ 'etunimi' ],
+			'sukunimi' => $params[ 'sukunimi' ],
+			'puhelinnumero' => $params[ 'puhelinnumero' ],
+			'sahkopostiosoite' => $params[ 'sahkopostiosoite' ],
+			'salasana' => $params[ 'salasana' ],
+			'tyyppi' => $params[ 'tyyppi' ]
+		);
+
+		// Jokaista asiakasta vastaa yksi käyttäjätunnus
+		$kayttaja = new Kayttaja( $kentat );
+		$kayttajavirheilmoitukset = $kayttaja->virheilmoitukset();
+
+		// Luodaan Asiakas-olio
+		$asiakas = new Asiakas( $kentat );
+		$asiakasvirheilmoitukset = $asiakas->virheilmoitukset();
+
+		// Asiakas- ja käyttäjävirheilmoitukset samassa nipussa
+		$virheilmoitukset = array_merge(
+			$kayttajavirheilmoitukset, $asiakasvirheilmoitukset );
+
+		if( count( $virheilmoitukset ) > 0 ) {
+			View::make( 'asiakas/muokkaa.html', array(
+				'virheilmoitukset' => $virheilmoitukset,
+				'asiakas' => $asiakas ) );
+			return;
+		}
+
+		$kayttaja->paivita();
+		$asiakas->paivita();
+
+		Redirect::to( '/asiakas/' . $asiakas->asiakas_id, array(
+			'paivitys_onnistui_viesti' => 'Asiakastietojen päivitys onnistui' ) );
+	}
+
 	// Listataan kaikkien asiakkaiden tiedot ylläpidon tarkastelua varten
 	public static function index() {
 		$asiakkaat = Asiakas::all();
 		View::make( 'asiakas/index.html', array( 'asiakkaat' => $asiakkaat ) );
 	}
 
-	// ESITTELYNÄKYMÄ:
 	// Renderöidään asiakkaan esittelysivu
 	public static function esittely( $asiakas_id ) {
 		$asiakas = Asiakas::find( $asiakas_id );

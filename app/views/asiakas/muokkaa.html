@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if asiakas %}
+	<div class="page-header">
+		<h1>Asiakastietojen muokkaus: {{asiakas.ktunnus}}</h1>
+	</div>
+
+	{% if virheilmoitukset %}
+		<div class="alert alert-danger">
+			<ul>
+				{% for virheilmoitus in virheilmoitukset %}
+					<li>{{virheilmoitus}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
+	<form method="post" action="{{base_path}}/asiakas/{{asiakas.asiakas_id}}/muokkaa">
+		<div class="form-group">
+			<label>Asiakas_ID</label>
+			<input name="asiakas_id" class="form-control"
+				value="{{asiakas.asiakas_id}}" type="text" readonly>
+		</div>
+
+		<div class="form-group">
+			<label>Käyttäjätunnus</label>
+			<input name="ktunnus" class="form-control"
+				value="{{asiakas.ktunnus}}" type="text" readonly>
+		</div>
+
+		<div class="form-group">
+			<label>Tyyppi (asiakas 0, ylläpitäjä 1)</label>
+			<input name="tyyppi" class="form-control"
+				value="{{asiakas.tyyppi}}" type="text">
+		</div>
+
+		<div class="form-group">
+			<label>Salasana</label>
+			<input name="salasana" class="form-control"
+				value="{{asiakas.salasana}}" type="password">
+		</div>
+
+		<div class="form-group">
+			<label>Etunimi</label>
+			<input name="etunimi" class="form-control"
+				value="{{asiakas.etunimi}}" type="text">
+		</div>
+
+		<div class="form-group">
+			<label>Sukunimi</label>
+			<input name="sukunimi" class="form-control"
+				value="{{asiakas.sukunimi}}" type="text">
+		</div>
+
+		<div class="form-group">
+			<label>Puhelinnumero</label>
+			<input name="puhelinnumero" class="form-control"
+				value="{{asiakas.puhelinnumero}}" type="text">
+		</div>
+
+		<div class="form-group">
+			<label>Sähköpostiosoite</label>
+			<input name="sahkopostiosoite" class="form-control"
+				value="{{asiakas.sahkopostiosoite}}" type="text">
+		</div>
+
+		<div class="form-group">
+			<button type="submit" class="btn btn-primary">Päivitä tiedot</button>
+		</div>
+	</form>
+
+{% else %}
+	<p>Muuttuja 'asiakas' on määrittelemättä!</p>
+{% endif %}
+{% endblock %}

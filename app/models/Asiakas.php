@@ -15,7 +15,8 @@ class Asiakas extends BaseModel {
 		parent::__construct( $attributes );
 		// Seuraava attribuutti on määritelty BaseModelissa
 		$this->validaattorit = array(
-			'validoi_etunimi', 'validoi_sukunimi' );
+			'validoi_etunimi', 'validoi_sukunimi',
+			'validoi_puhelinnumero', 'validoi_sahkopostiosoite' );
 	}
 
 	public function validoi_etunimi() {
@@ -28,6 +29,44 @@ class Asiakas extends BaseModel {
 		$errors = BaseModel::merkkijono_on_erisnimi(
 			"Sukunimi: ", $this->sukunimi );
 		return $errors;
+	}
+
+	// Hätäisesti ja kiireessä toteutettu
+	public function validoi_puhelinnumero() {
+		$errors = array();
+		$sl = '/\A[+]?[0-9 ]{10,20}\z/';
+		if( strlen( $this->puhelinnumero ) > 0
+			&& preg_match( $sl, $this->puhelinnumero ) == 0 ) {
+			$errors[] = 'Puhelinnumero ei kelpaa';
+		}
+		return $errors;
+	}
+
+	// Hätäisesti ja kiireessä toteutettu
+	public function validoi_sahkopostiosoite() {
+		$errors = array();
+		$sl = '/\A.{1,20}@.{1,20}\z/';
+		if( strlen( $this->sahkopostiosoite ) > 0
+			&& preg_match( $sl, $this->sahkopostiosoite ) == 0 ) {
+			$errors[] = 'Sähköpostiosoite ei kelpaa';
+		}
+		return $errors;
+	}
+
+	// Asiakastietojen päivitys. Huomaa, että kenttien asiakas_id ja ktunnus
+	// arvoja ei voi päivittää tällä funktiolla. Se ei olisi tarkoituksenmukaista.
+	public function paivita() {
+		$query = DB::connection()->prepare(
+			'update Asiakas set etunimi = :etunimi, sukunimi = :sukunimi, '
+			. 'puhelinnumero = :puhelinnumero, sahkopostiosoite = :sahkopostiosoite '
+			. 'where asiakas_id = :asiakas_id;' );
+		$query->execute( array(
+			'asiakas_id' => $this->asiakas_id,
+			'etunimi' => $this->etunimi,
+			'sukunimi' => $this->sukunimi,
+			'puhelinnumero' => $this->puhelinnumero,
+			'sahkopostiosoite' => $this->sahkopostiosoite
+		) );
 	}
 
 	// Poistetaan Asiakas-olio tietokannasta
