@@ -28,6 +28,31 @@
 			<li><strong>Ongelmia yhteensä:</strong> <label class="label label-danger">
 				3</label> (staattinen arvo, Tilaus- ja Ongelma-mallit toteutettava ensin)</li>
 		</ul>
+
+		{% if asiakkaan_osoitekirja %}
+			<h3>Asiakkaan osoitekirja</h3>
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>Lähiosoite</th>
+						<th>Postinumero</th>
+						<th>Postitoimipaikka</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for osoite in asiakkaan_osoitekirja %}
+						<tr>
+							<td>{{osoite.lahiosoite}}</td>
+							<td>{{osoite.postinumero}}</td>
+							<td>{{osoite.postitoimipaikka}}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<p><strong>Asiakkaan osoitekirja on tyhjä!</strong></p>
+		{% endif %}
+
 	{% else %}
 		<div class="alert alert-danger">
 			Käytettiin ilmeisesti olematonta asiakas_id:tä</div>
