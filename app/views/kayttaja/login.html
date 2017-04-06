@@ -7,6 +7,10 @@
 	<div class="alert alert-success">{{welcome}}</div>
 {% endif %}
 
+{% if kirjautumisvirhe is defined %}
+	<div class="alert alert-danger">{{kirjautumisvirhe}}</div>
+{% endif %}
+
 <form method="post" action="{{base_path}}/kayttaja/login">
 <div class="form-group">
 	<label>Käyttäjätunnus</label>

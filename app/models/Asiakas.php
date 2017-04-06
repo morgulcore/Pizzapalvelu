@@ -133,6 +133,16 @@ class Asiakas extends BaseModel {
 		return $asiakkaat;
 	}
 
+	// Haetaan asiakastunnusta vastaava (ensimmäinen) asiakas_id
+	public static function hae_asiakas_id( $ktunnus ) {
+		$kysely = DB::connection()->prepare(
+			'select * from Asiakas where ktunnus = :ktunnus limit 1;' );
+		$kysely->execute( array( 'ktunnus' => $ktunnus ) );
+		$rivi = $kysely->fetch();
+
+		return $rivi[ 'asiakas_id' ];
+	}
+
 	// Haetaan tietokannasta asiakas_id:tä vastaava asiakas. Huomaa, että
 	// tässä yhteydessä haetaan tietoa Asiakas-taulun lisäksi myös
 	// Kayttaja-taulusta

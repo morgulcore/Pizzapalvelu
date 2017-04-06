@@ -1,6 +1,6 @@
 insert into Kayttaja values
-	( 'admin', 'henrik1975', 1 ), -- Ensimmäisenä ylläpidon käyttäjätunnus
-	( 'mruusu', 'tsoha2017', 0 ), -- Loput käyttäjätunnukset liittyvät asiakkaisiin
+	-- ( 'admin', 'henrik1975', 1 ), -- Ensimmäisenä ylläpidon käyttäjätunnus
+	( 'mruusu', 'tsoha2017', 1 ), -- Loput käyttäjätunnukset liittyvät asiakkaisiin
 	( 'jporkkana', 'tsoha2017', 0 ),
 	( 'skurpitsa', 'tsoha2017', 0 ),
 	( 'nvadelma', 'tsoha2017', 1 ),

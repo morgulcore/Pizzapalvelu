@@ -50,6 +50,13 @@
     </nav>
 
     <div id="main-container">
+		{% if user_logged_in %}
+			<div class="alert alert-info">
+				Käyttäjä {{user_logged_in.ktunnus}} on kirjautuneena sisään</div>
+		{% else %}
+			<div class="alert alert-danger">
+				Kukaan ei ole kirjautuneena sisään</div>
+		{% endif %}
       <!-- Dynaaminen sisältö tulee tähän -->
       {% block content %}{% endblock %}
     </div>

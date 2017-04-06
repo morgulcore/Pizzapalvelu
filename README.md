@@ -1,6 +1,11 @@
 # Pizzapalvelu-nimisen tietokantasovelluksen esittelysivu
 
-Yleisiä linkkejä:
+## Sisäänkirjautumiseen tarvittavat tiedot
+* Käyttäjätunnus: mruusu
+* Salasana: tsoha2017
+* [Sisäänkirjautumissivu](http://xhexhex.users.cs.helsinki.fi/pizzapalvelu/kayttaja/login)
+
+## Yleisiä linkkejä
 
 * [Linkki sovellukseeni](http://xhexhex.users.cs.helsinki.fi/pizzapalvelu/)
 * [Linkki dokumentaatiooni](https://github.com/morgulcore/Pizzapalvelu/blob/master/doc/dokumentaatio.pdf)

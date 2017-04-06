@@ -1,50 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
 	<div class="page-header">
-		<h1>Asiakasrekisterimme kaiken kansan tarkasteltavaksi</h1>
+		<h1>Asiakasrekisteri</h1>
 	</div>
 
-	{% if poisto_onnistui is defined %}
-		<div class="alert alert-success">{{poisto_onnistui}}</div>
+	{% if user_logged_in and user_logged_in.tyyppi == 1 %}
+		{% if poisto_onnistui is defined %}
+			<div class="alert alert-success">{{poisto_onnistui}}</div>
+		{% endif %}
+
+		<p>
+			<a href="{{base_path}}/asiakas/uusi" class="btn btn-success">
+				Lisää asiakas</a>
+		</p>
+
+		<table class="table table-striped table-bordered">
+			<thead>
+				<th>Käyttäjätunnus</th>
+				<th>Etunimi</th>
+				<th>Sukunimi</th>
+				<th>Puhelinnumero</th>
+				<th>Sähköpostiosoite</th>
+				<th>Salasana</th>
+				<th>Tyyppi</th>
+			</thead>
+
+			<tbody>
+				{% for asiakas in asiakkaat %}
+					<tr>
+						<td><a href="{{base_path}}/asiakas/{{asiakas.asiakas_id}}">
+							{{asiakas.ktunnus}}</a></td>
+						<td>{{asiakas.etunimi}}</td>
+						<td>{{asiakas.sukunimi}}</td>
+						<td>{{asiakas.puhelinnumero}}</td>
+						<td>{{asiakas.sahkopostiosoite}}</td>
+						<td>{{asiakas.salasana}}</td>
+						<td>
+							{% if asiakas.tyyppi == 0 %}
+								<label class="label label-success">
+									Asiakas</label>
+							{% else %}
+								<label class="label label-danger">
+									Ylläpitäjä</label>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<h3>Access denied! Tällä sivulla on luottamuksellista tietoa!</h3>
 	{% endif %}
-
-	<p>
-		<a href="{{base_path}}/asiakas/uusi" class="btn btn-success">
-			Lisää asiakas</a>
-	</p>
-
-	<table class="table table-striped table-bordered">
-		<thead>
-			<th>Käyttäjätunnus</th>
-			<th>Etunimi</th>
-			<th>Sukunimi</th>
-			<th>Puhelinnumero</th>
-			<th>Sähköpostiosoite</th>
-			<th>Salasana</th>
-			<th>Tyyppi</th>
-		</thead>
-
-		<tbody>
-			{% for asiakas in asiakkaat %}
-				<tr>
-					<td><a href="{{base_path}}/asiakas/{{asiakas.asiakas_id}}">
-						{{asiakas.ktunnus}}</a></td>
-					<td>{{asiakas.etunimi}}</td>
-					<td>{{asiakas.sukunimi}}</td>
-					<td>{{asiakas.puhelinnumero}}</td>
-					<td>{{asiakas.sahkopostiosoite}}</td>
-					<td>{{asiakas.salasana}}</td>
-					<td>
-						{% if asiakas.tyyppi == 0 %}
-							<label class="label label-success">
-								Asiakas</label>
-						{% else %}
-							<label class="label label-danger">
-								Ylläpitäjä</label>
-						{% endif %}
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
 {% endblock %}

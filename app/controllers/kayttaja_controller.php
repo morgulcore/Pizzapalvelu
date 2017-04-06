@@ -16,12 +16,11 @@ class KayttajaController extends BaseController {
 
 		if( !$kayttaja ) {
 			View::make( 'kayttaja/login.html', array(
-				'error' => 'Väärä käyttäjätunnus tai salasana!',
-				'username' => $params[ 'username' ] ) );
+				'kirjautumisvirhe' => 'Väärä käyttäjätunnus tai salasana!' ) );
 		} else {
 			$_SESSION[ 'user' ] = $kayttaja->ktunnus;
-
-			Redirect::to( '/', array('message' => 'Tervetuloa takaisin, '
+			Redirect::to( '/', array(
+				'tervetuloa_takaisin' => 'Tervetuloa takaisin, '
 				. $kayttaja->ktunnus . '!' ) );
 		}
 	}

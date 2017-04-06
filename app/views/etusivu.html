@@ -5,5 +5,9 @@
 			online-pizzapalvelusovellusta!</h1>
 	</div>
 
+	{% if tervetuloa_takaisin is defined %}
+		<div class="alert alert-success">{{tervetuloa_takaisin}}</div>
+	{% endif %}
+
 	 <img src="{{base_path}}/images/pizza-superman.jpg" alt="Pizza Superman">
 {% endblock %}
