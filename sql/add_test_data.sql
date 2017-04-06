@@ -102,7 +102,9 @@ insert into Lisuke values
 	( 'chili', 'Lisäpotkua pizzaan tuoreella chilimurskalla' );
 
 -- lisuke_id, tilaus_id, tuotelaskuri
+/*
 insert into mm_Lisuke_Tilattu_tuote values
 	( 'valkosipuli', 1, 1 ),
 	( 'chili', 1, 1 ),
 	( 'chili', 1, 2 );
+*/

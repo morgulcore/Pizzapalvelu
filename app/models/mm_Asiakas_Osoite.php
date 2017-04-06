@@ -15,6 +15,14 @@ class mm_Asiakas_Osoite extends BaseModel {
 		$this->osoiteviite = Osoite::hae( $osoite_id );
 	}
 
+	// Poistaa taulusta mm_Asiakas_Osoite kaikki rivit, joissa
+	// esiintyy $asiakas_id
+	public static function poista_asiakas_id( $asiakas_id ) {
+		$kysely = DB::connection()->prepare(
+			'delete from mm_Asiakas_Osoite where asiakas_id = :asiakas_id;' );
+		$kysely->execute( array( 'asiakas_id' => $asiakas_id ) );
+	}
+
 	public static function hae_asiakkaan_osoitteet( $asiakas_id ) {
 		$asiakkaan_osoitteet = array();
 		$asiakas_osoite_parit = self::hae_kaikki();

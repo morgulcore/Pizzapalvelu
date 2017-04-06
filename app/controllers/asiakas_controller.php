@@ -26,17 +26,28 @@ class AsiakasController extends BaseController {
 			'asiakkaan_osoitekirja' => $asiakkaan_osoitekirja ) );
 	}
 
+	// Asiakastilin poistaminen tietokannasta. Tämä ei ole aivan mutkaton
+	// operaatio, koska asiakas_id:tä käytetään viiteavaimena tauluissa
+	// Tilaus ja mm_Asiakas_Osoite. Sen lisäksi tauluilla Käyttäjä ja
+	// Ongelma on tiettyjä loogisia tai teknisiä riippuvuuksia
+	// tauluun Asiakas.
 	public static function poista( $asiakas_id ) {
 		$poistettava_asiakas = Asiakas::find( $asiakas_id );
 		if( $poistettava_asiakas == null ) {
 			// Mitään ei poisteta, jos poistettavaa ei löydy. Pitäisi
-			// vielä laittaa joku virheilmoitus.
+			// vielä laittaa joku virheilmoitus...
 			return;
 		}
 
 		// Tietokannasta pitäisi pakostakin löytyä asiakastiliä
 		// vastaava käyttäjätunnus
 		$poistettava_kayttaja = Kayttaja::find( $poistettava_asiakas->ktunnus );
+
+		// Taulussa mm_Asiakas_Osoite voi olla viiteavaimia poistettavaan
+		// Asiakas-olioon
+		mm_Asiakas_Osoite::poista_asiakas_id( $poistettava_asiakas->asiakas_id );
+
+		Tilaus::poista_asiakkaan_tilaukset( $asiakas_id );
 
 		// Poistetaan asiakastili
 		$poistettava_asiakas->poista();
