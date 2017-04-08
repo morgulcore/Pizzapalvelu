@@ -1,4 +1,3 @@
-drop table if exists Kayttaja cascade;
 drop table if exists Asiakas cascade;
 drop table if exists Osoite cascade;
 drop table if exists mm_Asiakas_Osoite cascade;

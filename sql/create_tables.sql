@@ -1,20 +1,9 @@
-create table Kayttaja(
-	ktunnus varchar(20) primary key,
-	--Jos password on NULL, käyttäjätiliä ei voi käyttää
-	--järjestelmään kirjautumiseen
-	salasana varchar(50),
-	--Käyttäjätunnuksen tyyppi määrää siihen liittyvät oikeudet.
-	--Asiakkaiden käyttäjätunnusten tyyppi on aina 0. Jos käyttäjätunnuksen
-	--tyyppi on enemmän kuin 0, sillä voi suorittaa järjestelmän ylläpitoon
-	--liittyviä toimenpiteitä.
-	tyyppi integer not null
-);
-
 create table Asiakas(
-	asiakas_id serial primary key,
-	ktunnus varchar(20) references Kayttaja( ktunnus ),
-	etunimi varchar(50) not null,
-	sukunimi varchar(50) not null,
+	ktunnus varchar(20) primary key,
+	on_paakayttaja boolean not null,
+	salasana varchar(20),
+	etunimi varchar(20) not null,
+	sukunimi varchar(20) not null,
 	puhelinnumero varchar(20),
 	sahkopostiosoite varchar(50)
 );
@@ -28,16 +17,16 @@ create table Osoite(
 );
 
 create table mm_Asiakas_Osoite(
-	asiakas_id integer references Asiakas( asiakas_id ),
+	ktunnus varchar(20) references Asiakas( ktunnus ),
 	osoite_id integer references Osoite( osoite_id ),
-	primary key( asiakas_id, osoite_id )
+	primary key( ktunnus, osoite_id )
 );
 
 create table Tilaus(
 	tilaus_id serial primary key,
-	asiakas_id integer references Asiakas( asiakas_id ),
+	ktunnus varchar(20) references Asiakas( ktunnus ),
 	ts_tilauksen_teko timestamp not null, -- Ajankohta, jolloin tilaus tehtiin
-	unique( asiakas_id, ts_tilauksen_teko ),
+	unique( ktunnus, ts_tilauksen_teko ),
 	-- Lyhenne tak = toimitusajankohta. Jos kentän ts_tak_toivottu arvona
 	-- on NULL, tarkoittaa se asiakkaan toivomusta siitä, että tilaus
 	-- toimitettaisiin hänelle mahdollisimman pian.

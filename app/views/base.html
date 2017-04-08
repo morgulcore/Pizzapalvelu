@@ -1,75 +1,73 @@
 <!DOCTYPE html>
+
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>
-      {% block title %}
-        Pizzapalvelu Gizza
-      {% endblock %}
-    </title>
+		<title>
+			{% block title %}
+				Gizza – Pizzeria Omerta
+			{% endblock %}
+		</title>
 
-    {% block head %}
-      <!-- Bootstrap (tyylitiedosto) -->
-      <link href="{{base_path}}/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		{% block head %}
+			<!-- Bootstrap (tyylitiedosto) -->
+			<link href="{{base_path}}/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+			<!-- Oma tyylitiedostomme -->
+			<link href="{{base_path}}/assets/css/site.css" rel="stylesheet">
+		{% endblock %}
+	</head>
 
-      <!-- Oma tyylitiedostomme -->
-      <link href="{{base_path}}/assets/css/site.css" rel="stylesheet">
-    {% endblock %}
-  </head>
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed"
+						data-toggle="collapse" data-target="#navigation">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<!-- Sovelluksen nimi -->
+					<a class="navbar-brand" href="{{base_path}}">Gizza</a>
+				</div>
 
-  <body>
+				<div class="collapse navbar-collapse" id="navigation">
+					<ul class="nav navbar-nav">
+						<!-- Navigaation linkit -->
+						<li><a href="{{base_path}}/tuotteet">Tuotteet</a></li>
+						<li><a href="{{base_path}}/asiakas">Asiakasrekisteri</a></li>
+						<li><a href="{{base_path}}/asiakas/uusi">Rekisteröidy</a></li>
+						<li><a href="{{base_path}}/asiakas/login">Kirjaudu sisään</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
+		<div id="main-container">
+			{% if user_logged_in %}
+				<div class="alert alert-info">
+					Käyttäjä {{user_logged_in.ktunnus}} on kirjautuneena sisään
+				</div>
+			{% else %}
+				<div class="alert alert-danger">
+					Kukaan ei ole kirjautuneena sisään
+				</div>
+			{% endif %}
+			<!-- Dynaaminen sisältö tulee tähän -->
+			{% block content %}{% endblock %}
+		</div>
 
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navigation">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <!-- Sovelluksen nimi -->
-          <a class="navbar-brand" href="{{base_path}}">Gizza</a>
-        </div>
-
-        <div class="collapse navbar-collapse" id="navigation">
-          <ul class="nav navbar-nav">
-            <!-- Navigaation linkit -->
-            <!-- <li><a href="{{base_path}}">Etusivu</a></li> -->
-            <li><a href="{{base_path}}/tuotteet">Tuotteet</a></li>
-            <li><a href="{{base_path}}/asiakas">Asiakasrekisteri</a></li>
-            <li><a href="{{base_path}}/asiakas/uusi">Rekisteröidy</a></li>
-            <li><a href="{{base_path}}/kayttaja/login">Kirjaudu sisään</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <div id="main-container">
-		{% if user_logged_in %}
-			<div class="alert alert-info">
-				Käyttäjä {{user_logged_in.ktunnus}} on kirjautuneena sisään</div>
-		{% else %}
-			<div class="alert alert-danger">
-				Kukaan ei ole kirjautuneena sisään</div>
-		{% endif %}
-      <!-- Dynaaminen sisältö tulee tähän -->
-      {% block content %}{% endblock %}
-    </div>
-
-    {% block body %}
-      <!-- jQuery -->
-      <script src="{{base_path}}/vendor/jquery.min.js"></script>
-
-      <!-- Bootstrap (skriptitiedosto) -->
-      <script src="{{base_path}}/vendor/bootstrap/js/bootstrap.min.js"></script>
-
-      <!-- Oma skriptitiedostomme -->
-      <script src="{{base_path}}/assets/js/site.js"></script>
-    {% endblock %}
-  </body>
+		{% block body %}
+			<!-- jQuery -->
+			<script src="{{base_path}}/vendor/jquery.min.js"></script>
+			<!-- Bootstrap (skriptitiedosto) -->
+			<script src="{{base_path}}/vendor/bootstrap/js/bootstrap.min.js"></script>
+			<!-- Oma skriptitiedostomme -->
+			<script src="{{base_path}}/assets/js/site.js"></script>
+		{% endblock %}
+	</body>
 </html>

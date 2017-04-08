@@ -1,22 +1,60 @@
 <?php
 
 class Asiakas extends BaseModel {
+
 	// Attribuutit
-	public $asiakas_id, $ktunnus, $etunimi, $sukunimi,
-		$puhelinnumero, $sahkopostiosoite,
-		// Tietokantatoteutuksessa seuraavat kaksi kenttää eivät löydy
-		// taulusta Asiakas, vaan taulusta Kayttaja. En tiedä, onko ihan
-		// korrektia hämärtää malliolioiden ja taulujen yksi yhteen
-		// -vastaavuutta tällä tavalla, mutta kokeilen nyt kuitenkin.
-		$salasana, $tyyppi;
+	public
+		$ktunnus,
+		$on_paakayttaja,
+		$salasana,
+		$etunimi,
+		$sukunimi,
+		$puhelinnumero,
+		$sahkopostiosoite;
 
 	// Konstruktori
-	public function __construct( $attributes ) {
-		parent::__construct( $attributes );
+	public function __construct( $attribuutit ) {
+		parent::__construct( $attribuutit );
 		// Seuraava attribuutti on määritelty BaseModelissa
 		$this->validaattorit = array(
-			'validoi_etunimi', 'validoi_sukunimi',
+			'validoi_ktunnus', 'validoi_salasana',
+			'validoi_etunimi', 'validoi_sukunimi', // validoi_etu_ja_sukunimi()
 			'validoi_puhelinnumero', 'validoi_sahkopostiosoite' );
+	}
+
+	public function validoi_ktunnus() {
+		$virheilmoitukset = BaseModel::tyhja_merkkijono(
+			'Käyttäjätunnus: ', $this->ktunnus );
+
+		// \A tarkoittaa merkkijonon alkua, \z sen loppua. Käyttäjätunnus siis
+		// alkaa aina pienellä kirjaimella, jota seuraa 2–14 pientä kirjainta
+		// tai numeroa. En käytä kompaktia merkintää [a-z], koska en ole
+		// varma, miten se käyttäytyy lokalisointiasetuksien kanssa.
+		$sl = '/\A[abcdefghijklmnopqrstuvwxyz][abcdefghijklmnopqrstuvwxyz0123456789]{2,14}\z/';
+
+		if( preg_match( $sl, $this->ktunnus ) == 0 ) {
+			$virheilmoitukset[] = 'Käyttäjätunnus: Pituus on 3–15 merkkiä, '
+				. 'sisältää vain pieniä kirjaimia (a-z) ja numeroita (0-9), '
+				. 'alkaa pienellä kirjaimella';
+		}
+
+		return $virheilmoitukset;
+	}
+
+	public function validoi_salasana() {
+		$virheilmoitukset = BaseModel::tyhja_merkkijono(
+			'Salasana: ', $this->salasana );
+
+		// Salasana voi siis sisältää kirjaimia ja numeroita, ja se on
+		// pituudeltaan 4–15 merkkiä
+		$sl = '/\A[ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖabcdefghijklmnopqrstuvwxyzåäö0123456789]{4,15}\z/';
+
+		if( preg_match( $sl, $this->salasana ) == 0 ) {
+			$virheilmoitukset[] = 'Salasana: Pituus 4–15 merkkiä, voi sisältää '
+				. 'kirjaimia ja numeroita';
+		}
+
+		return $virheilmoitukset;
 	}
 
 	public function validoi_etunimi() {
@@ -108,60 +146,76 @@ class Asiakas extends BaseModel {
 		$this->asiakas_id = $row[ 'asiakas_id' ];
 	}
 
-	// Haetaan tietokannasta kaikki Asiakas-oliot. Jokaiseen asiakkaaseen
-	// liittyy täsmälleen yksi Kayttaja-olio, joten haetaan samalla nekin.
-	public static function all() {
-		$query = DB::connection()->prepare( 'select Asiakas.asiakas_id, Asiakas.etunimi, Asiakas.sukunimi, Asiakas.puhelinnumero, Asiakas.sahkopostiosoite, Kayttaja.ktunnus, Kayttaja.salasana, Kayttaja.tyyppi from Asiakas inner join Kayttaja on Asiakas.ktunnus = Kayttaja.ktunnus;' );
-		$query->execute();
-		$rows = $query->fetchAll();
+    // Uudelleennimetty authenticate(). Tutkitaan, löytyykö taulusta Asiakas
+    // annettua käyttäjätunnus–salasana-yhdistelmää.
+	public static function todenna( $ktunnus, $salasana ) {
+		$kysely = DB::connection()->prepare(
+			'select * from Asiakas where ktunnus = :ktunnus and '
+				. 'salasana = :salasana limit 1;' );
+		$kysely->execute( array(
+			'ktunnus' => $ktunnus, 'salasana' => $salasana ) );
+
+		$rivi = $kysely->fetch();
+		if( $rivi ) {
+			$asiakas = self::hae( $ktunnus );
+			if( ! $asiakas ) {
+				// Lähdekoodissa on bugi eli on paras viheltää peli heti poikki
+				exit( 'Asiakas::todenna() – Tapahtui hirveitä!' );
+			}
+
+			return $asiakas;
+		}
+
+		return null;
+	}
+
+	// Haetaan tietokannasta kaikki Asiakas-oliot
+	public static function hae_kaikki() {
+		$kysely = DB::connection()->prepare( 'select * from Asiakas;' );
+		$kysely->execute();
+		$rivit = $kysely->fetchAll();
 
 		$asiakkaat = array();
 
-		foreach( $rows as $row ) {
+		foreach( $rivit as $rivi ) {
+			$asiakkaat[] = new Asiakas( $rivi );
+
+			/*
 			$asiakkaat[] = new Asiakas( array(
-				'asiakas_id' => $row[ 'asiakas_id' ],
-				'ktunnus' => $row[ 'ktunnus' ],
-				'etunimi' => $row[ 'etunimi' ],
-				'sukunimi' => $row[ 'sukunimi' ],
-				'puhelinnumero' => $row[ 'puhelinnumero' ],
-				'sahkopostiosoite' => $row[ 'sahkopostiosoite' ],
-				'salasana' => $row[ 'salasana' ],
-				'tyyppi' => $row[ 'tyyppi' ]
-			) );
+				'asiakas_id' => $rivi[ 'asiakas_id' ],
+				'ktunnus' => $rivi[ 'ktunnus' ],
+				'etunimi' => $rivi[ 'etunimi' ],
+				'sukunimi' => $rivi[ 'sukunimi' ],
+				'puhelinnumero' => $rivi[ 'puhelinnumero' ],
+				'sahkopostiosoite' => $rivi[ 'sahkopostiosoite' ],
+				'salasana' => $rivi[ 'salasana' ],
+				'tyyppi' => $rivi[ 'tyyppi' ]
+			) ); */
 		}
 
 		return $asiakkaat;
 	}
 
-	// Haetaan asiakastunnusta vastaava (ensimmäinen) asiakas_id
-	public static function hae_asiakas_id( $ktunnus ) {
+	// Haetaan tietokannasta käyttäjätunnusta $ktunnus vastaava asiakas
+	public static function hae( $ktunnus ) {
 		$kysely = DB::connection()->prepare(
 			'select * from Asiakas where ktunnus = :ktunnus limit 1;' );
 		$kysely->execute( array( 'ktunnus' => $ktunnus ) );
+
 		$rivi = $kysely->fetch();
-
-		return $rivi[ 'asiakas_id' ];
-	}
-
-	// Haetaan tietokannasta asiakas_id:tä vastaava asiakas. Huomaa, että
-	// tässä yhteydessä haetaan tietoa Asiakas-taulun lisäksi myös
-	// Kayttaja-taulusta
-	public static function find( $asiakas_id ) {
-		$query = DB::connection()->prepare( 'select Asiakas.asiakas_id, Asiakas.etunimi, Asiakas.sukunimi, Asiakas.puhelinnumero, Asiakas.sahkopostiosoite, Kayttaja.ktunnus, Kayttaja.salasana, Kayttaja.tyyppi from ( Asiakas inner join Kayttaja on Asiakas.ktunnus = Kayttaja.ktunnus ) where asiakas_id = :asiakas_id limit 1;' );
-		$query->execute( array( 'asiakas_id' => $asiakas_id ) );
-		$row = $query->fetch();
-
-		if( $row ) {
+		if( $rivi ) {
+			$asiakas = new Asiakas( $rivi );
+			/*
 			$asiakas = new Asiakas( array(
-				'asiakas_id' => $row[ 'asiakas_id' ],
-				'ktunnus' => $row[ 'ktunnus' ],
-				'etunimi' => $row[ 'etunimi' ],
-				'sukunimi' => $row[ 'sukunimi' ],
-				'puhelinnumero' => $row[ 'puhelinnumero' ],
-				'sahkopostiosoite' => $row[ 'sahkopostiosoite' ],
-				'salasana' => $row[ 'salasana' ],
-				'tyyppi' => $row[ 'tyyppi' ]
-			) );
+				'asiakas_id' => $rivi[ 'asiakas_id' ],
+				'ktunnus' => $rivi[ 'ktunnus' ],
+				'etunimi' => $rivi[ 'etunimi' ],
+				'sukunimi' => $rivi[ 'sukunimi' ],
+				'puhelinnumero' => $rivi[ 'puhelinnumero' ],
+				'sahkopostiosoite' => $rivi[ 'sahkopostiosoite' ],
+				'salasana' => $rivi[ 'salasana' ],
+				'tyyppi' => $rivi[ 'tyyppi' ]
+			) );*/
 
 			return $asiakas;
 		}

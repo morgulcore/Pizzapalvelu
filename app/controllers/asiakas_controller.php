@@ -55,15 +55,15 @@ class AsiakasController extends BaseController {
 
 	// Listataan kaikkien asiakkaiden tiedot ylläpidon tarkastelua varten
 	public static function index() {
-		$asiakkaat = Asiakas::all();
+		$asiakkaat = Asiakas::hae_kaikki();
 		View::make( 'asiakas/index.html', array( 'asiakkaat' => $asiakkaat ) );
 	}
 
 	// Renderöidään asiakkaan esittelysivu
-	public static function esittely( $asiakas_id ) {
-		$asiakas = Asiakas::find( $asiakas_id );
+	public static function esittely( $ktunnus ) {
+		$asiakas = Asiakas::hae( $ktunnus );
 		$asiakkaan_osoitekirja
-			= mm_Asiakas_Osoite::hae_asiakkaan_osoitteet( $asiakas_id );
+			= mm_Asiakas_Osoite::hae_asiakkaan_osoitteet( $ktunnus );
 		View::make( 'asiakas/esittely.html', array(
 			'asiakas' => $asiakas,
 			'asiakkaan_osoitekirja' => $asiakkaan_osoitekirja ) );
@@ -161,5 +161,28 @@ class AsiakasController extends BaseController {
 			'welcome' => 'Tervetuloa asiakkaaksi, ' . $params[ 'etunimi' ]
 			. '! Voit nyt kirjautua sisään luomallasi käyttäjätunnuksella '
 			. $params[ 'ktunnus' ] . '.' ) );
+	}
+
+	// Sisäänkirjautumissivun näyttäminen
+	public static function login() {
+		View::make( 'asiakas/login.html' );
+	}
+
+	// Sisäänkirjautumisen käsittely
+	public static function handle_login() {
+		$params = $_POST;
+
+		$asiakas = Asiakas::todenna(
+			$params[ 'username' ], $params[ 'password' ] );
+
+		if( !$asiakas ) {
+			View::make( 'asiakas/login.html', array(
+				'kirjautumisvirhe' => 'Väärä käyttäjätunnus tai salasana!' ) );
+		} else {
+			$_SESSION[ 'user' ] = $asiakas->ktunnus;
+			Redirect::to( '/', array(
+				'tervetuloa_takaisin' => 'Tervetuloa takaisin, '
+				. $asiakas->ktunnus . '!' ) );
+		}
 	}
 }

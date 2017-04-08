@@ -14,16 +14,15 @@ $routes->get( '/asiakas/uusi',
 	function() { AsiakasController::uusi(); } );
 $routes->post( '/asiakas/uusi',
 	function() { AsiakasController::rekisteroi(); } );
-$routes->get( '/asiakas/:asiakas_id',
-	function( $asiakas_id ) { AsiakasController::esittely( $asiakas_id ); } );
-$routes->get( '/asiakas/:asiakas_id/muokkaa',
-	function( $asiakas_id ) { AsiakasController::muokkaa( $asiakas_id ); } );
-$routes->post( '/asiakas/:asiakas_id/muokkaa',
+$routes->get( '/asiakas/login',
+	function() { AsiakasController::login(); } );
+$routes->post( '/asiakas/login',
+	function() { AsiakasController::handle_login(); } );
+$routes->get( '/asiakas/:ktunnus',
+	function( $ktunnus ) { AsiakasController::esittely( $ktunnus ); } );
+$routes->get( '/asiakas/:ktunnus/muokkaa',
+	function( $ktunnus ) { AsiakasController::muokkaa( $ktunnus ); } );
+$routes->post( '/asiakas/:ktunnus/muokkaa',
 	function() { AsiakasController::paivita(); } );
-$routes->post( '/asiakas/:asiakas_id/poista',
-	function( $asiakas_id ) { AsiakasController::poista( $asiakas_id ); } );
-
-$routes->get( '/kayttaja/login',
-	function() { KayttajaController::login(); } );
-$routes->post( '/kayttaja/login',
-	function() { KayttajaController::handle_login(); } );
+$routes->post( '/asiakas/:ktunnus/poista',
+	function( $ktunnus ) { AsiakasController::poista( $ktunnus ); } );

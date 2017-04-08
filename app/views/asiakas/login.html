@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Kirjaudu sisään</h1>
+
+{% if welcome is defined %}
+	<div class="alert alert-success">{{welcome}}</div>
+{% endif %}
+
+{% if kirjautumisvirhe is defined %}
+	<div class="alert alert-danger">{{kirjautumisvirhe}}</div>
+{% endif %}
+
+<form method="post" action="{{base_path}}/asiakas/login">
+	<div class="form-group">
+		<label>Käyttäjätunnus</label>
+		<input class="form-control" name="username" value="{{username}}"
+			type="text">
+	</div>
+
+	<div class="form-group">
+		<label>Salasana</label>
+		<input class="form-control" name="password" type="password">
+	</div>
+
+	<button type="submit" class="btn btn-primary">Kirjaudu sisään</button>
+</form>
+
+{% endblock %}
