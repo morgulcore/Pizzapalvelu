@@ -23,127 +23,158 @@ class Asiakas extends BaseModel {
 	}
 
 	public function validoi_ktunnus() {
-		$virheilmoitukset = BaseModel::tyhja_merkkijono(
-			'Käyttäjätunnus: ', $this->ktunnus );
+		$virheet = array();
 
-		// \A tarkoittaa merkkijonon alkua, \z sen loppua. Käyttäjätunnus siis
-		// alkaa aina pienellä kirjaimella, jota seuraa 2–14 pientä kirjainta
-		// tai numeroa. En käytä kompaktia merkintää [a-z], koska en ole
-		// varma, miten se käyttäytyy lokalisointiasetuksien kanssa.
-		$sl = '/\A[abcdefghijklmnopqrstuvwxyz][abcdefghijklmnopqrstuvwxyz0123456789]{2,14}\z/';
+		// \A tarkoittaa merkkijonon alkua, \z sen loppua.
+		// Käyttäjätunnus koostuu vähintään kolmesta ja enintään 15:sta
+		// pienestä kirjaimesta (ei ääkkösiä).
+		$sl = '/\A[a-z]{3,15}\z/';
 
-		if( preg_match( $sl, $this->ktunnus ) == 0 ) {
-			$virheilmoitukset[] = 'Käyttäjätunnus: Pituus on 3–15 merkkiä, '
-				. 'sisältää vain pieniä kirjaimia (a-z) ja numeroita (0-9), '
-				. 'alkaa pienellä kirjaimella';
+		if( BaseModel::tyhja_merkkijono( $this->ktunnus ) ) {
+			$virheet[] = 'Käyttäjätunnus: Ei saa olla tyhjä';
+		} else if( preg_match( $sl, $this->ktunnus ) == 0 ) {
+			$virheet[] = 'Käyttäjätunnus: Pituus 3–15 merkkiä, '
+				. 'sisältää vain pieniä kirjaimia (ei ääkkösiä)';
 		}
 
-		return $virheilmoitukset;
+		return $virheet;
 	}
 
 	public function validoi_salasana() {
-		$virheilmoitukset = BaseModel::tyhja_merkkijono(
-			'Salasana: ', $this->salasana );
+		$virheet = array();
 
 		// Salasana voi siis sisältää kirjaimia ja numeroita, ja se on
-		// pituudeltaan 4–15 merkkiä
-		$sl = '/\A[ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖabcdefghijklmnopqrstuvwxyzåäö0123456789]{4,15}\z/';
+		// pituudeltaan 3–15 merkkiä
+		$sl = '/\A[a-zA-Z0-9]{3,15}\z/';
 
-		if( preg_match( $sl, $this->salasana ) == 0 ) {
-			$virheilmoitukset[] = 'Salasana: Pituus 4–15 merkkiä, voi sisältää '
-				. 'kirjaimia ja numeroita';
+		if( BaseModel::tyhja_merkkijono( $this->salasana ) ) {
+			$virheet[] = 'Salasana: Ei saa olla tyhjä';
+		} else if( preg_match( $sl, $this->salasana ) == 0 ) {
+			$virheet[] = 'Salasana: Pituus 3–15 merkkiä, sisältää '
+				. 'numeroita ja kirjaimia (ei ääkkösiä)';
 		}
 
-		return $virheilmoitukset;
+		return $virheet;
 	}
 
 	public function validoi_etunimi() {
-		$errors = BaseModel::merkkijono_on_erisnimi(
-			"Etunimi: ", $this->etunimi );
-		return $errors;
+		return $this->validoi_nimi( false );
 	}
 
 	public function validoi_sukunimi() {
-		$errors = BaseModel::merkkijono_on_erisnimi(
-			"Sukunimi: ", $this->sukunimi );
-		return $errors;
+		return $this->validoi_nimi( true );
 	}
 
-	// Hätäisesti ja kiireessä toteutettu
+	private function validoi_nimi( $kyseessa_sukunimi ) {
+		$virheet = array();
+
+		// Sovitaan yksinkertaisuuden vuoksi, että nimi sisältää vain
+		// kirjaimia, jolloin esim. "Anna-Maija" ei käy nimestä
+		$sl = '/\A[a-zA-ZäÄöÖåÅ]{2,20}\z/';
+
+		if( BaseModel::tyhja_merkkijono(
+			$kyseessa_sukunimi ? $this->sukunimi : $this->etunimi ) ) {
+			$virheet[] = ( $kyseessa_sukunimi ? 'Sukunimi: ' : 'Etunimi: ' )
+				. 'Ei saa olla tyhjä';
+		} else if( preg_match( $sl, $kyseessa_sukunimi ?
+			$this->sukunimi : $this->etunimi ) == 0 ) {
+			$virheet[] = $kyseessa_sukunimi ? 'Sukunimi: ' : 'Etunimi: '
+				. 'Pituus 2–20 merkkiä, koostuu vain kirjaimista';
+		}
+
+		return $virheet;
+	}
+
 	public function validoi_puhelinnumero() {
-		$errors = array();
-		$sl = '/\A[+]?[0-9 ]{10,20}\z/';
-		if( strlen( $this->puhelinnumero ) > 0
-			&& preg_match( $sl, $this->puhelinnumero ) == 0 ) {
-			$errors[] = 'Puhelinnumero ei kelpaa';
+		// Puhelinnumero saa olla tyhjä merkkijono
+		if( BaseModel::tyhja_merkkijono( $this->puhelinnumero ) ) {
+			return array();
 		}
-		return $errors;
+
+		$virheet = array();
+		$sl = '/\A([+]358|0)[0-9 ]{8,15}\z/';
+
+		if( preg_match( $sl, $this->puhelinnumero ) == 0 ) {
+			$virheet[] = 'Puhelinnumero: 8–15 merkkiä pitkä, alkaa joko "0" tai '
+				. '"+358", voi sisältää numeroiden lisäksi välilyöntejä';
+		}
+
+		if( BaseModel::merkkilaskuri( $this->puhelinnumero, ' ' ) > 3 ) {
+			$virheet[] = 'Puhelinnumero: Välilyöntejä saa olla enintään kolme';
+		}
+
+		return $virheet;
 	}
 
-	// Hätäisesti ja kiireessä toteutettu
 	public function validoi_sahkopostiosoite() {
-		$errors = array();
-		$sl = '/\A.{1,20}@.{1,20}\z/';
-		if( strlen( $this->sahkopostiosoite ) > 0
-			&& preg_match( $sl, $this->sahkopostiosoite ) == 0 ) {
-			$errors[] = 'Sähköpostiosoite ei kelpaa';
+		// Sähköpostiosoite saa olla tyhjä merkkijono
+		if( BaseModel::tyhja_merkkijono( $this->sahkopostiosoite ) ) {
+			return array();
 		}
-		return $errors;
+
+		$virheet = array();
+		$sl = '/\A[a-zA-Z0-9._-]{1,15}@[a-zA-Z0-9._-]{3,15}\z/';
+
+		if( preg_match( $sl, $this->sahkopostiosoite ) == 0 ) {
+			$virheet[] = 'Sähköpostiosoite: Jotain mätää';
+		}
+
+		return $virheet;
 	}
 
-	// Asiakastietojen päivitys. Huomaa, että kenttien asiakas_id ja ktunnus
-	// arvoja ei voi päivittää tällä funktiolla. Se ei olisi tarkoituksenmukaista.
+	// Asiakastietojen päivitys. Huomaa, että attribuutteja ktunnus ja
+	// on_paakayttaja ei voi päivittää tällä funktiolla.
 	public function paivita() {
-		$query = DB::connection()->prepare(
-			'update Asiakas set etunimi = :etunimi, sukunimi = :sukunimi, '
-			. 'puhelinnumero = :puhelinnumero, sahkopostiosoite = :sahkopostiosoite '
-			. 'where asiakas_id = :asiakas_id;' );
-		$query->execute( array(
-			'asiakas_id' => $this->asiakas_id,
+		// Bugtrap
+		if( self::hae( $this->ktunnus ) == null ) {
+			exit( 'Asiakas->paivita() – Yritettiin päivittää olematonta riviä' );
+		}
+
+		$kysely = DB::connection()->prepare(
+			'update Asiakas set salasana = :salasana, etunimi = :etunimi, '
+				. 'sukunimi = :sukunimi, puhelinnumero = :puhelinnumero, '
+				. 'sahkopostiosoite = :sahkopostiosoite '
+				. 'where ktunnus = :ktunnus;' );
+		$kysely->execute( array(
+			'ktunnus' => $this->ktunnus,
+			'salasana' => $this->salasana,
 			'etunimi' => $this->etunimi,
 			'sukunimi' => $this->sukunimi,
 			'puhelinnumero' => $this->puhelinnumero,
-			'sahkopostiosoite' => $this->sahkopostiosoite
+			'sahkopostiosoite' => $this->sahkopostiosoite,
 		) );
 	}
 
 	// Poistetaan Asiakas-olio tietokannasta
 	public function poista() {
-		// Varmistetaan, että poistettavaksi tarkoitettu olio
-		// on tallennettuna tietokantaan
-		if( self::find( $this->asiakas_id ) == null ) {
-			return null;
+		// Bugtrap
+		if( self::hae( $this->ktunnus ) == null ) {
+			exit( 'Asiakas.poista() – Yritettiin poistaa olematonta riviä' );
 		}
 
-		$query = DB::connection()->prepare(
-			'delete from Asiakas where asiakas_id = :asiakas_id;' );
-		$query->execute( array(
-			'asiakas_id' => $this->asiakas_id
-		) );
-
-		return $this;
+		$kysely = DB::connection()->prepare(
+			'delete from Asiakas where ktunnus = :ktunnus;' );
+		$kysely->execute( array( 'ktunnus' => $this->ktunnus ) );
 	}
 
 	// Tallennetaan Asiakas-olio tietokantaan
-	public function save() {
-		$kayttaja = new Kayttaja( array(
-			'ktunnus' => $this->ktunnus, 'salasana' => null, 'tyyppi' => 0 ) );
-		$kayttaja->save();
+	public function tallenna() {
+		if( self::hae( $this->ktunnus ) != null ) {
+			exit( 'Asiakas::tallenna() – ktunnus jo olemassa' );
+		}
 
-		$query = DB::connection()->prepare(
-			'insert into Asiakas ( ktunnus, etunimi, sukunimi, puhelinnumero, '
-			. 'sahkopostiosoite ) values ( :ktunnus, :etunimi, :sukunimi, '
-			. ':puhelinnumero, :sahkopostiosoite ) returning asiakas_id;' );
-		$query->execute( array(
+		$kysely = DB::connection()->prepare(
+			'insert into Asiakas values ( :ktunnus, :on_paakayttaja, :salasana, '
+				. ':etunimi, :sukunimi, :puhelinnumero, :sahkopostiosoite );' );
+		$kysely->execute( array(
 			'ktunnus' => $this->ktunnus,
+			'on_paakayttaja' => 'false',
+			'salasana' => $this->salasana,
 			'etunimi' => $this->etunimi,
 			'sukunimi' => $this->sukunimi,
 			'puhelinnumero' => $this->puhelinnumero,
 			'sahkopostiosoite' => $this->sahkopostiosoite
 		) );
-
-		$row = $query->fetch();
-		$this->asiakas_id = $row[ 'asiakas_id' ];
 	}
 
     // Uudelleennimetty authenticate(). Tutkitaan, löytyykö taulusta Asiakas
@@ -160,7 +191,7 @@ class Asiakas extends BaseModel {
 			$asiakas = self::hae( $ktunnus );
 			if( ! $asiakas ) {
 				// Lähdekoodissa on bugi eli on paras viheltää peli heti poikki
-				exit( 'Asiakas::todenna() – Tapahtui hirveitä!' );
+				exit( 'Asiakas::todenna() – Null-viite' );
 			}
 
 			return $asiakas;
@@ -179,18 +210,6 @@ class Asiakas extends BaseModel {
 
 		foreach( $rivit as $rivi ) {
 			$asiakkaat[] = new Asiakas( $rivi );
-
-			/*
-			$asiakkaat[] = new Asiakas( array(
-				'asiakas_id' => $rivi[ 'asiakas_id' ],
-				'ktunnus' => $rivi[ 'ktunnus' ],
-				'etunimi' => $rivi[ 'etunimi' ],
-				'sukunimi' => $rivi[ 'sukunimi' ],
-				'puhelinnumero' => $rivi[ 'puhelinnumero' ],
-				'sahkopostiosoite' => $rivi[ 'sahkopostiosoite' ],
-				'salasana' => $rivi[ 'salasana' ],
-				'tyyppi' => $rivi[ 'tyyppi' ]
-			) ); */
 		}
 
 		return $asiakkaat;
@@ -205,17 +224,6 @@ class Asiakas extends BaseModel {
 		$rivi = $kysely->fetch();
 		if( $rivi ) {
 			$asiakas = new Asiakas( $rivi );
-			/*
-			$asiakas = new Asiakas( array(
-				'asiakas_id' => $rivi[ 'asiakas_id' ],
-				'ktunnus' => $rivi[ 'ktunnus' ],
-				'etunimi' => $rivi[ 'etunimi' ],
-				'sukunimi' => $rivi[ 'sukunimi' ],
-				'puhelinnumero' => $rivi[ 'puhelinnumero' ],
-				'sahkopostiosoite' => $rivi[ 'sahkopostiosoite' ],
-				'salasana' => $rivi[ 'salasana' ],
-				'tyyppi' => $rivi[ 'tyyppi' ]
-			) );*/
 
 			return $asiakas;
 		}

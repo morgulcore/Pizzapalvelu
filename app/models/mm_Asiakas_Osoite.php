@@ -16,11 +16,16 @@ class mm_Asiakas_Osoite extends BaseModel {
 	}
 
 	// Poistaa taulusta mm_Asiakas_Osoite kaikki rivit, joissa
-	// esiintyy $asiakas_id
-	public static function poista_asiakas_id( $asiakas_id ) {
+	// esiintyy $ktunnus (pääavaimen toinen osa)
+	public static function poista_ktunnus( $ktunnus ) {
+		// Bugtrap
+		if( Asiakas::hae( $ktunnus ) == null ) {
+			exit( 'mm_Asiakas_Osoite::poista_ktunnus() – Olematon ktunnus' );
+		}
+
 		$kysely = DB::connection()->prepare(
-			'delete from mm_Asiakas_Osoite where asiakas_id = :asiakas_id;' );
-		$kysely->execute( array( 'asiakas_id' => $asiakas_id ) );
+			'delete from mm_Asiakas_Osoite where ktunnus = :ktunnus;' );
+		$kysely->execute( array( 'ktunnus' => $ktunnus ) );
 	}
 
 	public static function hae_asiakkaan_osoitteet( $ktunnus ) {

@@ -8,36 +8,27 @@ class AsiakasController extends BaseController {
 	}
 
 	// Asiakkaan tietojen muokkaus (lomakkeen esittäminen)
-	public static function muokkaa( $asiakas_id ) {
-		$asiakas = Asiakas::find( $asiakas_id );
+	public static function muokkaa( $ktunnus ) {
+		$asiakas = Asiakas::hae( $ktunnus );
 		View::make( 'asiakas/muokkaa.html', array( 'asiakas' => $asiakas ) );
 	}
 
 	// Asiakkaan tietojen päivitys (tiedot lomakkeen kautta)
 	public static function paivita() {
 		$params = $_POST;
-		$kentat = array(
-			'asiakas_id' => $params[ 'asiakas_id' ],
+		$attribuutit = array(
 			'ktunnus' => $params[ 'ktunnus' ],
+			'on_paakayttaja' => false,
+			'salasana' => $params[ 'salasana' ],
 			'etunimi' => $params[ 'etunimi' ],
 			'sukunimi' => $params[ 'sukunimi' ],
 			'puhelinnumero' => $params[ 'puhelinnumero' ],
-			'sahkopostiosoite' => $params[ 'sahkopostiosoite' ],
-			'salasana' => $params[ 'salasana' ],
-			'tyyppi' => $params[ 'tyyppi' ]
+			'sahkopostiosoite' => $params[ 'sahkopostiosoite' ]
 		);
 
-		// Jokaista asiakasta vastaa yksi käyttäjätunnus
-		$kayttaja = new Kayttaja( $kentat );
-		$kayttajavirheilmoitukset = $kayttaja->virheilmoitukset();
-
 		// Luodaan Asiakas-olio
-		$asiakas = new Asiakas( $kentat );
-		$asiakasvirheilmoitukset = $asiakas->virheilmoitukset();
-
-		// Asiakas- ja käyttäjävirheilmoitukset samassa nipussa
-		$virheilmoitukset = array_merge(
-			$kayttajavirheilmoitukset, $asiakasvirheilmoitukset );
+		$asiakas = new Asiakas( $attribuutit );
+		$virheilmoitukset = $asiakas->virheilmoitukset();
 
 		if( count( $virheilmoitukset ) > 0 ) {
 			View::make( 'asiakas/muokkaa.html', array(
@@ -46,10 +37,9 @@ class AsiakasController extends BaseController {
 			return;
 		}
 
-		$kayttaja->paivita();
 		$asiakas->paivita();
 
-		Redirect::to( '/asiakas/' . $asiakas->asiakas_id, array(
+		Redirect::to( '/asiakas/' . $asiakas->ktunnus, array(
 			'paivitys_onnistui_viesti' => 'Asiakastietojen päivitys onnistui' ) );
 	}
 
@@ -69,114 +59,84 @@ class AsiakasController extends BaseController {
 			'asiakkaan_osoitekirja' => $asiakkaan_osoitekirja ) );
 	}
 
-	// Asiakastilin poistaminen tietokannasta. Tämä ei ole aivan mutkaton
-	// operaatio, koska asiakas_id:tä käytetään viiteavaimena tauluissa
-	// Tilaus ja mm_Asiakas_Osoite. Sen lisäksi tauluilla Käyttäjä ja
-	// Ongelma on tiettyjä loogisia tai teknisiä riippuvuuksia
-	// tauluun Asiakas.
-	public static function poista( $asiakas_id ) {
-		$poistettava_asiakas = Asiakas::find( $asiakas_id );
+	// Asiakastilin poistaminen tietokannasta
+	public static function poista( $ktunnus ) {
+		$poistettava_asiakas = Asiakas::hae( $ktunnus );
 		if( $poistettava_asiakas == null ) {
-			// Mitään ei poisteta, jos poistettavaa ei löydy. Pitäisi
-			// vielä laittaa joku virheilmoitus...
-			return;
+			// Bugien nopean löytämisen edesauttamiseksi
+			exit( 'AsiakasController::poista() – null-viite' );
 		}
 
-		// Tietokannasta pitäisi pakostakin löytyä asiakastiliä
-		// vastaava käyttäjätunnus
-		$poistettava_kayttaja = Kayttaja::find( $poistettava_asiakas->ktunnus );
-
 		// Taulussa mm_Asiakas_Osoite voi olla viiteavaimia poistettavaan
-		// Asiakas-olioon
-		mm_Asiakas_Osoite::poista_asiakas_id( $poistettava_asiakas->asiakas_id );
-
-		Tilaus::poista_asiakkaan_tilaukset( $asiakas_id );
+		// Asiakas-olioon. Poistetaan ne.
+		mm_Asiakas_Osoite::poista_ktunnus( $poistettava_asiakas->ktunnus );
+		// Poistetaan myös asiakkaan tilaukset
+		Tilaus::poista_asiakkaan_tilaukset( $poistettava_asiakas->ktunnus );
 
 		// Poistetaan asiakastili
 		$poistettava_asiakas->poista();
-		// Poistetaan vastaava käyttäjätunnus
-		$poistettava_kayttaja->poista();
 
 		Redirect::to( '/asiakas', array(
 			'poisto_onnistui' => 'Poistettiin '
 				. $poistettava_asiakas->etunimi . ' '
 				. $poistettava_asiakas->sukunimi . ' ('
-				. $poistettava_asiakas->asiakas_id . ', '
 				. $poistettava_asiakas->ktunnus . ')' ) );
 	}
 
-	// Rekisteröidään uusi asiakastili ja siihen liittyvä käyttäjätunnus.
-	// Tarvittavat tiedot on saatu käyttäjän lähettämästä lomakkeesta.
+	// Rekisteröidään uusi asiakastili. Tarvittavat tiedot on saatu
+	// käyttäjän lähettämästä lomakkeesta.
 	public static function rekisteroi() {
 		$params = $_POST;
-		$kentat = array(
+		$attribuutit = array(
 			'ktunnus' => $params[ 'ktunnus' ],
 			'salasana' => $params[ 'salasana' ],
 			'etunimi' => $params[ 'etunimi' ],
 			'sukunimi' => $params[ 'sukunimi' ]
 		);
 
-		// Jokaista asiakasta vastaa yksi käyttäjätunnus
-		$uusi_kayttaja = new Kayttaja( array(
-			'ktunnus' => $params[ 'ktunnus' ],
-			'salasana' => $params[ 'salasana' ],
-			'tyyppi' => 0 ) );
-		$kayttajavirheilmoitukset = $uusi_kayttaja->virheilmoitukset();
+		// Varmistetaan aluksi, ettei käyttäjätiliä ole jo olemassa
+		if( Asiakas::hae( $attribuutit[ 'ktunnus' ] ) != null ) {
+			View::make( 'asiakas/uusi.html', array(
+				'ktunnus_jo_olemassa' => 1,
+				'attribuutit' => $attribuutit ) );
+			return;
+		}
 
 		// Luodaan Asiakas-olio
-		$uusi_asiakas = new Asiakas( array(
-			'ktunnus' => $params[ 'ktunnus' ],
-			'etunimi' => $params[ 'etunimi' ],
-			'sukunimi' => $params[ 'sukunimi' ] ) );
-		$asiakasvirheilmoitukset = $uusi_asiakas->virheilmoitukset();
-
-		// Asiakas- ja käyttäjävirheilmoitukset samassa nipussa
-		$virheilmoitukset = array_merge(
-			$kayttajavirheilmoitukset, $asiakasvirheilmoitukset );
+		$uusi_asiakas = new Asiakas( $attribuutit );
+		$virheilmoitukset = $uusi_asiakas->virheilmoitukset();
 
 		if( count( $virheilmoitukset ) > 0 ) {
 			View::make( 'asiakas/uusi.html', array(
 				'virheilmoitukset' => $virheilmoitukset,
-				'kentat' => $kentat ) );
-			return;
-		}
-
-		// Käyttäjätunnuksen tiedot tallennetaan sillä ehdolla, että
-		// vastaavannimistä käyttäjätunnusta ei ole jo olemassa
-		if( ! $uusi_kayttaja->save() ) {
-			$virheilmoitukset[] = 'Käyttäjätunnus: ' . $uusi_kayttaja->ktunnus
-				. ' on jo olemassa';
-			View::make( 'asiakas/uusi.html', array(
-				'virheilmoitukset' => $virheilmoitukset,
-				'kentat' => $kentat ) );
+				'attribuutit' => $attribuutit ) );
 			return;
 		}
 
 		// Tallennetaan Asiakas-olio tietokantaan
-		$uusi_asiakas->save();
+		$uusi_asiakas->tallenna();
 
 		// Ohjataan käyttäjä kirjautumissivulle, jotta hän voi kirjautua
 		// sisään juuri luomallaan käyttäjätunnuksella
-		Redirect::to( '/kayttaja/login', array(
-			'welcome' => 'Tervetuloa asiakkaaksi, ' . $params[ 'etunimi' ]
+		Redirect::to( '/asiakas/kirjaudu', array(
+			'tervetulotoivotus' => 'Tervetuloa asiakkaaksi, ' . $params[ 'etunimi' ]
 			. '! Voit nyt kirjautua sisään luomallasi käyttäjätunnuksella '
 			. $params[ 'ktunnus' ] . '.' ) );
 	}
 
 	// Sisäänkirjautumissivun näyttäminen
-	public static function login() {
-		View::make( 'asiakas/login.html' );
+	public static function kirjaudu() {
+		View::make( 'asiakas/kirjaudu.html' );
 	}
 
-	// Sisäänkirjautumisen käsittely
-	public static function handle_login() {
+	public static function sisaankirjautumisen_kasittely() {
 		$params = $_POST;
 
 		$asiakas = Asiakas::todenna(
-			$params[ 'username' ], $params[ 'password' ] );
+			$params[ 'ktunnus' ], $params[ 'salasana' ] );
 
-		if( !$asiakas ) {
-			View::make( 'asiakas/login.html', array(
+		if( ! $asiakas ) {
+			View::make( 'asiakas/kirjaudu.html', array(
 				'kirjautumisvirhe' => 'Väärä käyttäjätunnus tai salasana!' ) );
 		} else {
 			$_SESSION[ 'user' ] = $asiakas->ktunnus;

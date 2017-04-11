@@ -14,10 +14,10 @@ $routes->get( '/asiakas/uusi',
 	function() { AsiakasController::uusi(); } );
 $routes->post( '/asiakas/uusi',
 	function() { AsiakasController::rekisteroi(); } );
-$routes->get( '/asiakas/login',
-	function() { AsiakasController::login(); } );
-$routes->post( '/asiakas/login',
-	function() { AsiakasController::handle_login(); } );
+$routes->get( '/asiakas/kirjaudu',
+	function() { AsiakasController::kirjaudu(); } );
+$routes->post( '/asiakas/kirjaudu',
+	function() { AsiakasController::sisaankirjautumisen_kasittely(); } );
 $routes->get( '/asiakas/:ktunnus',
 	function( $ktunnus ) { AsiakasController::esittely( $ktunnus ); } );
 $routes->get( '/asiakas/:ktunnus/muokkaa',

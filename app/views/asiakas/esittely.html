@@ -17,12 +17,12 @@
 
 		<p>
 			<form method="post"
-				action="{{base_path}}/asiakas/{{asiakas.asiakas_id}}/poista"
+				action="{{base_path}}/asiakas/{{asiakas.ktunnus}}/poista"
 				style="display: inline-block;">
 				<button type="submit" class="btn btn-danger">Poista</button>
 			</form>
 			<form method="get"
-				action="{{base_path}}/asiakas/{{asiakas.asiakas_id}}/muokkaa"
+				action="{{base_path}}/asiakas/{{asiakas.ktunnus}}/muokkaa"
 				style="display: inline-block;">
 				<button type="submit" class="btn btn-default">Muokkaa</button>
 			</form>
@@ -65,6 +65,6 @@
 
 	{% else %}
 		<div class="alert alert-danger">
-			Käytettiin ilmeisesti olematonta asiakas_id:tä</div>
+			Käytettiin ilmeisesti olematonta ktunnusta</div>
 	{% endif %}
 {% endblock %}

@@ -13,11 +13,11 @@ class Tilaus extends BaseModel {
 	}
 
 	// Poistaa taulusta Tilaus kaikki tiettyyn asiakkaaseen liittyvät tilaukset
-	public static function poista_asiakkaan_tilaukset( $asiakas_id ) {
+	public static function poista_asiakkaan_tilaukset( $ktunnus ) {
 		// Taulun Tilaus pääavain tilaus_id on tauluissa Ongelma
 		// ja Tilattu_tuote viiteavaimina
 		$poistettavan_asiakkaan_tilaukset
-			= self::hae_asiakkaan_tilaukset( $asiakas_id );
+			= self::hae_asiakkaan_tilaukset( $ktunnus );
 		foreach( $poistettavan_asiakkaan_tilaukset as $tilaus ) {
 			// Poistetaan mikäli poistettavaa on
 			Ongelma::poista( $tilaus->tilaus_id );
@@ -25,18 +25,18 @@ class Tilaus extends BaseModel {
 		}
 
 		$kysely = DB::connection()->prepare(
-			'delete from Tilaus where asiakas_id = :asiakas_id;' );
-		$kysely->execute( array( 'asiakas_id' => $asiakas_id ) );
+			'delete from Tilaus where ktunnus = :ktunnus;' );
+		$kysely->execute( array( 'ktunnus' => $ktunnus ) );
 	}
 
 	// Hakee taulusta Tilaus yksittäisen asiakkaan kaikki tilaukset
-	public static function hae_asiakkaan_tilaukset( $asiakas_id ) {
+	public static function hae_asiakkaan_tilaukset( $ktunnus ) {
 		$kaikki_tilaukset = self::hae_kaikki();
 
 		$asiakkaan_tilaukset = array();
 
 		foreach( $kaikki_tilaukset as $tilaus ) {
-			if( $tilaus->asiakasviite->asiakas_id == $asiakas_id ) {
+			if( $tilaus->asiakasviite->ktunnus == $ktunnus ) {
 				$asiakkaan_tilaukset[] = $tilaus;
 			}
 		}
@@ -54,7 +54,7 @@ class Tilaus extends BaseModel {
 		if( $rivi ) {
 			$tilaus = new Tilaus( array(
 				'tilaus_id' => $rivi[ 'tilaus_id' ],
-				'asiakasviite' => Asiakas::find( $rivi[ 'asiakas_id' ] ),
+				'asiakasviite' => Asiakas::find( $rivi[ 'ktunnus' ] ),
 				'ts_tilauksen_teko' => $rivi[ 'ts_tilauksen_teko' ],
 				'ts_tak_toivottu' => $rivi[ 'ts_tak_toivottu' ],
 				'ts_tak_toteutunut' => $rivi[ 'ts_tak_toteutunut' ],
@@ -67,6 +67,7 @@ class Tilaus extends BaseModel {
 		return null;
 	}
 
+	// Hae kaikki rivit taulusta Tilaus ja palauta ne taulukkona olioita
 	public static function hae_kaikki() {
 		$kysely = DB::connection()->prepare(
 			'select * from Tilaus;' );
@@ -78,7 +79,7 @@ class Tilaus extends BaseModel {
 		foreach( $rivit as $rivi ) {
 			$tilaukset[] = new Tilaus( array(
 				'tilaus_id' => $rivi[ 'tilaus_id' ],
-				'asiakasviite' => Asiakas::find( $rivi[ 'asiakas_id' ] ),
+				'asiakasviite' => Asiakas::hae( $rivi[ 'ktunnus' ] ),
 				'ts_tilauksen_teko' => $rivi[ 'ts_tilauksen_teko' ],
 				'ts_tak_toivottu' => $rivi[ 'ts_tak_toivottu' ],
 				'ts_tak_toteutunut' => $rivi[ 'ts_tak_toteutunut' ],

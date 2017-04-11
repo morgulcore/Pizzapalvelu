@@ -111,11 +111,11 @@ class BaseModel {
 		return $virheet;
 	}
 
-	public static function tyhja_merkkijono( $kentta, $mj ) { // mj, merkkijono
-		$virheilmoitukset = array();
+	public static function tyhja_merkkijono( $mj ) { // mj, merkkijono
 		if( $mj == null || $mj == '' ) {
-			$virheilmoitukset[] = $kentta . 'Tyhjä merkkijono';
+			return true;
 		}
-		return $virheilmoitukset;
+
+		return false;
 	}
 }

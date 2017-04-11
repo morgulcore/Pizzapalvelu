@@ -16,23 +16,11 @@
 		</div>
 	{% endif %}
 
-	<form method="post" action="{{base_path}}/asiakas/{{asiakas.asiakas_id}}/muokkaa">
-		<div class="form-group">
-			<label>Asiakas_ID</label>
-			<input name="asiakas_id" class="form-control"
-				value="{{asiakas.asiakas_id}}" type="text" readonly>
-		</div>
-
+	<form method="post" action="{{base_path}}/asiakas/{{asiakas.ktunnus}}/muokkaa">
 		<div class="form-group">
 			<label>Käyttäjätunnus</label>
 			<input name="ktunnus" class="form-control"
 				value="{{asiakas.ktunnus}}" type="text" readonly>
-		</div>
-
-		<div class="form-group">
-			<label>Tyyppi (asiakas 0, ylläpitäjä 1)</label>
-			<input name="tyyppi" class="form-control"
-				value="{{asiakas.tyyppi}}" type="text">
 		</div>
 
 		<div class="form-group">

@@ -1,47 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
 
-	<h1>Luo uusi asiakastili</h1>
+<h1>Luo uusi asiakastili</h1>
 
-	{% if virheilmoitukset %}
-		<div class="alert alert-danger">
-			<ul>
-				{% for virheilmoitus in virheilmoitukset %}
-					<li>{{virheilmoitus}}</li>
-				{% endfor %}
-			</ul>
-		</div>
-	{% endif %}
+{% if ktunnus_jo_olemassa is defined %}
+	<div class="alert alert-danger">Käyttäjätunnus {{attribuutit.ktunnus}}
+		on jo olemassa</div>
+{% endif %}
 
-	<form method="post" action="{{base_path}}/asiakas/uusi">
-	<div class="form-group">
-		<label>Käyttäjätunnus</label>
-		<input name="ktunnus" class="form-control"
-			value="{{kentat.ktunnus}}" type="text">
+{% if virheilmoitukset %}
+	<div class="alert alert-danger">
+		<ul>
+			{% for virheilmoitus in virheilmoitukset %}
+				<li>{{virheilmoitus}}</li>
+			{% endfor %}
+		</ul>
 	</div>
+{% endif %}
 
-	<form method="post" action="{{base_path}}/asiakas/uusi">
-	<div class="form-group">
-		<label>Salasana</label>
-		<input name="salasana" class="form-control"
-			value="{{kentat.salasana}}" type="password">
-	</div>
+<form method="post" action="{{base_path}}/asiakas/uusi">
+<div class="form-group">
+	<label>Käyttäjätunnus</label>
+	<input name="ktunnus" class="form-control"
+		value="{{attribuutit.ktunnus}}" type="text">
+</div>
 
-	<div class="form-group">
-		<label>Etunimi</label>
-		<input name="etunimi" class="form-control"
-			value="{{kentat.etunimi}}" type="text">
-	</div>
+<form method="post" action="{{base_path}}/asiakas/uusi">
+<div class="form-group">
+	<label>Salasana</label>
+	<input name="salasana" class="form-control"
+		value="{{attribuutit.salasana}}" type="password">
+</div>
 
-	<div class="form-group">
-		<label>Sukunimi</label>
-		<input name="sukunimi" class="form-control"
-			value="{{kentat.sukunimi}}" type="text">
-	</div>
+<div class="form-group">
+	<label>Etunimi</label>
+	<input name="etunimi" class="form-control"
+		value="{{attribuutit.etunimi}}" type="text">
+</div>
 
-	<div class="form-group">
-		<button type="submit" class="btn btn-primary">Lähetä tiedot</button>
-	</div>
-	</form>
+<div class="form-group">
+	<label>Sukunimi</label>
+	<input name="sukunimi" class="form-control"
+		value="{{attribuutit.sukunimi}}" type="text">
+</div>
+
+<div class="form-group">
+	<button type="submit" class="btn btn-primary">Lähetä tiedot</button>
+</div>
+</form>
 
 {% endblock %}
