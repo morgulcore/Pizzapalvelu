@@ -1,9 +1,9 @@
 # Pizzapalvelu-nimisen tietokantasovelluksen esittelysivu
 
 ## Sisäänkirjautumiseen tarvittavat tiedot
-* Käyttäjätunnus: mruusu
-* Salasana: tsoha2017
-* [Sisäänkirjautumissivu](http://xhexhex.users.cs.helsinki.fi/pizzapalvelu/kayttaja/login)
+* Käyttäjätunnus: admin
+* Salasana: Tsoh4
+* [Sisäänkirjautumissivu](http://xhexhex.users.cs.helsinki.fi/pizzapalvelu/asiakas/kirjaudu)
 
 ## Yleisiä linkkejä
 
