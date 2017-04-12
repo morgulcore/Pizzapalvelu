@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Hae preg_match() -funktiot, päivitä "==" -> "===", testaa.
+
 class Asiakas extends BaseModel {
 
 	// Attribuutit
@@ -18,7 +20,7 @@ class Asiakas extends BaseModel {
 		// Seuraava attribuutti on määritelty BaseModelissa
 		$this->validaattorit = array(
 			'validoi_ktunnus', 'validoi_salasana',
-			'validoi_etunimi', 'validoi_sukunimi', // validoi_etu_ja_sukunimi()
+			'validoi_etunimi', 'validoi_sukunimi',
 			'validoi_puhelinnumero', 'validoi_sahkopostiosoite' );
 	}
 
@@ -113,10 +115,26 @@ class Asiakas extends BaseModel {
 		}
 
 		$virheet = array();
-		$sl = '/\A[a-zA-Z0-9._-]{1,15}@[a-zA-Z0-9._-]{3,15}\z/';
 
-		if( preg_match( $sl, $this->sahkopostiosoite ) == 0 ) {
-			$virheet[] = 'Sähköpostiosoite: Jotain mätää';
+		// Tämän pitäisi olla kohtuullisen tarkka määritelmä sähköpostiosoitteen
+		// muodolle. Ei kuitenkaan riittävän tarkka tuotantokäyttöön. Esim.
+		// ".@..ab" vastaa tätä säännöllistä lauseketta, mikä ei tietenkään
+		// ole hyväksyttävissä.
+		$sl_1 = '/\A[a-zA-Z0-9._-]{1,20}@[a-zA-Z0-9.-]{1,20}\.[a-zA-Z]{2,4}\z/';
+
+		if( preg_match( $sl_1, $this->sahkopostiosoite ) == 0 ) {
+			$virheet[] = 'Sähköpostiosoite: Tarkista, että muoto on oikea. '
+				. 'Huomaa, että ääkköset eivät ole sallituja.';
+		}
+
+		// Pitäisi matchata minkä tahansa merkkijonon, jossa on osamerkki-
+		// jonona "..". Tämä on vain yksi erityistapaus, parempi olisi
+		// tietysti yleiskäyttöinen function, jolla voisi tutkia, sisältääkö
+		// merkkijono $mj osamerkkijonon, joka koostuu kahdesta peräkkäisestä
+		// merkistä $c.
+		$sl_2 = '/\A.*\.\..*\z/';
+		if( preg_match( $sl_2, $this->sahkopostiosoite ) === 1 ) {
+			$virheet[] = 'Sähköpostiosoite: Sisältää kaksi peräkkäistä pistettä';
 		}
 
 		return $virheet;
