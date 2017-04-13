@@ -39,6 +39,34 @@
 				3</label> (staattinen arvo, Tilaus- ja Ongelma-mallit toteutettava ensin)</li>
 		</ul>
 
+		<!--
+		{% if asiakkaaseen_liittyvat_ongelmat %}
+			<h3>Asiakkaaseen liittyvät ongelmat</h3>
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>Tilaus_ID</th>
+						<th>Ongelman tyyppi</th>
+						<th>Tapahtuma-ajankohta</th>
+						<th>Ongelman kuvaus</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for ongelma in asiakkaaseen_liittyvat_ongelmat %}
+						<tr>
+							<td>{{ongelma.x}}</td>
+							<td>{{ongelma.x}}</td>
+							<td>{{ongelma.x}}</td>
+							<td>{{ongelma.x}}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<p><strong>Asiakkaaseen liittyviä ongelmia ei löytynyt</strong></p>
+		{% endif %}
+		-->
+
 		{% if asiakkaan_osoitekirja %}
 			<h3>Asiakkaan osoitekirja</h3>
 			<table class="table table-striped table-bordered">

@@ -5,8 +5,8 @@ $routes->get( '/',
 $routes->get('/hiekkalaatikko',
 	function() { EtusivuController::sandbox(); } );
 
-$routes->get( '/tuote',
-	function() { TuoteController::index(); } );
+$routes->get( '/ongelma',
+	function() { OngelmaController::index(); } );
 
 $routes->get( '/asiakas',
 	function() { AsiakasController::index(); } );

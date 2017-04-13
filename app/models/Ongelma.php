@@ -2,7 +2,11 @@
 
 class Ongelma extends BaseModel {
 	// Attribuutit
-	public $tilausviite, $ongelman_tyyppi, $ts_ongelma, $ongelman_kuvaus;
+	public
+		$tilausviite, // olioviite
+		$ongelman_tyyppi,
+		$ts_ongelma, // ts = timestamp
+		$ongelman_kuvaus;
 
 	// Konstruktori
 	public function __construct( $tilausviite, $ongelman_tyyppi,
@@ -30,8 +34,15 @@ class Ongelma extends BaseModel {
 		$ongelmat = array();
 
 		foreach( $rivit as $rivi ) {
+			$tilausviite = Tilaus::hae( $rivi[ 'tilaus_id' ] );
+
+			// Bugtrap
+			if( $tilausviite == null ) {
+				exit( 'Ongelma.hae_kaikki() – Null-viite' );
+			}
+
 			$ongelmat[] = new Ongelma(
-				null,
+				$tilausviite,
 				$rivi[ 'ongelman_tyyppi' ],
 				$rivi[ 'ts_ongelma' ],
 				$rivi[ 'ongelman_kuvaus' ]

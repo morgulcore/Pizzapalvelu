@@ -2,13 +2,17 @@
 
 class Tilaus extends BaseModel {
 	// Attribuutit. Lyhenteet: ts = timestamp, tak = toimitusajankohta.
-	public $tilaus_id, $asiakasviite, $ts_tilauksen_teko, $ts_tak_toivottu,
-		$ts_tak_toteutunut, $osoiteviite;
+	public
+		$tilaus_id,
+		$asiakasviite, // viite, olioviite
+		$ts_tilauksen_teko,
+		$ts_tak_toivottu,
+		$ts_tak_toteutunut,
+		$osoiteviite;
 
 	// Konstruktori
 	public function __construct( $attribuutit ) {
 		parent::__construct( $attribuutit );
-		// Seuraava attribuutti on määritelty BaseModelissa
 		// $this->validaattorit = array( 'validoi_...', 'validoi_...' );
 	}
 
@@ -54,7 +58,7 @@ class Tilaus extends BaseModel {
 		if( $rivi ) {
 			$tilaus = new Tilaus( array(
 				'tilaus_id' => $rivi[ 'tilaus_id' ],
-				'asiakasviite' => Asiakas::find( $rivi[ 'ktunnus' ] ),
+				'asiakasviite' => Asiakas::hae( $rivi[ 'ktunnus' ] ),
 				'ts_tilauksen_teko' => $rivi[ 'ts_tilauksen_teko' ],
 				'ts_tak_toivottu' => $rivi[ 'ts_tak_toivottu' ],
 				'ts_tak_toteutunut' => $rivi[ 'ts_tak_toteutunut' ],

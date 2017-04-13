@@ -1,16 +1,15 @@
 <?php
 
 class BaseModel {
-	// "protected"-attribuutti on käytössä vain luokan ja sen perivien luokkien sisällä
 	protected $validaattorit;
 
-	public function __construct($attributes = null) {
+	public function __construct( $attribuutit = null ) {
 		// Käydään assosiaatiolistan avaimet läpi
-		foreach($attributes as $attribute => $value) {
+		foreach( $attribuutit as $attribuutti => $value ) {
 			// Jos avaimen niminen attribuutti on olemassa...
-			if( property_exists( $this, $attribute ) ) {
+			if( property_exists( $this, $attribuutti ) ) {
 				// ... lisätään avaimen nimiseen attribuuttin siihen liittyvä arvo
-				$this->{$attribute} = $value;
+				$this->{$attribuutti} = $value;
 			}
 		}
 	}
@@ -34,6 +33,7 @@ class BaseModel {
 	// tai "Minna81" eivät ole sanoja. Toisaalta myös "asdf" on funktioni
 	// mielestä sana. Kirjainten lisäksi sana voi sisältää myös korkeintaan
 	// yhden väliviivan, mutta ei kuitenkaan sanan alussa tai lopussa.
+	/*
 	public static function merkkijono_on_sana( $kentta, $mj ) {
 		// Katsotaan aluksi, onko merkkijono tyhjä
 		$virheilmoitukset = self::tyhja_merkkijono( $kentta, $mj );
@@ -52,7 +52,7 @@ class BaseModel {
 		}
 		// Paluuarvo nolla tarkoittaa "no match". Tässä siis verrataan
 		// merkkijonoa säännölliseen lausekkeeseen.
-		else if( preg_match( $sl, $mj ) == 0 ) {
+		else if( preg_match( $sl, $mj ) === 0 ) {
 			$virheilmoitukset[] = $kentta . 'Ei ole tulkittavissa sanana tai nimenä';
 		}
 
@@ -68,6 +68,7 @@ class BaseModel {
 
 		return $virheilmoitukset;
 	}
+	*/
 
 	// Laskee, kuinka monta kertaa merkki $merkki esiintyy merkkijonossa $mj
 	public static function merkkilaskuri( $mj, $merkki ) {
@@ -85,6 +86,7 @@ class BaseModel {
 
 	// $kentta ilmaisee virheilmoitukseen lomakkeen kentän nimen,
 	// esim. "Etunimi: "
+	/*
 	public static function merkkijono_on_erisnimi( $kentta, $mj ) {
 		$virheet = self::merkkijono_on_sana( $kentta, $mj );
 
@@ -104,12 +106,13 @@ class BaseModel {
 
 		// Paluuarvo nolla tarkoittaa "no match". Tässä siis verrataan
 		// merkkijonoa säännölliseen lausekkeeseen.
-		if( preg_match( $sl, $mj ) == 0 ) {
+		if( preg_match( $sl, $mj ) === 0 ) {
 			$virheet[] = $kentta . 'Tarkista nimesi oikeinkirjoitus (esim. Pekka)';
 		}
 
 		return $virheet;
 	}
+	*/
 
 	public static function tyhja_merkkijono( $mj ) { // mj, merkkijono
 		if( $mj == null || $mj == '' ) {

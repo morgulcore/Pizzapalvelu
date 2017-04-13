@@ -1,7 +1,5 @@
 <?php
 
-// TODO: Hae preg_match() -funktiot, päivitä "==" -> "===", testaa.
-
 class Asiakas extends BaseModel {
 
 	// Attribuutit
@@ -34,7 +32,7 @@ class Asiakas extends BaseModel {
 
 		if( BaseModel::tyhja_merkkijono( $this->ktunnus ) ) {
 			$virheet[] = 'Käyttäjätunnus: Ei saa olla tyhjä';
-		} else if( preg_match( $sl, $this->ktunnus ) == 0 ) {
+		} else if( preg_match( $sl, $this->ktunnus ) === 0 ) {
 			$virheet[] = 'Käyttäjätunnus: Pituus 3–15 merkkiä, '
 				. 'sisältää vain pieniä kirjaimia (ei ääkkösiä)';
 		}
@@ -51,7 +49,7 @@ class Asiakas extends BaseModel {
 
 		if( BaseModel::tyhja_merkkijono( $this->salasana ) ) {
 			$virheet[] = 'Salasana: Ei saa olla tyhjä';
-		} else if( preg_match( $sl, $this->salasana ) == 0 ) {
+		} else if( preg_match( $sl, $this->salasana ) === 0 ) {
 			$virheet[] = 'Salasana: Pituus 3–15 merkkiä, sisältää '
 				. 'numeroita ja kirjaimia (ei ääkkösiä)';
 		}
@@ -79,7 +77,7 @@ class Asiakas extends BaseModel {
 			$virheet[] = ( $kyseessa_sukunimi ? 'Sukunimi: ' : 'Etunimi: ' )
 				. 'Ei saa olla tyhjä';
 		} else if( preg_match( $sl, $kyseessa_sukunimi ?
-			$this->sukunimi : $this->etunimi ) == 0 ) {
+			$this->sukunimi : $this->etunimi ) === 0 ) {
 			$virheet[] = $kyseessa_sukunimi ? 'Sukunimi: ' : 'Etunimi: '
 				. 'Pituus 2–20 merkkiä, koostuu vain kirjaimista';
 		}
@@ -96,7 +94,7 @@ class Asiakas extends BaseModel {
 		$virheet = array();
 		$sl = '/\A([+]358|0)[0-9 ]{8,15}\z/';
 
-		if( preg_match( $sl, $this->puhelinnumero ) == 0 ) {
+		if( preg_match( $sl, $this->puhelinnumero ) === 0 ) {
 			$virheet[] = 'Puhelinnumero: 8–15 merkkiä pitkä, alkaa joko "0" tai '
 				. '"+358", voi sisältää numeroiden lisäksi välilyöntejä';
 		}
@@ -122,7 +120,7 @@ class Asiakas extends BaseModel {
 		// ole hyväksyttävissä.
 		$sl_1 = '/\A[a-zA-Z0-9._-]{1,20}@[a-zA-Z0-9.-]{1,20}\.[a-zA-Z]{2,4}\z/';
 
-		if( preg_match( $sl_1, $this->sahkopostiosoite ) == 0 ) {
+		if( preg_match( $sl_1, $this->sahkopostiosoite ) === 0 ) {
 			$virheet[] = 'Sähköpostiosoite: Tarkista, että muoto on oikea. '
 				. 'Huomaa, että ääkköset eivät ole sallituja.';
 		}
