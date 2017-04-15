@@ -29,7 +29,9 @@ insert into mm_Asiakas_Osoite values
 	( 'tmansikka', 1 ),	-- Tero Mansikka, Savirinne 17
 	( 'tmansikka', 9 ),	-- Tero Mansikka, Kurpitsankantajankatu 33 B 15
 	( 'smansikka', 1 ),	-- Saara Mansikka, Savirinne 17
-	( 'mmansikka', 1 );	-- Minttu Mansikka, Savirinne 17
+	( 'mmansikka', 1 ),	-- Minttu Mansikka, Savirinne 17
+	( 'jporkkana', 2 ), -- Juuso Porkkana, Nokkosentie 6 B 15
+	( 'jporkkana', 6 ); -- Juuso Porkkana, Sitruunakuja 7
 
 insert into Tilaus ( ktunnus, ts_tilauksen_teko, ts_tak_toivottu, ts_tak_toteutunut, osoite_id )
 	values
@@ -37,7 +39,8 @@ insert into Tilaus ( ktunnus, ts_tilauksen_teko, ts_tak_toivottu, ts_tak_toteutu
 	( 'therne', timestamp '2017-01-20 12:01:02', null, null, 7 ),
 	( 'tmansikka', timestamp '2017-03-25 23:15:46', null, null, 1 ),
 	( 'therne', timestamp '2017-01-22 14:37:16', null, timestamp '2017-01-22 15:32:07', 7 ),
-	( 'mruusu', timestamp '2017-02-14 10:02:01', null, null, 5 );
+	( 'mruusu', timestamp '2017-02-14 10:02:01', null, null, 5 ),
+	( 'jporkkana', timestamp '2017-03-25 13:12:51', timestamp '2017-04-01 00:00:00', null, 2 );
 
 --tilaus_id, ongelman_tyyppi, ts_ongelma, ongelman_kuvaus
 insert into Ongelma values

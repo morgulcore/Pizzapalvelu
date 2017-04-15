@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+	<div class="page-header">
+		<h1>Tilaus #{{tilaus.tilaus_id}}</h1>
+		<p><a href="{{base_path}}/asiakas/{{tilaus.asiakasviite.ktunnus}}">
+			{{tilaus.asiakasviite.etunimi}} {{tilaus.asiakasviite.sukunimi}}
+			</a> – {{tilaus.osoiteviite.lahiosoite}},
+			{{tilaus.osoiteviite.postinumero}},
+			{{tilaus.osoiteviite.postitoimipaikka}}
+		</p>
+	</div>
+
+	<ul>
+		<li><strong>Tilaus tehty: </strong>{{tilaus.ts_tilauksen_teko}}</li>
+		{% if tilaus.ts_tak_toteutunut != null %}
+			<li><strong>Tilaus luovutettu asiakkaalle: </strong>
+				{{tilaus.ts_tak_toteutunut}}</li>
+		{% elseif tilaus.ts_tak_toivottu != null %}
+			<li><strong>Toivottu toimitusajankohta: </strong>
+				{{tilaus.ts_tak_toivottu}}</li>
+		{% else %}
+			<li><strong>Toivottu toimitusajankohta: </strong>
+				Mahdollisimman pian</li>
+		{% endif %}
+	</ul>
+
+	<h3>Tilatut tuotteet</h3>
+	<table class="table table-striped table-bordered">
+		<thead>
+			<tr>
+				<th>Yksi</th>
+				<th>Kaksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Pizza</td>
+				<td>123</td>
+			</tr>
+			<!--
+			{% for osoite in asiakkaan_osoitekirja %}
+				<tr>
+					<td>{{osoite.lahiosoite}}</td>
+					<td>{{osoite.postinumero}}</td>
+					<td>{{osoite.postitoimipaikka}}</td>
+				</tr>
+			{% endfor %}
+			-->
+		</tbody>
+	</table>
+
+{% endblock %}

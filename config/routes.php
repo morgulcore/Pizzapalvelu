@@ -5,9 +5,6 @@ $routes->get( '/',
 $routes->get('/hiekkalaatikko',
 	function() { EtusivuController::sandbox(); } );
 
-$routes->get( '/ongelma',
-	function() { OngelmaController::index(); } );
-
 $routes->get( '/asiakas',
 	function() { AsiakasController::index(); } );
 $routes->get( '/asiakas/uusi',
@@ -26,3 +23,9 @@ $routes->post( '/asiakas/:ktunnus/muokkaa',
 	function() { AsiakasController::paivita(); } );
 $routes->post( '/asiakas/:ktunnus/poista',
 	function( $ktunnus ) { AsiakasController::poista( $ktunnus ); } );
+
+$routes->get( '/ongelma',
+	function() { OngelmaController::index(); } );
+
+$routes->get( '/tilaus/:tilaus_id',
+	function( $tilaus_id ) { TilausController::esittely( $tilaus_id ); } );
