@@ -9,13 +9,11 @@ class EtusivuController extends BaseController {
 
 	public static function sandbox() {
 		// $asiakkaan_osoitteet = mm_Asiakas_Osoite::hae_asiakkaan_osoitteet( 6 );
-		// Kint::dump( $asiakkaan_osoitteet );
 		// $tilaukset = Tilaus::hae_kaikki();
-		// Kint::dump( $tilaukset );
 		// $tilaus = Tilaus::hae( 1 );
-		// Kint::dump( $tilaus );
-		$_SESSION[ 'user' ] = 'admin';
-		$user = BaseController::get_user_logged_in();
-		Kint::dump( $user );
+		// $_SESSION[ 'user' ] = 'admin';
+		// $user = BaseController::get_user_logged_in();
+		$tilatut_tuotteet = Tilattu_tuote::hae_kaikki();
+		Kint::dump( $tilatut_tuotteet );
 	}
 }

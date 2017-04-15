@@ -2,14 +2,42 @@
 
 class Tilattu_tuote extends BaseModel {
 	// Attribuutit
-	public $tilausviite, $tuotelaskuri, $tuotetyyppiviite,
-		$tuoteversio, $lukumaara;
+	public
+		$tilausviite,
+		$tuotelaskuri,
+		$tuoteviite,
+		$lukumaara;
 
 	// Konstruktori
 	public function __construct( $attribuutit ) {
 		parent::__construct( $attribuutit );
-		// Seuraava attribuutti on määritelty BaseModelissa
-		// $this->validaattorit = array( 'validoi_...', 'validoi_...' );
+
+		$this->tilausviite = Tilaus::hae( $attribuutit[ 'tilaus_id' ] );
+		// Bugtrap
+		if( $this->tilausviite == null ) {
+			exit( 'Tilattu_tuote.__construct() – $tilausviite == null' );
+		}
+
+		$this->tuoteviite = Tuote::hae(
+			$attribuutit[ 'tuotetyyppi_id' ], $attribuutit[ 'tuoteversio' ] );
+		// Bugtrap
+		if( $this->tuoteviite == null ) {
+			exit( 'Tilattu_tuote.__construct() – $this->tuoteviite' );
+		}
+	}
+
+	public static function hae_kaikki() {
+		$kysely = DB::connection()->prepare( 'select * from Tilattu_tuote;' );
+		$kysely->execute();
+		$rivit = $kysely->fetchAll();
+
+		$tilatut_tuotteet = array();
+
+		foreach( $rivit as $rivi ) {
+			$tilatut_tuotteet[] = new Tilattu_tuote( $rivi );
+		}
+
+		return $tilatut_tuotteet;
 	}
 
 	// Poistaa taulusta Tilattu_tuote kaikki rivit, joissa
