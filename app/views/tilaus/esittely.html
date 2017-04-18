@@ -37,36 +37,29 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<td>Tosimiehen vege</td>
-				<td>iso</td>
-				<td>2</td>
-				<td>5,90 €</td>
-				<td>11,80 €</td>
-			</tr>
-			<tr>
-				<td>Olut</td>
-				<td>iso</td>
-				<td>1</td>
-				<td>4,50 €</td>
-				<td>4,50 €</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td><strong>16,30 €</strong></td>
-			</tr>
-			<!--
-			{% for osoite in asiakkaan_osoitekirja %}
+			{% set tilauksen_kokonaishinta = 0 %}
+			{% for tilattu_tuote in tilatut_tuotteet %}
+				{% set rivihinta
+					= tilattu_tuote.lukumaara * tilattu_tuote.tuoteviite.hinta %}
+				{% set tilauksen_kokonaishinta
+					= tilauksen_kokonaishinta + rivihinta %}
 				<tr>
-					<td>{{osoite.lahiosoite}}</td>
-					<td>{{osoite.postinumero}}</td>
-					<td>{{osoite.postitoimipaikka}}</td>
+					<td>{{tilattu_tuote.tuoteviite.tuotetyyppiviite.tuotenimi}}</td>
+					<td>{{tilattu_tuote.tuoteviite.tuoteversio}}</td>
+					<td>{{tilattu_tuote.lukumaara}}</td>
+					<td>{{tilattu_tuote.tuoteviite.hinta}} €</td>
+					<td>{{rivihinta}} €</td>
 				</tr>
 			{% endfor %}
-			-->
+			<!-- Muunnetaan muuttuja liukuluvuksi, ellei jo ole sellainen -->
+			{% set tilauksen_kokonaishinta = 1.0 * tilauksen_kokonaishinta %}
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td><strong>{{tilauksen_kokonaishinta}} €</strong></td>
+			</tr>
 		</tbody>
 	</table>
 

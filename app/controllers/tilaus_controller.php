@@ -10,13 +10,14 @@ class TilausController extends BaseController {
 
 	public static function esittely( $tilaus_id ) {
 		$tilaus = Tilaus::hae( $tilaus_id );
+		$tilatut_tuotteet = Tilattu_tuote::hae_kaikki();
 
 		// Bugtrap
-		if( $tilaus == null ) {
+		if( $tilaus == null || $tilatut_tuotteet == null ) {
 			exit( 'TilausController.esittely() – Null-viite' );
 		}
 
 		View::make( 'tilaus/esittely.html', array(
-			'tilaus' => $tilaus ) );
+			'tilaus' => $tilaus, 'tilatut_tuotteet' => $tilatut_tuotteet ) );
 	}
 }
