@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+	<div class="page-header">
+		<h1>Uusi tilaus</h1>
+	</div>
+
+	{% if virheilmoitukset %}
+		<div class="alert alert-danger">
+			<ul>
+				{% for virheilmoitus in virheilmoitukset %}
+					<li>{{virheilmoitus}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
+	<form method="post" action="{{base_path}}/tilaus/uusi">
+		<div class="form-group">
+			<h2>Valitse tuotteet</h2>
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>Tuote</th>
+						<th>Versio</th>
+						<th>Hinta</th>
+						<th>Lukumäärä</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for tuote in kaikki_tuotteet %}
+						<!-- Pizzerian tuotteiden lukumäärä ei ole mikään kiveenhakattu vakio,
+							joten myös rivien lukumäärä listauksessa ei ole vakio. Tämän vuoksi
+							lukumääriä ilmaisevat kentät on nimettävä "dynaamisesti". -->
+						{% set lkm_kentta_nimi = tuote.tuotetyyppiviite.tuotetyyppi_id ~ '/' ~ tuote.tuoteversio %}
+						<tr>
+							<td><a href="#">{{tuote.tuotetyyppiviite.tuotenimi}}</a></td>
+							<td>{{tuote.tuoteversio}}</td>
+							<td>{{tuote.hinta}}</td>
+							<td>
+								<select class="form-control" name="{{lkm_kentta_nimi}}">
+									{% for i in 0..10 %}
+										<option value="{{i}}">{{i}}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="form-group">
+			<h2>Valitse osoite ja tilauksen toimitusajankohta</h2>
+			<table class="table table-striped table-bordered">
+				<tbody>
+					<tr>
+						<td>
+							<select class="form-control" name="toimitusosoite">
+								{% for osoite in asiakkaan_osoitteet %}
+									<option value="{{osoite.osoite_id}}">
+										{{osoite.lahiosoite}}, {{osoite.postinumero}}
+										{{osoite.postitoimipaikka}}</option>
+								{% endfor %}
+							</select>
+						</td>
+						{% if jo_taytetyt_kentat.toivottu_toimitusajankohta is defined %}
+							{% set toivottu_toimitusajankohta
+								= jo_taytetyt_kentat.toivottu_toimitusajankohta %}
+						{% else %}
+							{% set toivottu_toimitusajankohta = nyt_plus_tunti %}
+						{% endif %}
+						<td><input name="toivottu_toimitusajankohta"
+							value="{{toivottu_toimitusajankohta}}" type="text"
+							size="20" /></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<input name="ktunnus" value="admin" type="hidden" />
+		</div>
+
+		<div class="form-group">
+			<button type="submit" class="btn btn-primary">Lähetä tilaus</button>
+		</div>
+	</form>
+
+{% endblock %}

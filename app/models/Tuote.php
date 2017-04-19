@@ -14,6 +14,20 @@ class Tuote extends BaseModel {
 			= Tuotetyyppi::hae( $attribuutit[ 'tuotetyyppi_id' ] );
 	}
 
+	public static function hae_kaikki() {
+		$kysely = DB::connection()->prepare( 'select * from Tuote;' );
+		$kysely->execute();
+		$rivit = $kysely->fetchAll();
+
+		$tuotteet = array();
+
+		foreach( $rivit as $rivi ) {
+			$tuotteet[] = new Tuote( $rivi );
+		}
+
+		return $tuotteet;
+	}
+
 	// Taulun Tuote pääavain on kaksiosainen, joten funktiossa tarvitaan
 	// kaksi parametriä. Palauttaa parametrien yksilöimän rivin taulusta.
 	public static function hae( $tuotetyyppi_id, $tuoteversio ) {

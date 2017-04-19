@@ -13,7 +13,55 @@ class Tilaus extends BaseModel {
 	// Konstruktori
 	public function __construct( $attribuutit ) {
 		parent::__construct( $attribuutit );
-		// $this->validaattorit = array( 'validoi_...', 'validoi_...' );
+		$this->asiakasviite = Asiakas::hae( $attribuutit[ 'ktunnus' ] );
+		$this->osoiteviite = Osoite::hae( $attribuutit[ 'osoite_id' ] );
+		$this->validaattorit = array( 'validoi_ts_tak_toivottu' );
+	}
+
+	// Tilaus-olion tallentaminen tietokantaan
+	public function tallenna() {
+		$kysely = DB::connection()->prepare(
+			'insert into Tilaus ( ktunnus, ts_tilauksen_teko, ts_tak_toivottu, '
+				. 'ts_tak_toteutunut, osoite_id ) values ( :ktunnus, '
+				. ':ts_tilauksen_teko, :ts_tak_toivottu, :ts_tak_toteutunut, '
+				. ':osoite_id );' );
+		$kysely->execute( array(
+			'ktunnus' => $this->asiakasviite->ktunnus,
+			'ts_tilauksen_teko' => $this->ts_tilauksen_teko,
+			'ts_tak_toivottu' => $this->ts_tak_toivottu,
+			'ts_tak_toteutunut' => $this->ts_tak_toteutunut,
+			'osoite_id' => $this->osoiteviite->osoite_id
+		) );
+	}
+
+	public function validoi_ts_tak_toivottu() {
+		// Toivottu toimitusajankohta saa olla tyhjä merkkijono, jolloin
+		// sen merkitys on "mahdollisimman pian".
+		if( BaseModel::tyhja_merkkijono( $this->ts_tak_toivottu ) ) {
+			return array();
+		}
+
+		$virheet = array();
+
+		if( ! $this->on_validi_timestamp( $this->ts_tak_toivottu ) ) {
+			$virheet[] = 'Toivottu toimitusajankohta: Väärä muoto tai liian '
+				. 'kaukana nykyajasta. Esimerkki hyväksyttävästä arvosta '
+				. 'on 2017-04-19 14:59:23';
+		}
+
+		return $virheet;
+	}
+
+	// Esimerkki validista timestamp-arvosta: "2017-04-19 14:59:23"
+	private function on_validi_timestamp( $timestamp ) {
+		// \A tarkoittaa merkkijonon alkua, \z sen loppua.
+		$sl = '/\A20[12][0-9]-[01][0-9]-[0123][0-9] [012][0-9]:[0-5][0-9]:[0-5][0-9]\z/';
+
+		if( preg_match( $sl, $timestamp ) === 0 ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	// Poistaa taulusta Tilaus kaikki tiettyyn asiakkaaseen liittyvät tilaukset
@@ -58,11 +106,13 @@ class Tilaus extends BaseModel {
 		if( $rivi ) {
 			$tilaus = new Tilaus( array(
 				'tilaus_id' => $rivi[ 'tilaus_id' ],
-				'asiakasviite' => Asiakas::hae( $rivi[ 'ktunnus' ] ),
+				// 'asiakasviite' => Asiakas::hae( $rivi[ 'ktunnus' ] ),
+				'ktunnus' => $rivi[ 'ktunnus' ],
 				'ts_tilauksen_teko' => $rivi[ 'ts_tilauksen_teko' ],
 				'ts_tak_toivottu' => $rivi[ 'ts_tak_toivottu' ],
 				'ts_tak_toteutunut' => $rivi[ 'ts_tak_toteutunut' ],
-				'osoiteviite' => Osoite::hae( $rivi[ 'osoite_id' ] )
+				// 'osoiteviite' => Osoite::hae( $rivi[ 'osoite_id' ] )
+				'osoite_id' => $rivi[ 'osoite_id' ]
 			) );
 
 			return $tilaus;

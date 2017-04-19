@@ -27,5 +27,9 @@ $routes->post( '/asiakas/:ktunnus/poista',
 $routes->get( '/ongelma',
 	function() { OngelmaController::index(); } );
 
+$routes->get( '/tilaus/uusi',
+	function() { TilausController::uusi_tilaus( null, null ); } );
+$routes->post( '/tilaus/uusi',
+	function() { TilausController::tee_tilaus(); } );
 $routes->get( '/tilaus/:tilaus_id',
 	function( $tilaus_id ) { TilausController::esittely( $tilaus_id ); } );

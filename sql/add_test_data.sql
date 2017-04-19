@@ -24,6 +24,8 @@ insert into Osoite ( lahiosoite, postinumero, postitoimipaikka ) values
 	( 'Kurpitsankantajankatu 45 F 6', '29400', 'Tuonela' );		-- 10
 
 insert into mm_Asiakas_Osoite values
+	( 'admin', 6 ),		-- Gizza Admin, Sitruunakuja 7
+	( 'admin', 10 ),	-- Gizza Admin, Kurpitsankantajankatu 45 F 6
 	( 'mruusu', 5 ),	-- Minna Ruusu, Pihlajakatu 21 C 10
 	( 'therne', 7 ),	-- Tauno Herne, Kadotuksentie 13
 	( 'tmansikka', 1 ),	-- Tero Mansikka, Savirinne 17
@@ -50,7 +52,7 @@ insert into Ongelma values
 		'Maksettuaan tilauksen asiakas löi tilauksen toimittajaa' ),
 	( 5, 'customer_not_found', timestamp '2017-02-14 10:45:41', null );
 
-	-- Kentät: tuotekategoria, yohintakerroin, ongelmahintakerroin
+-- Kentät: tuotekategoria, yohintakerroin, ongelmahintakerroin
 insert into Hintamuunnos values
 	( 'pizza', 1.2, 1.4 ),
 	( 'vegaanipizza', 1.3, 1.4 ),
@@ -58,29 +60,47 @@ insert into Hintamuunnos values
 	( 'olut', 1.0, 2.0 ),
 	( 'muu', 1.0, 1.4 );
 
-insert into Tuotetyyppi ( tuotekategoria, tuotenimi, tuotekuvaus ) values
-	( 'pizza', 'Carnivore',
-		'Tosimiehen pizza! Syötyäsi tämän pääset ohitusleikkaukseen!' ),
-	( 'vegaanipizza', 'Herbivore', 'Nälkäisen ituhipin valinta' );
+-- Kentät: tuotetyyppi_id, tuotekategoria, tuotenimi, tuotekuvaus, kuva_tuotteesta
+insert into Tuotetyyppi values
+	( 1, 'pizza', 'Carnivore',
+		'Tämä pizza on petojen sukua! Lihansyöjän varma valinta.',
+		null ),
+	( 2, 'pizza', 'Americano',
+		'Ananasta, aurajuustoa, kinkkua – maistuis varmaan sullekin!',
+		null ),
+	( 3, 'vegaanipizza', 'Herbivore',
+		'Maukas herkkupizza vegaaneille',
+		null ),
+	( 4, 'virvoitusjuoma', 'Sihi-Litku',
+		'Keinotekoisen makuinen, voimakkaasti hiilihapotettu virvoitusjuoma',
+		null ),
+	( 5, 'olut', 'Sport Beer',
+		'Kevyt lager-olut meneville, paljon liikkuville ihmisille',
+		null ),
+	( 6, 'olut', 'Pizza Beer',
+		'Tämä olut on pizzan paras kaveri!',
+		null ),
+	( 7, 'muu', 'Pizzeria Omerta -lippalakki',
+		'Jos olet vannoutunut asiakkaamme, voit ilmaista sen tällä lippalakilla :)',
+		null );
 
 insert into Tuote values
-	-- "Values of the numeric, int, and bigint data types can be cast to money.
-	-- Conversion from the real and double precision data types can be done by
-	-- casting to numeric first."
-	-- https://www.postgresql.org/docs/9.1/static/datatype-money.html
-	-- On siis tarpeen castata liukulukuarvo monivaiheisesti moneyksi.
-	-- On syytä muistaa sekin, että "oikeassa" eli tuotantokäyttöön
-	-- tarkoitetussa järjestelmässä hintoja ei pidä esittää liukulukuina,
-	-- koska tästä voi seurata pyöristysvirheitä.
-	( 1, 'pieni', 4.50 ),
-	( 1, 'iso', 7.80 ),
-	( 2, 'pieni', 5.10 );
+	( 1, 'iso', 8.90 ),
+	( 2, 'tavallinen', 5.50 ),
+	( 2, 'iso', 7.90 ),
+	( 3, 'tavallinen', 5.50 ),
+	( 4, 'tavallinen', 2.10 ),
+	( 5, 'tavallinen', 2.60 ),
+	( 6, 'pieni', 2.20 ),
+	( 6, 'iso', 4.40 ),
+	( 7, 'tavallinen', 6.50 );
 
 insert into Tilattu_tuote ( tilaus_id, tuotetyyppi_id, tuoteversio, lukumaara )
 	values
 	( 1, 1, 'iso', 1 ),
-	( 1, 2, 'pieni', 2 );
+	( 1, 2, 'tavallinen', 2 );
 
+/*
 -- 'valkosipuli', 'oregano', 'chili'
 -- lisuke_id, kuvaus_lisukkeesta
 insert into Lisuke values
@@ -89,7 +109,6 @@ insert into Lisuke values
 	( 'chili', 'Lisäpotkua pizzaan tuoreella chilimurskalla' );
 
 -- lisuke_id, tilaus_id, tuotelaskuri
-/*
 insert into mm_Lisuke_Tilattu_tuote values
 	( 'valkosipuli', 1, 1 ),
 	( 'chili', 1, 1 ),

@@ -94,6 +94,7 @@ create table Tilattu_tuote (
 	primary key (tilaus_id, tuotelaskuri )
 );
 
+/*
 create type Lisuke_enum as enum ( 'valkosipuli', 'oregano', 'chili' );
 create table Lisuke (
 	lisuke_id Lisuke_enum primary key,
@@ -108,3 +109,4 @@ create table mm_Lisuke_Tilattu_tuote (
 		tilaus_id, tuotelaskuri ),
 	primary key ( lisuke_id, tilaus_id, tuotelaskuri )
 );
+*/
