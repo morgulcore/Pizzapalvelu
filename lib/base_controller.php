@@ -20,9 +20,20 @@ class BaseController {
 		return null;
 	}
 
-	public static function check_logged_in(){
-		// Toteuta kirjautumisen tarkistus tähän.
-		// Jos käyttäjä ei ole kirjautunut sisään, ohjaa hänet toiselle
-		// sivulle (esim. kirjautumissivulle).
+	public static function check_logged_in() {
+		if( ! isset( $_SESSION[ 'user' ] ) ) {
+			Redirect::to( '/asiakas/kirjaudu', array(
+				'kirjaudu_ensin_sisaan' => 'Kirjaudu ensin sisään!' ) );
+		}
+	}
+
+	public static function kayttaja_on_yllapitaja() {
+		self::check_logged_in();
+
+		$kayttaja = Asiakas::hae( $_SESSION[ 'user' ] );
+		if( ! $kayttaja->on_paakayttaja ) {
+			Redirect::to( '/asiakas/kirjaudu', array(
+				'kirjaudu_ensin_sisaan' => 'Kirjaudu sisään ylläpitäjänä' ) );
+		}
 	}
 }

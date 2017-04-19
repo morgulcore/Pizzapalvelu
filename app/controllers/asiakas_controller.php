@@ -9,12 +9,16 @@ class AsiakasController extends BaseController {
 
 	// Asiakkaan tietojen muokkaus (lomakkeen esittäminen)
 	public static function muokkaa( $ktunnus ) {
+		self::check_logged_in();
+
 		$asiakas = Asiakas::hae( $ktunnus );
 		View::make( 'asiakas/muokkaa.html', array( 'asiakas' => $asiakas ) );
 	}
 
 	// Asiakkaan tietojen päivitys (tiedot lomakkeen kautta)
 	public static function paivita() {
+		self::check_logged_in();
+
 		$params = $_POST;
 		$attribuutit = array(
 			'ktunnus' => $params[ 'ktunnus' ],
@@ -45,12 +49,16 @@ class AsiakasController extends BaseController {
 
 	// Listataan kaikkien asiakkaiden tiedot ylläpidon tarkastelua varten
 	public static function index() {
+		self::kayttaja_on_yllapitaja();
+
 		$asiakkaat = Asiakas::hae_kaikki();
 		View::make( 'asiakas/index.html', array( 'asiakkaat' => $asiakkaat ) );
 	}
 
 	// Renderöidään asiakkaan esittelysivu
 	public static function esittely( $ktunnus ) {
+		self::check_logged_in();
+
 		$asiakas = Asiakas::hae( $ktunnus );
 		$asiakkaan_osoitekirja
 			= mm_Asiakas_Osoite::hae_asiakkaan_osoitteet( $ktunnus );
@@ -61,6 +69,8 @@ class AsiakasController extends BaseController {
 
 	// Asiakastilin poistaminen tietokannasta
 	public static function poista( $ktunnus ) {
+		self::check_logged_in();
+
 		$poistettava_asiakas = Asiakas::hae( $ktunnus );
 		if( $poistettava_asiakas == null ) {
 			// Bugien nopean löytämisen edesauttamiseksi
@@ -144,5 +154,10 @@ class AsiakasController extends BaseController {
 				'tervetuloa_takaisin' => 'Tervetuloa takaisin, '
 				. $asiakas->ktunnus . '!' ) );
 		}
+	}
+
+	public static function kirjaudu_ulos() {
+		$_SESSION[ 'user' ] = null;
+		Redirect::to( '/asiakas/kirjaudu' );
 	}
 }

@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="page-header">
-	<h1>Asiakasrekisteri</h1>
-</div>
-
-{% if user_logged_in and user_logged_in.on_paakayttaja %}
+	<div class="page-header">
+		<h1>Asiakasrekisteri</h1>
+	</div>
 
 	{% if poisto_onnistui is defined %}
 		<div class="alert alert-success">{{poisto_onnistui}}</div>
@@ -50,11 +48,5 @@
 			{% endfor %}
 		</tbody>
 	</table>
-
-{% else %}
-
-	<h3>Access denied! Tällä sivulla on luottamuksellista tietoa!</h3>
-
-{% endif %}
 
 {% endblock %}

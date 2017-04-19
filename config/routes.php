@@ -15,6 +15,8 @@ $routes->get( '/asiakas/kirjaudu',
 	function() { AsiakasController::kirjaudu(); } );
 $routes->post( '/asiakas/kirjaudu',
 	function() { AsiakasController::sisaankirjautumisen_kasittely(); } );
+$routes->post( '/asiakas/kirjaudu_ulos',
+	function() { AsiakasController::kirjaudu_ulos(); } );
 $routes->get( '/asiakas/:ktunnus',
 	function( $ktunnus ) { AsiakasController::esittely( $ktunnus ); } );
 $routes->get( '/asiakas/:ktunnus/muokkaa',

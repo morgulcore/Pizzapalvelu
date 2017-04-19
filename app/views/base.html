@@ -42,22 +42,24 @@
 						<li><a href="{{base_path}}/ongelma">Ongelmat</a></li>
 						<li><a href="{{base_path}}/asiakas">Asiakasrekisteri</a></li>
 						<li><a href="{{base_path}}/asiakas/uusi">Rekisteröidy</a></li>
-						<li><a href="{{base_path}}/asiakas/kirjaudu">Kirjaudu sisään</a></li>
 					</ul>
+
+					{% if user_logged_in %}
+						<form class="navbar-form navbar-right" method="post"
+							action="{{base_path}}/asiakas/kirjaudu_ulos" >
+							<button type="submit" class="btn btn-default">
+								Kirjaudu ulos ({{user_logged_in.ktunnus}})</button>
+						</form>
+					{% else %}
+						<ul class="nav navbar-nav navbar-right">
+							<li><a href="{{base_path}}/asiakas/kirjaudu">Kirjaudu sisään</a></li>
+						</ul>
+					{% endif %}
 				</div>
 			</div>
 		</nav>
 
 		<div id="main-container">
-			{% if user_logged_in %}
-				<div class="alert alert-info">
-					Käyttäjä {{user_logged_in.ktunnus}} on kirjautuneena sisään
-				</div>
-			{% else %}
-				<div class="alert alert-danger">
-					Kukaan ei ole kirjautuneena sisään
-				</div>
-			{% endif %}
 			<!-- Dynaaminen sisältö tulee tähän -->
 			{% block content %}{% endblock %}
 		</div>

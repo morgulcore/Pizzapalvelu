@@ -1,26 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Kirjaudu sisään</h1>
+	<h1>Kirjaudu sisään</h1>
 
-{% if tervetulotoivotus is defined %}
-	<div class="alert alert-success">{{tervetulotoivotus}}</div>
-{% elseif kirjautumisvirhe is defined %}
-	<div class="alert alert-danger">{{kirjautumisvirhe}}</div>
-{% endif %}
+	{% if tervetulotoivotus is defined %}
+		<div class="alert alert-success">{{tervetulotoivotus}}</div>
+	{% elseif kirjautumisvirhe is defined %}
+		<div class="alert alert-danger">{{kirjautumisvirhe}}</div>
+	{% elseif kirjaudu_ensin_sisaan is defined %}
+		<div class="alert alert-info">{{kirjaudu_ensin_sisaan}}</div>
+	{% endif %}
 
-<form method="post" action="{{base_path}}/asiakas/kirjaudu">
-	<div class="form-group">
-		<label>Käyttäjätunnus</label>
-		<input class="form-control" name="ktunnus" type="text">
-	</div>
+	<form method="post" action="{{base_path}}/asiakas/kirjaudu">
+		<div class="form-group">
+			<label>Käyttäjätunnus</label>
+			<input class="form-control" name="ktunnus" type="text">
+		</div>
 
-	<div class="form-group">
-		<label>Salasana</label>
-		<input class="form-control" name="salasana" type="password">
-	</div>
+		<div class="form-group">
+			<label>Salasana</label>
+			<input class="form-control" name="salasana" type="password">
+		</div>
 
-	<button type="submit" class="btn btn-primary">Kirjaudu sisään</button>
-</form>
+		<button type="submit" class="btn btn-primary">Kirjaudu sisään</button>
+	</form>
 
 {% endblock %}

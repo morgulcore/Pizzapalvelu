@@ -9,6 +9,8 @@ class TilausController extends BaseController {
 	} */
 
 	public static function uusi_tilaus( $virheilmoitukset, $jo_taytetyt_kentat ) {
+		self::check_logged_in();
+
 		$kaikki_tuotteet = Tuote::hae_kaikki();
 		// Bugtrap
 		if( $kaikki_tuotteet == null ) {
@@ -34,6 +36,8 @@ class TilausController extends BaseController {
 	}
 
 	public static function tee_tilaus() {
+		self::check_logged_in();
+
 		// Format: 2001-03-10 17:16:18
 		$ts_tilauksen_teko = date("Y-m-d H:i:s");
 
@@ -59,6 +63,8 @@ class TilausController extends BaseController {
 	}
 
 	public static function esittely( $tilaus_id ) {
+		self::check_logged_in();
+
 		$tilaus = Tilaus::hae( $tilaus_id );
 		$tilatut_tuotteet = Tilattu_tuote::hae_kaikki();
 
