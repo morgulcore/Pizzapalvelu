@@ -27,6 +27,8 @@ insert into mm_Asiakas_Osoite values
 	( 'admin', 6 ),		-- Gizza Admin, Sitruunakuja 7
 	( 'admin', 10 ),	-- Gizza Admin, Kurpitsankantajankatu 45 F 6
 	( 'mruusu', 5 ),	-- Minna Ruusu, Pihlajakatu 21 C 10
+	( 'mruusu', 3 ),	-- Minna Ruusu, Metsätie 87
+	( 'mruusu', 8 ),	-- Minna Ruusu, Korpipolku 3
 	( 'therne', 7 ),	-- Tauno Herne, Kadotuksentie 13
 	( 'tmansikka', 1 ),	-- Tero Mansikka, Savirinne 17
 	( 'tmansikka', 9 ),	-- Tero Mansikka, Kurpitsankantajankatu 33 B 15

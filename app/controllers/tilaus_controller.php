@@ -2,14 +2,19 @@
 
 class TilausController extends BaseController {
 
-	/*
 	public static function index() {
-		$ongelmat = Ongelma::hae_kaikki();
-		View::make( 'ongelma/index.html', array( 'ongelmat' => $ongelmat ) );
-	} */
+		if( ! self::kayttaja_on_yllapitaja() ) {
+			return;
+		}
+
+		$tilaukset = Tilaus::hae_kaikki();
+		View::make( 'tilaus/index.html', array( 'tilaukset' => $tilaukset ) );
+	}
 
 	public static function uusi_tilaus( $virheilmoitukset, $jo_taytetyt_kentat ) {
-		self::check_logged_in();
+		if( ! self::check_logged_in() ) {
+			return;
+		}
 
 		$kaikki_tuotteet = Tuote::hae_kaikki();
 		// Bugtrap
@@ -26,7 +31,7 @@ class TilausController extends BaseController {
 			= mm_Asiakas_Osoite::hae_asiakkaan_osoitteet( $asiakas->ktunnus );
 		// Bugtrap
 		if( $asiakkaan_osoitteet == null ) {
-			exit( 'TilausController.uusi_tilaus() – Null-viite (3)' );
+			exit( 'TilausController.uusi_tilaus() – Uuden käyttäjän osoitekirja on tyhjä, joten hän ei voi tilata pizzaa :( Ongelmaa korjataan... Sillä välin voit kirjautua sisään käyttäjätunnuksella mruusu ja salasanalla Tsoh4, jos haluat tehdä tilauksen' );
 		}
 
 		$nyt = new DateTime(); // Nykyinen pvm ja kellonaika
@@ -43,7 +48,9 @@ class TilausController extends BaseController {
 	// Ymmärrän, että tämä funktio on aivan liian pitkä. Refaktoroin sen
 	// ennen lopullista palautusta.
 	public static function tee_tilaus() {
-		self::check_logged_in();
+		if( ! self::check_logged_in() ) {
+			return;
+		}
 
 		// Format: 2001-03-10 17:16:18
 		$ts_tilauksen_teko = date("Y-m-d H:i:s");
@@ -121,7 +128,15 @@ class TilausController extends BaseController {
 	}
 
 	public static function esittely( $tilaus_id ) {
-		self::check_logged_in();
+		$tilaus = Tilaus::hae( $tilaus_id );
+
+		if( ! self::check_logged_in() ) {
+			return;
+		} else if( self::kayttajalle_kuulumaton_asia(
+			$tilaus->asiakasviite->ktunnus,
+			'Tavallisena käyttäjänä et voi tarkastella toisten tilauksia' ) ) {
+			return;
+		}
 
 		$tilaus = Tilaus::hae( $tilaus_id );
 		// Bugtrap
