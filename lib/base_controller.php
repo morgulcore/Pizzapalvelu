@@ -24,16 +24,39 @@ class BaseController {
 		if( ! isset( $_SESSION[ 'user' ] ) ) {
 			Redirect::to( '/asiakas/kirjaudu', array(
 				'kirjaudu_ensin_sisaan' => 'Kirjaudu ensin sisään!' ) );
+			return false;
 		}
+
+		return true;
 	}
 
 	public static function kayttaja_on_yllapitaja() {
-		self::check_logged_in();
+		if( ! self::check_logged_in() ) {
+			return false;
+		}
 
 		$kayttaja = Asiakas::hae( $_SESSION[ 'user' ] );
 		if( ! $kayttaja->on_paakayttaja ) {
 			Redirect::to( '/asiakas/kirjaudu', array(
 				'kirjaudu_ensin_sisaan' => 'Kirjaudu sisään ylläpitäjänä' ) );
+			return false;
 		}
+
+		return true;
+	}
+
+	// Tavallisen käyttäjän (asiakkaan) pitää voida katsoa ja muuttaa
+	// vain sellaisia asioita, jotka liittyvät häneen. Esimerkkinä
+	// tästä käy esittelysivu. Ei ole mielekästä antaa asiakkaiden
+	// tutkia eikä varsinkaan muokata toistensa esittelysivuja.
+	public static function kayttajalle_kuulumaton_asia( $ktunnus, $viesti ) {
+		if( ! self::get_user_logged_in()->on_paakayttaja
+			&& self::get_user_logged_in()->ktunnus != $ktunnus ) {
+			Redirect::to( '/asiakas/kirjaudu', array(
+				'riittamattomat_oikeudet' => $viesti ) );
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -133,11 +133,11 @@ class Tilaus extends BaseModel {
 		foreach( $rivit as $rivi ) {
 			$tilaukset[] = new Tilaus( array(
 				'tilaus_id' => $rivi[ 'tilaus_id' ],
-				'asiakasviite' => Asiakas::hae( $rivi[ 'ktunnus' ] ),
+				'ktunnus' => $rivi[ 'ktunnus' ],
 				'ts_tilauksen_teko' => $rivi[ 'ts_tilauksen_teko' ],
 				'ts_tak_toivottu' => $rivi[ 'ts_tak_toivottu' ],
 				'ts_tak_toteutunut' => $rivi[ 'ts_tak_toteutunut' ],
-				'osoiteviite' => Osoite::hae( $rivi[ 'osoite_id' ] )
+				'osoite_id' => $rivi[ 'osoite_id' ]
 			) );
 		}
 

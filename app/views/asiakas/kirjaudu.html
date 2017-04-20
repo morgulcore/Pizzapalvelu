@@ -9,6 +9,8 @@
 		<div class="alert alert-danger">{{kirjautumisvirhe}}</div>
 	{% elseif kirjaudu_ensin_sisaan is defined %}
 		<div class="alert alert-info">{{kirjaudu_ensin_sisaan}}</div>
+	{% elseif riittamattomat_oikeudet is defined %}
+		<div class="alert alert-danger">{{riittamattomat_oikeudet}}</div>
 	{% endif %}
 
 	<form method="post" action="{{base_path}}/asiakas/kirjaudu">

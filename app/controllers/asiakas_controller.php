@@ -9,7 +9,13 @@ class AsiakasController extends BaseController {
 
 	// Asiakkaan tietojen muokkaus (lomakkeen esittäminen)
 	public static function muokkaa( $ktunnus ) {
-		self::check_logged_in();
+		if( ! self::check_logged_in() ) {
+			return;
+		} else if( self::kayttajalle_kuulumaton_asia( $ktunnus,
+			'Tavallisena käyttäjänä voit muokata vain omaa '
+			. 'esittelysivuasi' ) ) {
+			return;
+		}
 
 		$asiakas = Asiakas::hae( $ktunnus );
 		View::make( 'asiakas/muokkaa.html', array( 'asiakas' => $asiakas ) );
@@ -17,9 +23,16 @@ class AsiakasController extends BaseController {
 
 	// Asiakkaan tietojen päivitys (tiedot lomakkeen kautta)
 	public static function paivita() {
-		self::check_logged_in();
-
 		$params = $_POST;
+
+		if( ! self::check_logged_in() ) {
+			return;
+		} else if( self::kayttajalle_kuulumaton_asia( $params[ 'ktunnus' ],
+			'Tavallisena käyttäjänä voit muokata vain omaa '
+			. 'esittelysivuasi' ) ) {
+			return;
+		}
+
 		$attribuutit = array(
 			'ktunnus' => $params[ 'ktunnus' ],
 			'on_paakayttaja' => false,
@@ -49,7 +62,9 @@ class AsiakasController extends BaseController {
 
 	// Listataan kaikkien asiakkaiden tiedot ylläpidon tarkastelua varten
 	public static function index() {
-		self::kayttaja_on_yllapitaja();
+		if( ! self::kayttaja_on_yllapitaja() ) {
+			return;
+		}
 
 		$asiakkaat = Asiakas::hae_kaikki();
 		View::make( 'asiakas/index.html', array( 'asiakkaat' => $asiakkaat ) );
@@ -57,7 +72,15 @@ class AsiakasController extends BaseController {
 
 	// Renderöidään asiakkaan esittelysivu
 	public static function esittely( $ktunnus ) {
-		self::check_logged_in();
+		if( ! self::check_logged_in() ) {
+			return;
+		// Ilman ylläpitäjän oikeuksia käyttäjä pääsee tarkastelemaan
+		// vain omaa esittelysivuaan
+		} else if( self::kayttajalle_kuulumaton_asia( $ktunnus,
+			'Tavallisena käyttäjänä voit tarkastella vain omaa '
+			. 'esittelysivuasi' ) ) {
+			return;
+		}
 
 		$asiakas = Asiakas::hae( $ktunnus );
 		$asiakkaan_osoitekirja
@@ -69,7 +92,10 @@ class AsiakasController extends BaseController {
 
 	// Asiakastilin poistaminen tietokannasta
 	public static function poista( $ktunnus ) {
-		self::check_logged_in();
+		// Vain ylläpitäjä voi poistaa asiakastilejä
+		if( ! self::kayttaja_on_yllapitaja() ) {
+			return;
+		}
 
 		$poistettava_asiakas = Asiakas::hae( $ktunnus );
 		if( $poistettava_asiakas == null ) {
@@ -149,10 +175,16 @@ class AsiakasController extends BaseController {
 			View::make( 'asiakas/kirjaudu.html', array(
 				'kirjautumisvirhe' => 'Väärä käyttäjätunnus tai salasana!' ) );
 		} else {
+			$viesti = 'Kirjauduit sisään käyttäjätunnuksella '
+				. $asiakas->ktunnus;
+			if( $asiakas->on_paakayttaja ) {
+				$viesti = $viesti
+					. '. Huomaa, että sinulla on nyt ylläpitäjän oikeudet.';
+			}
+
 			$_SESSION[ 'user' ] = $asiakas->ktunnus;
 			Redirect::to( '/', array(
-				'tervetuloa_takaisin' => 'Tervetuloa takaisin, '
-				. $asiakas->ktunnus . '!' ) );
+				'tervetuloa_takaisin' => $viesti ) );
 		}
 	}
 
