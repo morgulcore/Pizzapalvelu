@@ -98,7 +98,13 @@ insert into Tuote values
 insert into Tilattu_tuote ( tilaus_id, tuotetyyppi_id, tuoteversio, lukumaara )
 	values
 	( 1, 1, 'iso', 1 ),
-	( 1, 2, 'tavallinen', 2 );
+	( 1, 2, 'tavallinen', 2 ),
+	( 2, 1, 'iso', 1 ),
+	( 3, 1, 'iso', 1 ),
+	( 4, 1, 'iso', 1 ),
+	( 5, 1, 'iso', 1 ),
+	( 6, 3, 'tavallinen', 1 ),
+	( 6, 4, 'tavallinen', 1 );
 
 /*
 -- 'valkosipuli', 'oregano', 'chili'

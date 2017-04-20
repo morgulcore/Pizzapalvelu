@@ -38,12 +38,13 @@
 				<div class="collapse navbar-collapse" id="navigation">
 					<ul class="nav navbar-nav">
 						<!-- Navigaation linkit -->
-						{% if user_logged_in %}
-							<li><a href="{{base_path}}/tilaus/uusi">Uusi tilaus</a></li>
+						{% if user_logged_in and not user_logged_in.on_paakayttaja %}
+							<li><a href="{{base_path}}/tilaus/uusi">Tilaa pizzaa!</a></li>
 						{% endif %}
 						{% if user_logged_in.on_paakayttaja %}
-							<li><a href="{{base_path}}/ongelma">Ongelmat</a></li>
 							<li><a href="{{base_path}}/asiakas">Asiakasrekisteri</a></li>
+							<li><a href="{{base_path}}/ongelma">Ongelmat</a></li>
+							<li><a href="{{base_path}}/tilaus">Tilaukset</a></li>
 						{% endif %}
 						{% if not user_logged_in %}
 							<li><a href="{{base_path}}/asiakas/uusi">Rekisteröidy</a></li>

@@ -12,7 +12,12 @@ class Tilattu_tuote extends BaseModel {
 	public function __construct( $attribuutit ) {
 		parent::__construct( $attribuutit );
 
-		$this->tilausviite = Tilaus::hae( $attribuutit[ 'tilaus_id' ] );
+		if( array_key_exists( 'tilausviite', $attribuutit )
+			&& $attribuutit[ 'tilausviite' ] != null ) {
+			$this->tilausviite = $attribuutit[ 'tilausviite' ];
+		} else {
+			$this->tilausviite = Tilaus::hae( $attribuutit[ 'tilaus_id' ] );
+		}
 		// Bugtrap
 		if( $this->tilausviite == null ) {
 			exit( 'Tilattu_tuote.__construct() – $tilausviite == null' );
@@ -24,6 +29,33 @@ class Tilattu_tuote extends BaseModel {
 		if( $this->tuoteviite == null ) {
 			exit( 'Tilattu_tuote.__construct() – $this->tuoteviite' );
 		}
+	}
+
+	// Tallentaa olion tietokantaan
+	public function tallenna() {
+		$kysely = DB::connection()->prepare(
+			'insert into Tilattu_tuote values ( :tilaus_id, :tuotelaskuri, '
+			. ':tuotetyyppi_id, :tuoteversio, :lukumaara );' );
+		$kysely->execute( array(
+			'tilaus_id' => $this->tilausviite->tilaus_id,
+			'tuotelaskuri' => $this->tuotelaskuri,
+			'tuotetyyppi_id' => $this->tuoteviite->tuotetyyppiviite->tuotetyyppi_id,
+			'tuoteversio' => $this->tuoteviite->tuoteversio,
+			'lukumaara' => $this->lukumaara
+		) );
+	}
+
+	public static function hae_tilaukseen_liittyvat_tuotteet( $tilaus_id ) {
+		$kaikki = self::hae_kaikki();
+		$tilaukseen_liittyvat_tuotteet = array();
+
+		foreach( $kaikki as $tilattu_tuote ) {
+			if( $tilattu_tuote->tilausviite->tilaus_id == $tilaus_id ) {
+				$tilaukseen_liittyvat_tuotteet[] = $tilattu_tuote;
+			}
+		}
+
+		return $tilaukseen_liittyvat_tuotteet;
 	}
 
 	public static function hae_kaikki() {

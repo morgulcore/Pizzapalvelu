@@ -91,7 +91,7 @@ create table Tilattu_tuote (
 	lukumaara integer, -- Esim. 2 * Americano (iso)
 	foreign key ( tuotetyyppi_id, tuoteversio ) references Tuote (
 		tuotetyyppi_id, tuoteversio ),
-	primary key (tilaus_id, tuotelaskuri )
+	primary key ( tilaus_id, tuotelaskuri )
 );
 
 /*

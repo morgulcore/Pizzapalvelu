@@ -16,22 +16,11 @@ class Tilaus extends BaseModel {
 		$this->asiakasviite = Asiakas::hae( $attribuutit[ 'ktunnus' ] );
 		$this->osoiteviite = Osoite::hae( $attribuutit[ 'osoite_id' ] );
 		$this->validaattorit = array( 'validoi_ts_tak_toivottu' );
-	}
 
-	// Tilaus-olion tallentaminen tietokantaan
-	public function tallenna() {
-		$kysely = DB::connection()->prepare(
-			'insert into Tilaus ( ktunnus, ts_tilauksen_teko, ts_tak_toivottu, '
-				. 'ts_tak_toteutunut, osoite_id ) values ( :ktunnus, '
-				. ':ts_tilauksen_teko, :ts_tak_toivottu, :ts_tak_toteutunut, '
-				. ':osoite_id );' );
-		$kysely->execute( array(
-			'ktunnus' => $this->asiakasviite->ktunnus,
-			'ts_tilauksen_teko' => $this->ts_tilauksen_teko,
-			'ts_tak_toivottu' => $this->ts_tak_toivottu,
-			'ts_tak_toteutunut' => $this->ts_tak_toteutunut,
-			'osoite_id' => $this->osoiteviite->osoite_id
-		) );
+		// SQL-kysely funktiossa tallenna() ei toimi ilman tätä
+		if( $this->ts_tak_toivottu == '' ) {
+			$this->ts_tak_toivottu = null;
+		}
 	}
 
 	public function validoi_ts_tak_toivottu() {
@@ -55,13 +44,30 @@ class Tilaus extends BaseModel {
 	// Esimerkki validista timestamp-arvosta: "2017-04-19 14:59:23"
 	private function on_validi_timestamp( $timestamp ) {
 		// \A tarkoittaa merkkijonon alkua, \z sen loppua.
-		$sl = '/\A20[12][0-9]-[01][0-9]-[0123][0-9] [012][0-9]:[0-5][0-9]:[0-5][0-9]\z/';
+		$sl = '/\A20[12][0-9]-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01]) '
+			. '([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\z/';
 
 		if( preg_match( $sl, $timestamp ) === 0 ) {
 			return false;
 		}
 
 		return true;
+	}
+
+	// Tilaus-olion tallentaminen tietokantaan
+	public function tallenna() {
+		$kysely = DB::connection()->prepare(
+			'insert into Tilaus ( ktunnus, ts_tilauksen_teko, ts_tak_toivottu, '
+				. 'ts_tak_toteutunut, osoite_id ) values ( :ktunnus, '
+				. ':ts_tilauksen_teko, :ts_tak_toivottu, :ts_tak_toteutunut, '
+				. ':osoite_id );' );
+		$kysely->execute( array(
+			'ktunnus' => $this->asiakasviite->ktunnus,
+			'ts_tilauksen_teko' => $this->ts_tilauksen_teko,
+			'ts_tak_toivottu' => $this->ts_tak_toivottu,
+			'ts_tak_toteutunut' => $this->ts_tak_toteutunut,
+			'osoite_id' => $this->osoiteviite->osoite_id
+		) );
 	}
 
 	// Poistaa taulusta Tilaus kaikki tiettyyn asiakkaaseen liittyvät tilaukset
@@ -142,5 +148,22 @@ class Tilaus extends BaseModel {
 		}
 
 		return $tilaukset;
+	}
+
+	// Pari ( $ktunnus, $ts_tilauksen_teko ) on yksikäsitteinen, joten sitä
+	// vastaa täsmälleen yksi tilaus_id (olettaen, että pari on olemassa)
+	public static function hae_tilaus_id( $ktunnus, $ts_tilauksen_teko ) {
+		$kysely = DB::connection()->prepare(
+			'select * from Tilaus where ktunnus = :ktunnus and '
+				. 'ts_tilauksen_teko = :ts_tilauksen_teko limit 1;' );
+		$kysely->execute( array(
+			'ktunnus' => $ktunnus, 'ts_tilauksen_teko' => $ts_tilauksen_teko ) );
+
+		$rivi = $kysely->fetch();
+		if( $rivi ) {
+			return $rivi[ 'tilaus_id' ];
+		}
+
+		return null;
 	}
 }
