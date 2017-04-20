@@ -29,6 +29,9 @@ $routes->post( '/asiakas/:ktunnus/poista/',
 $routes->get( '/ongelma/',
 	function() { OngelmaController::index(); } );
 
+$routes->get( '/osoite/',
+	function() { OsoiteController::index(); } );
+
 $routes->get( '/tilaus/',
 	function() { TilausController::index(); } );
 $routes->get( '/tilaus/uusi/',
