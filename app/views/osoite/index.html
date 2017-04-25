@@ -6,6 +6,44 @@
 		<p>Pahasti kesken. Tulen toteuttamaan sivulle monesta moneen -hifistelyä.</p>
 	</div>
 
+	<table>
+		<thead>
+			<th>Valitse asiakas</th>
+			<th>Valitse osoite</th>
+		</thead>
+			<tbody>
+				<td>
+					<select class="form-control" name="x">
+						<option value="0">–</option>
+						{% for asiakas in kaikki_asiakkaat %}
+							<option value="{{asiakas.ktunnus}}">
+								{{asiakas.etunimi}} {{asiakas.sukunimi}}
+								({{asiakas.ktunnus}})</option>
+						{% endfor %}
+					</select>
+				</td>
+				<td>
+					<select class="form-control" name="x">
+						<option value="0">–</option>
+						{% for asiakas in kaikki_asiakkaat %}
+							<option value="{{asiakas.ktunnus}}">
+								{{asiakas.etunimi}} {{asiakas.sukunimi}}
+								({{asiakas.ktunnus}})</option>
+						{% endfor %}
+					</select>
+				</td>
+			</tbody>
+	</table>
+
+	<br>
+
+	<p>
+		<a href="#" class="btn btn-success">
+			Hae tiedot</a>
+	</p>
+
+	<hr>
+
 	<table class="table table-striped table-bordered">
 		<thead>
 			<th>Asiakas</th>

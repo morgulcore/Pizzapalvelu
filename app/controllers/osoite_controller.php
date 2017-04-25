@@ -8,7 +8,9 @@ class OsoiteController extends BaseController {
 		}
 
 		$asiakas_osoite_parit = Osoite::hae_kaikki_asiakas_osoite_parit();
+		$kaikki_asiakkaat = Asiakas::hae_kaikki();
 		View::make( 'osoite/index.html', array(
-			'asiakas_osoite_parit' => $asiakas_osoite_parit ) );
+			'asiakas_osoite_parit' => $asiakas_osoite_parit,
+			'kaikki_asiakkaat' => $kaikki_asiakkaat ) );
 	}
 }
