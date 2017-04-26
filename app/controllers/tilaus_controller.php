@@ -28,7 +28,7 @@ class TilausController extends BaseController {
 		}
 
 		$asiakkaan_osoitteet
-			= mm_Asiakas_Osoite::hae_asiakkaan_osoitteet( $asiakas->ktunnus );
+			= Osoite::hae_asiakkaan_osoitteet( $asiakas->ktunnus );
 		// Bugtrap
 		if( $asiakkaan_osoitteet == null ) {
 			exit( 'TilausController.uusi_tilaus() – Uuden käyttäjän osoitekirja on tyhjä, joten hän ei voi tilata pizzaa :( Ongelmaa korjataan... Sillä välin voit kirjautua sisään käyttäjätunnuksella mruusu ja salasanalla Tsoh4, jos haluat tehdä tilauksen' );
@@ -90,7 +90,7 @@ class TilausController extends BaseController {
 				$kaksi_mjonoa = explode( '/', $avain );
 				// Bugtrap
 				if( count( $kaksi_mjonoa ) != 2 ) {
-					exit( 'FIKSUMPI VIRHEILMOITUS TÄHÄN' );
+					exit( 'TilausController.tee_tilaus() – Lukumäärävirhe' );
 				}
 
 				$tuotetyyppi_id = $kaksi_mjonoa[ 0 ];

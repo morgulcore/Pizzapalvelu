@@ -12,16 +12,17 @@ insert into Asiakas values
     ( 'pnauris', false, 'Tsoh4','Pekka', 'Nauris', '050 123 1983', null );
 
 insert into Osoite ( lahiosoite, postinumero, postitoimipaikka ) values
-	( 'Savirinne 17', '29094', 'Tuonela' ),						-- 1
-	( 'Nokkosentie 6 B 15', '29818', 'Tuonela' ),				-- 2
-	( 'Metsätie 87', '01642', 'Synkkälä' ),						-- 3
-	( 'Omenapolku 7 A', '29396', 'Tuonela' ),					-- 4
-	( 'Pihlajakatu 21 C 10', '29396', 'Tuonela' ),				-- 5
-	( 'Sitruunakuja 7', '29145', 'Tuonela' ),					-- 6
-	( 'Kadotuksentie 13', '06660', 'Gehenna' ),					-- 7
-	( 'Korpipolku 3', '01642', 'Synkkälä' ),					-- 8
-	( 'Kurpitsankantajankatu 33 B 15', '29400', 'Tuonela' ),	-- 9
-	( 'Kurpitsankantajankatu 45 F 6', '29400', 'Tuonela' );		-- 10
+	( 'Savirinne 17', '29094', 'Vihervuori' ),						-- 1
+	( 'Nokkosentie 6 B 15', '29818', 'Vihervuori' ),				-- 2
+	( 'Metsätie 87', '01642', 'Korpimaa' ),							-- 3
+	( 'Omenapolku 7 A', '29396', 'Vihervuori' ),					-- 4
+	( 'Pihlajakatu 21 C 10', '29396', 'Vihervuori' ),				-- 5
+	( 'Sitruunakuja 7', '29145', 'Vihervuori' ),					-- 6
+	( 'Kadotuksentie 13', '06660', 'Gehenna' ),						-- 7
+	( 'Korpipolku 3', '01642', 'Korpimaa' ),						-- 8
+	( 'Kurpitsankantajankatu 33 B 15', '29400', 'Vihervuori' ),		-- 9
+	( 'Kurpitsankantajankatu 45 F 6', '29400', 'Vihervuori' ),		-- 10
+	( 'Keskuspuisto 1', '29000', 'Vihervuori' );					-- 11 – osoitteettomien osoite?
 
 insert into mm_Asiakas_Osoite values
 	( 'admin', 6 ),		-- Gizza Admin, Sitruunakuja 7

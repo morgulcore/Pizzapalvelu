@@ -30,9 +30,11 @@ $routes->get( '/ongelma/',
 	function() { OngelmaController::index(); } );
 
 $routes->get( '/osoite/',
-	function() { OsoiteController::index(); } );
+	function() { OsoiteController::index( null ); } );
 $routes->post( '/osoite/',
-	function() { OsoiteController::index(); } );
+	function() { OsoiteController::index( null ); } );
+$routes->post( '/osoite/poista_ao_parit/',
+	function() { OsoiteController::poista_valitut_asiakas_osoite_parit(); } );
 
 $routes->get( '/tilaus/',
 	function() { TilausController::index(); } );

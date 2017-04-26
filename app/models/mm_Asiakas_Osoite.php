@@ -6,7 +6,8 @@ class mm_Asiakas_Osoite extends BaseModel {
 
 	// Konstruktori
 	public function __construct( $ktunnus, $osoite_id ) {
-		if( ! self::tarkista_olemassaolo( $ktunnus, $osoite_id ) ) {
+		if( ! Osoite::tarkista_asiakas_osoite_parin_olemassaolo(
+			$ktunnus, $osoite_id ) ) {
 			// Jossain on bugi. Vihelletään peli poikki.
 			exit( 'Luokan mm_Asiakas_Osoite konstruktorissa tapahtui kauheita!' );
 		}
@@ -15,6 +16,17 @@ class mm_Asiakas_Osoite extends BaseModel {
 		$this->osoiteviite = Osoite::hae( $osoite_id );
 	}
 
+	// Poistaa oliota vastaavan rivin taulusta mm_Asiakas_Osoite
+	public function poista() {
+		$kysely = DB::connection()->prepare(
+			'delete from mm_Asiakas_Osoite where ktunnus = :ktunnus and '
+				. 'osoite_id = :osoite_id;' );
+		$kysely->execute( array(
+			'ktunnus' => $this->asiakasviite->ktunnus,
+			'osoite_id' => $this->osoiteviite->osoite_id ) );
+	}
+
+	// Tämäkin pitäisi siirtää luokkaan Osoite.
 	// Poistaa taulusta mm_Asiakas_Osoite kaikki rivit, joissa
 	// esiintyy $ktunnus (pääavaimen toinen osa)
 	public static function poista_ktunnus( $ktunnus ) {
@@ -26,39 +38,5 @@ class mm_Asiakas_Osoite extends BaseModel {
 		$kysely = DB::connection()->prepare(
 			'delete from mm_Asiakas_Osoite where ktunnus = :ktunnus;' );
 		$kysely->execute( array( 'ktunnus' => $ktunnus ) );
-	}
-
-	// Hakee kaikki rivit taulusta ja palauttaa ne taulukkona
-	// asiakas–osoite-pareja
-	/*
-	public static function hae_kaikki() {
-		$kysely = DB::connection()->prepare(
-			'select * from mm_Asiakas_Osoite;' );
-		$kysely->execute();
-		$rivit = $kysely->fetchAll();
-
-		$asiakas_osoite_parit = array();
-
-		foreach( $rivit as $rivi ) {
-			$asiakas_osoite_parit[] = new mm_Asiakas_Osoite(
-				$rivi[ 'ktunnus' ], $rivi[ 'osoite_id' ]
-			);
-		}
-
-		return $asiakas_osoite_parit;
-	}
-	*/
-
-	// Tarkistetaan, että taulussa mm_Asiakas_Osoite todella on rivi
-	// pääavaimella ( $ktunnus, $osoite_id )
-	public static function tarkista_olemassaolo( $ktunnus, $osoite_id ) {
-		$kysely = DB::connection()->prepare(
-			'select * from mm_Asiakas_Osoite where ktunnus = :ktunnus '
-				. 'and osoite_id = :osoite_id limit 1;' );
-		$kysely->execute( array( 'ktunnus' => $ktunnus,
-			'osoite_id' => $osoite_id ) );
-		$rivi = $kysely->fetch();
-
-		return $rivi ? true : false;
 	}
 }

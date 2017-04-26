@@ -83,8 +83,8 @@ class AsiakasController extends BaseController {
 		}
 
 		$asiakas = Asiakas::hae( $ktunnus );
-		$asiakkaan_osoitekirja
-			= mm_Asiakas_Osoite::hae_asiakkaan_osoitteet( $ktunnus );
+		$asiakkaan_osoitekirja = Osoite::hae_asiakkaan_osoitteet( $ktunnus );
+
 		View::make( 'asiakas/esittely.html', array(
 			'asiakas' => $asiakas,
 			'asiakkaan_osoitekirja' => $asiakkaan_osoitekirja ) );

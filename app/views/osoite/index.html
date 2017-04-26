@@ -2,7 +2,7 @@
 {% block content %}
 
 	<div class="page-header">
-		<h1>Asiakas–osoite-parit</h1>
+		<h1>Hallinnoi osoitteita</h1>
 	</div>
 
 	<form method="post" action="{{base_path}}/osoite">
@@ -47,7 +47,11 @@
 							</select>
 						</td>
 						<td align="right">
-							<input type="checkbox" name="lisaystoiminto" value="abc">
+							{% if lisaystoiminto_kaytossa %}
+								<input checked type="checkbox" name="lisaystoiminto">
+							{% else %}
+								<input type="checkbox" name="lisaystoiminto">
+							{% endif %}
 						</td>
 					</tbody>
 			</table>
@@ -57,7 +61,11 @@
 			<input type="hidden" name="tehty_haku" value="1">
 		</div>
 
-		<br>
+		<p>Valitse tähtimerkki, jos haluat, että hakusi koskee kaikkia asiakkaita
+			ja/tai osoitteita. Lisäystoiminnolla valintasi lisätään tietokantaan.
+			Esim. jos valitset asiakkaaksi Minna Ruusun ja osoitteeksi tähtimerkin,
+			lisätään tietokantaan asiakas–osoite-parit (mruusu, *), missä tähtimerkki
+			vastaa jokaista osoitetta.</p>
 
 		<div class="form-group">
 			<button type="submit" class="btn btn-primary">Hae tiedot</button>
@@ -67,32 +75,44 @@
 	<hr>
 
 	<h2>Haun tulokset</h2>
-	{% if tehty_haku %}
-		<p>Annetuilla ehdoilla löytyi {{ao_parien_lkm}} riviä</p>
+	{% if tehty_haku  %}
+		<p>Annetuilla ehdoilla löytyi {{ao_parien_lkm}} riviä{% if lisaystoiminto_kaytossa %}.
+			Ennen hakua tauluun mm_Asiakas_Osoite lisättiin {{lisattyjen_rivien_lkm}}
+			riviä.{% endif %}</p>
 
-		<table class="table table-striped table-bordered">
-			<thead>
-				<th>Asiakas</th>
-				<th>Osoite</th>
-				<th>Poista</th>
-			</thead>
+		<form method="post" action="{{base_path}}/osoite/poista_ao_parit">
+			<div class="form-group">
+				<table class="table table-striped table-bordered">
+					<thead>
+						<th>Asiakas</th>
+						<th>Osoite</th>
+						<th>Poista</th>
+					</thead>
 
-			<tbody>
-				{% for asiakas_osoite_pari in asiakas_osoite_parit %}
-					<tr>
-						<td><a href="{{base_path}}/asiakas/{{asiakas_osoite_pari.asiakasviite.ktunnus}}">
-							{{asiakas_osoite_pari.asiakasviite.etunimi}}
-							{{asiakas_osoite_pari.asiakasviite.sukunimi}}</a></td>
-						<td>{{asiakas_osoite_pari.osoiteviite.lahiosoite}},
-							{{asiakas_osoite_pari.osoiteviite.postinumero}}
-							{{asiakas_osoite_pari.osoiteviite.postitoimipaikka}}</td>
-						<td align="right">
-							<input type="checkbox" name="xyz" value="abc">
-						</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+					<tbody>
+						{% for asiakas_osoite_pari in asiakas_osoite_parit %}
+							<tr>
+								<td><a href="{{base_path}}/asiakas/{{asiakas_osoite_pari.asiakasviite.ktunnus}}">
+									{{asiakas_osoite_pari.asiakasviite.etunimi}}
+									{{asiakas_osoite_pari.asiakasviite.sukunimi}}</a></td>
+								<td>{{asiakas_osoite_pari.osoiteviite.lahiosoite}},
+									{{asiakas_osoite_pari.osoiteviite.postinumero}}
+									{{asiakas_osoite_pari.osoiteviite.postitoimipaikka}}</td>
+								<td align="right">
+									<input type="checkbox" name="{{asiakas_osoite_pari.asiakasviite.ktunnus}}/{{asiakas_osoite_pari.osoiteviite.osoite_id}}">
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn btn-danger">Poista valitut rivit</button>
+			</div>
+		</form>
+	{% elseif viesti_ao_pareja_poistettu is not null %}
+		<p>{{viesti_ao_pareja_poistettu}}</p>
 	{% else %}
 		<p>Et ole vielä tehnyt hakua</p>
 	{% endif %}
