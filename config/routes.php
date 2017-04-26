@@ -31,6 +31,8 @@ $routes->get( '/ongelma/',
 
 $routes->get( '/osoite/',
 	function() { OsoiteController::index(); } );
+$routes->post( '/osoite/',
+	function() { OsoiteController::index(); } );
 
 $routes->get( '/tilaus/',
 	function() { TilausController::index(); } );

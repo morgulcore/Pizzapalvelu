@@ -3,65 +3,98 @@
 
 	<div class="page-header">
 		<h1>Asiakas–osoite-parit</h1>
-		<p>Pahasti kesken. Tulen toteuttamaan sivulle monesta moneen -hifistelyä.</p>
 	</div>
 
-	<table>
-		<thead>
-			<th>Valitse asiakas</th>
-			<th>Valitse osoite</th>
-		</thead>
-			<tbody>
-				<td>
-					<select class="form-control" name="x">
-						<option value="0">–</option>
-						{% for asiakas in kaikki_asiakkaat %}
-							<option value="{{asiakas.ktunnus}}">
-								{{asiakas.etunimi}} {{asiakas.sukunimi}}
-								({{asiakas.ktunnus}})</option>
-						{% endfor %}
-					</select>
-				</td>
-				<td>
-					<select class="form-control" name="x">
-						<option value="0">–</option>
-						{% for asiakas in kaikki_asiakkaat %}
-							<option value="{{asiakas.ktunnus}}">
-								{{asiakas.etunimi}} {{asiakas.sukunimi}}
-								({{asiakas.ktunnus}})</option>
-						{% endfor %}
-					</select>
-				</td>
-			</tbody>
-	</table>
+	<form method="post" action="{{base_path}}/osoite">
+		<div class="form-group">
+			<table>
+				<thead>
+					<th>Valitse asiakas</th>
+					<th>Valitse osoite</th>
+					<th>Lisäystoiminto</th>
+				</thead>
+					<tbody>
+						<td>
+							<select class="form-control" name="asiakasvalitsin">
+								<option value="*">*</option>
+								{% for asiakas in kaikki_asiakkaat %}
+									{% if asiakas.ktunnus == valittu_asiakas %}
+										<option selected value="{{asiakas.ktunnus}}">
+											{{asiakas.etunimi}} {{asiakas.sukunimi}}
+											({{asiakas.ktunnus}})</option>
+									{% else %}
+										<option value="{{asiakas.ktunnus}}">
+											{{asiakas.etunimi}} {{asiakas.sukunimi}}
+											({{asiakas.ktunnus}})</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+						</td>
+						<td>
+							<select class="form-control" name="osoitevalitsin">
+								<option value="*">*</option>
+								{% for osoite in kaikki_osoitteet %}
+									{% if osoite.osoite_id == valittu_osoite %}
+										<option selected value="{{osoite.osoite_id}}">
+											{{osoite.lahiosoite}}, {{osoite.postinumero}}
+											({{osoite.postitoimipaikka}})</option>
+									{% else %}
+										<option value="{{osoite.osoite_id}}">
+											{{osoite.lahiosoite}}, {{osoite.postinumero}}
+											({{osoite.postitoimipaikka}})</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+						</td>
+						<td align="right">
+							<input type="checkbox" name="lisaystoiminto" value="abc">
+						</td>
+					</tbody>
+			</table>
+		</div>
 
-	<br>
+		<div class="form-group">
+			<input type="hidden" name="tehty_haku" value="1">
+		</div>
 
-	<p>
-		<a href="#" class="btn btn-success">
-			Hae tiedot</a>
-	</p>
+		<br>
+
+		<div class="form-group">
+			<button type="submit" class="btn btn-primary">Hae tiedot</button>
+		</div>
+	</form>
 
 	<hr>
 
-	<table class="table table-striped table-bordered">
-		<thead>
-			<th>Asiakas</th>
-			<th>Osoite</th>
-		</thead>
+	<h2>Haun tulokset</h2>
+	{% if tehty_haku %}
+		<p>Annetuilla ehdoilla löytyi {{ao_parien_lkm}} riviä</p>
 
-		<tbody>
-			{% for asiakas_osoite_pari in asiakas_osoite_parit %}
-				<tr>
-					<td><a href="{{base_path}}/asiakas/{{asiakas_osoite_pari.asiakasviite.ktunnus}}">
-						{{asiakas_osoite_pari.asiakasviite.etunimi}}
-						{{asiakas_osoite_pari.asiakasviite.sukunimi}}</a></td>
-					<td>{{asiakas_osoite_pari.osoiteviite.lahiosoite}},
-						{{asiakas_osoite_pari.osoiteviite.postinumero}}
-						{{asiakas_osoite_pari.osoiteviite.postitoimipaikka}}</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+		<table class="table table-striped table-bordered">
+			<thead>
+				<th>Asiakas</th>
+				<th>Osoite</th>
+				<th>Poista</th>
+			</thead>
+
+			<tbody>
+				{% for asiakas_osoite_pari in asiakas_osoite_parit %}
+					<tr>
+						<td><a href="{{base_path}}/asiakas/{{asiakas_osoite_pari.asiakasviite.ktunnus}}">
+							{{asiakas_osoite_pari.asiakasviite.etunimi}}
+							{{asiakas_osoite_pari.asiakasviite.sukunimi}}</a></td>
+						<td>{{asiakas_osoite_pari.osoiteviite.lahiosoite}},
+							{{asiakas_osoite_pari.osoiteviite.postinumero}}
+							{{asiakas_osoite_pari.osoiteviite.postitoimipaikka}}</td>
+						<td align="right">
+							<input type="checkbox" name="xyz" value="abc">
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<p>Et ole vielä tehnyt hakua</p>
+	{% endif %}
 
 {% endblock %}

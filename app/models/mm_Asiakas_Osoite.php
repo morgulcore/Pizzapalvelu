@@ -28,21 +28,9 @@ class mm_Asiakas_Osoite extends BaseModel {
 		$kysely->execute( array( 'ktunnus' => $ktunnus ) );
 	}
 
-	public static function hae_asiakkaan_osoitteet( $ktunnus ) {
-		$asiakkaan_osoitteet = array();
-		$asiakas_osoite_parit = self::hae_kaikki();
-
-		foreach( $asiakas_osoite_parit as $ao_pari ) {
-			if( $ao_pari->asiakasviite->ktunnus == $ktunnus ) {
-				$asiakkaan_osoitteet[] = $ao_pari->osoiteviite;
-			}
-		}
-
-		return $asiakkaan_osoitteet;
-	}
-
 	// Hakee kaikki rivit taulusta ja palauttaa ne taulukkona
 	// asiakas–osoite-pareja
+	/*
 	public static function hae_kaikki() {
 		$kysely = DB::connection()->prepare(
 			'select * from mm_Asiakas_Osoite;' );
@@ -59,6 +47,7 @@ class mm_Asiakas_Osoite extends BaseModel {
 
 		return $asiakas_osoite_parit;
 	}
+	*/
 
 	// Tarkistetaan, että taulussa mm_Asiakas_Osoite todella on rivi
 	// pääavaimella ( $ktunnus, $osoite_id )
