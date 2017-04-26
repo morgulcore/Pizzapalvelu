@@ -102,6 +102,21 @@ class Tilaus extends BaseModel {
 		return $asiakkaan_tilaukset;
 	}
 
+	// Hakee taulusta Tilaus yksittäisen asiakkaan toimittamattomat tilaukset
+	public static function hae_asiakkaan_toimittamattomat_tilaukset(
+		$ktunnus ) {
+		$asiakkaan_tilaukset = self::hae_asiakkaan_tilaukset( $ktunnus );
+		$asiakkaan_toimittamattomat_tilaukset = array();
+
+		foreach( $asiakkaan_tilaukset as $tilaus ) {
+			if( ! $tilaus->ts_tak_toteutunut ) {
+				$asiakkaan_toimittamattomat_tilaukset[] = $tilaus;
+			}
+		}
+
+		return $asiakkaan_toimittamattomat_tilaukset;
+	}
+
 	// Haetaan tietokannasta tietty yksittäinen tilaus
 	public static function hae( $tilaus_id ) {
 		$kysely = DB::connection()->prepare(

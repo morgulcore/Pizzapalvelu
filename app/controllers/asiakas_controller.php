@@ -84,10 +84,14 @@ class AsiakasController extends BaseController {
 
 		$asiakas = Asiakas::hae( $ktunnus );
 		$asiakkaan_osoitekirja = Osoite::hae_asiakkaan_osoitteet( $ktunnus );
+		$asiakkaan_toimittamattomat_tilaukset
+			= Tilaus::hae_asiakkaan_toimittamattomat_tilaukset( $ktunnus );
 
 		View::make( 'asiakas/esittely.html', array(
 			'asiakas' => $asiakas,
-			'asiakkaan_osoitekirja' => $asiakkaan_osoitekirja ) );
+			'asiakkaan_osoitekirja' => $asiakkaan_osoitekirja,
+			'asiakkaan_toimittamattomat_tilaukset'
+				=> $asiakkaan_toimittamattomat_tilaukset ) );
 	}
 
 	// Asiakastilin poistaminen tietokannasta

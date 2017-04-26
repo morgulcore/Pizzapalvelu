@@ -30,9 +30,10 @@
 		</p>
 		<ul>
 			<li><strong>Toimittamattomat tilaukset:</strong>
-				<a href="#">123</a> <a href="#">124</a> <a href="#">127</a>
-				(staattisia arvoja, aidot linkit keskeneräisiin tilauksiin
-				toteutetaan myöhemmin</li>
+				{% for tilaus in asiakkaan_toimittamattomat_tilaukset %}
+					<a href="{{base_path}}/tilaus/{{tilaus.tilaus_id}}">{{tilaus.tilaus_id}}</a>
+				{% endfor %}
+			</li>
 			<li><strong>Toimitettuja tilauksia yhteensä:</strong>
 				0 (staattinen arvo, Tilaus-malli toteutettava ensin)</li>
 			<li><strong>Ongelmia yhteensä:</strong> <label class="label label-danger">
