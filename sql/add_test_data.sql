@@ -18,7 +18,7 @@ insert into Osoite ( lahiosoite, postinumero, postitoimipaikka ) values
 	( 'Omenapolku 7 A', '29396', 'Vihervuori' ),					-- 4
 	( 'Pihlajakatu 21 C 10', '29396', 'Vihervuori' ),				-- 5
 	( 'Sitruunakuja 7', '29145', 'Vihervuori' ),					-- 6
-	( 'Kadotuksentie 13', '06660', 'Gehenna' ),						-- 7
+	( 'Nokikuja 13', '01230', 'Toisaalla' ),						-- 7
 	( 'Korpipolku 3', '01642', 'Korpimaa' ),						-- 8
 	( 'Kurpitsankantajankatu 33 B 15', '29400', 'Vihervuori' ),		-- 9
 	( 'Kurpitsankantajankatu 45 F 6', '29400', 'Vihervuori' ),		-- 10
@@ -30,7 +30,7 @@ insert into mm_Asiakas_Osoite values
 	( 'mruusu', 5 ),	-- Minna Ruusu, Pihlajakatu 21 C 10
 	( 'mruusu', 3 ),	-- Minna Ruusu, Metsätie 87
 	( 'mruusu', 8 ),	-- Minna Ruusu, Korpipolku 3
-	( 'therne', 7 ),	-- Tauno Herne, Kadotuksentie 13
+	( 'therne', 7 ),	-- Tauno Herne, Nokikuja 13
 	( 'tmansikka', 1 ),	-- Tero Mansikka, Savirinne 17
 	( 'tmansikka', 9 ),	-- Tero Mansikka, Kurpitsankantajankatu 33 B 15
 	( 'smansikka', 1 ),	-- Saara Mansikka, Savirinne 17
