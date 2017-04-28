@@ -34,30 +34,33 @@
 				<th>Lukumäärä</th>
 				<th>Kappalehinta</th>
 				<th>Kokonaishinta</th>
+				<th>Kokonaishinta (PHP)</th>
 			</tr>
 		</thead>
 		<tbody>
-			{% set tilauksen_kokonaishinta = 0 %}
+			{% set tilauksen_kokonaishinta_twig = 0 %}
 			{% for tilattu_tuote in tilatut_tuotteet %}
 				{% set rivihinta
 					= tilattu_tuote.lukumaara * tilattu_tuote.tuoteviite.hinta %}
-				{% set tilauksen_kokonaishinta
-					= tilauksen_kokonaishinta + rivihinta %}
+				{% set tilauksen_kokonaishinta_twig
+					= tilauksen_kokonaishinta_twig + rivihinta %}
 				<tr>
 					<td>{{tilattu_tuote.tuoteviite.tuotetyyppiviite.tuotenimi}}</td>
 					<td>{{tilattu_tuote.tuoteviite.tuoteversio}}</td>
 					<td>{{tilattu_tuote.lukumaara}}</td>
 					<td>{{tilattu_tuote.tuoteviite.hinta}} €</td>
 					<td>{{rivihinta}} €</td>
+					<td>{{tilattu_tuote.rivihinta}} €</td>
 				</tr>
 			{% endfor %}
 			<!-- Muunnetaan muuttuja liukuluvuksi, ellei jo ole sellainen -->
-			{% set tilauksen_kokonaishinta = 1.0 * tilauksen_kokonaishinta %}
+			{% set tilauksen_kokonaishinta_twig = 1.0 * tilauksen_kokonaishinta_twig %}
 			<tr>
 				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
+				<td><strong>{{tilauksen_kokonaishinta_twig}} €</strong></td>
 				<td><strong>{{tilauksen_kokonaishinta}} €</strong></td>
 			</tr>
 		</tbody>

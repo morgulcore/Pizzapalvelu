@@ -5,13 +5,20 @@ class Tuote extends BaseModel {
 	public
 		$tuotetyyppiviite, // olioviite
 		$tuoteversio,
-		$hinta;
+		$hinta; // staattinen hinta (siis hinta ilman hintamuunnosta)
 
 	// Konstruktori
 	public function __construct( $attribuutit ) {
 		parent::__construct( $attribuutit );
 		$this->tuotetyyppiviite
 			= Tuotetyyppi::hae( $attribuutit[ 'tuotetyyppi_id' ] );
+	}
+
+	// Dynaaminen hinta saadaan, kun tuotteen (staattinen) hinta kerrotaan
+	// taulusta Hintamuunnos saadulla kertoimella. Näin tuotteen hintaa
+	// voidaan automaattisesti vaihdella esim. vuorokaudenajan mukaan.
+	public function dynaaminen_hinta() {
+		return $this->hinta;
 	}
 
 	public static function hae_kaikki() {

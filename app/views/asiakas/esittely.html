@@ -29,44 +29,34 @@
 			<!-- <a href="#" class="btn btn-default">Muokkaa</a> -->
 		</p>
 		<ul>
-			<li><strong>Toimittamattomat tilaukset:</strong>
-				{% for tilaus in asiakkaan_toimittamattomat_tilaukset %}
-					<a href="{{base_path}}/tilaus/{{tilaus.tilaus_id}}">{{tilaus.tilaus_id}}</a>
-				{% endfor %}
+			<li>
+				{% if toimittamattomien_tilausten_lkm > 0 %}
+					<strong>Toimittamattomat tilaukset:</strong>
+					{% for tilaus in asiakkaan_toimittamattomat_tilaukset %}
+						<a href="{{base_path}}/tilaus/{{tilaus.tilaus_id}}">{{tilaus.tilaus_id}}</a>
+					{% endfor %}
+				{% else %}
+					<strong>Ei toimittamattomia tilauksia</strong>
+				{% endif %}
 			</li>
 			<li><strong>Toimitettuja tilauksia yhteensä:</strong>
-				0 (staattinen arvo, Tilaus-malli toteutettava ensin)</li>
-			<li><strong>Ongelmia yhteensä:</strong> <label class="label label-danger">
-				3</label> (staattinen arvo, Tilaus- ja Ongelma-mallit toteutettava ensin)</li>
+				{{toimitettujen_tilausten_lkm}}</li>
+			<li><strong>Toimitettujen tilausten kokonaisarvo:</strong></li>
+			<li>
+				<strong>Ongelmia yhteensä:</strong>
+				{% if asiakkaaseen_liittyvien_ongelmien_lkm > 0 %}
+					<label class="label label-danger">
+						{{asiakkaaseen_liittyvien_ongelmien_lkm}}</label>
+				{% else %}
+					<label class="label label-success">
+						{{asiakkaaseen_liittyvien_ongelmien_lkm}}</label>
+				{% endif %}
+			</li>
 		</ul>
 
-		<!--
-		{% if asiakkaaseen_liittyvat_ongelmat %}
-			<h3>Asiakkaaseen liittyvät ongelmat</h3>
-			<table class="table table-striped table-bordered">
-				<thead>
-					<tr>
-						<th>Tilaus_ID</th>
-						<th>Ongelman tyyppi</th>
-						<th>Tapahtuma-ajankohta</th>
-						<th>Ongelman kuvaus</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for ongelma in asiakkaaseen_liittyvat_ongelmat %}
-						<tr>
-							<td>{{ongelma.x}}</td>
-							<td>{{ongelma.x}}</td>
-							<td>{{ongelma.x}}</td>
-							<td>{{ongelma.x}}</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		{% else %}
-			<p><strong>Asiakkaaseen liittyviä ongelmia ei löytynyt</strong></p>
+		{% if asiakkaaseen_liittyvien_ongelmien_lkm > 0 %}
+			<p>Siirry tarkastelemaan asiakkaaseen liittyviä <a href="#">ongelmia</a></p>
 		{% endif %}
-		-->
 
 		{% if asiakkaan_osoitekirja %}
 			<h3>Asiakkaan osoitekirja</h3>

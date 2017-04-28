@@ -6,7 +6,8 @@ class Tilattu_tuote extends BaseModel {
 		$tilausviite,
 		$tuotelaskuri,
 		$tuoteviite,
-		$lukumaara;
+		$lukumaara,
+		$rivihinta;
 
 	// Konstruktori
 	public function __construct( $attribuutit ) {
@@ -29,6 +30,8 @@ class Tilattu_tuote extends BaseModel {
 		if( $this->tuoteviite == null ) {
 			exit( 'Tilattu_tuote.__construct() – $this->tuoteviite' );
 		}
+
+		$this->rivihinta = $this->laske_rivihinta();
 	}
 
 	// Tallentaa olion tietokantaan
@@ -43,6 +46,13 @@ class Tilattu_tuote extends BaseModel {
 			'tuoteversio' => $this->tuoteviite->tuoteversio,
 			'lukumaara' => $this->lukumaara
 		) );
+	}
+
+	// Laskee Tilattu_tuote-ilmentymän rivihinnan. Rivihinta tarkoittaa
+	// tilatun tuotteen hintaa kerrottuna lukumäärällä. Esim. jos on tilattu
+	// kaksi pizzaa, joiden kappalehinta on 5 €, rivihinta on 2 * 5 € = 10 €.
+	private function laske_rivihinta() {
+		return $this->lukumaara * $this->tuoteviite->dynaaminen_hinta();
 	}
 
 	public static function hae_tilaukseen_liittyvat_tuotteet( $tilaus_id ) {

@@ -47,7 +47,8 @@ insert into Tilaus ( ktunnus, ts_tilauksen_teko, ts_tak_toivottu, ts_tak_toteutu
 	( 'mruusu', timestamp '2017-02-14 10:02:01', null, null, 5 ),
 	( 'jporkkana', timestamp '2017-03-25 13:12:51', timestamp '2017-04-01 00:00:00', null, 2 ),
 	( 'mruusu', timestamp '2017-02-14 11:07:03', timestamp '2017-02-14 12:07:03', null, 3 ),
-	( 'mruusu', timestamp '2017-02-14 12:02:01', null, null, 8 );
+	( 'mruusu', timestamp '2017-02-14 12:02:01', null, null, 8 ),
+	( 'tmansikka', timestamp '2017-03-25 23:15:50', null, timestamp '2017-03-25 23:50:01', 1 );
 
 --tilaus_id, ongelman_tyyppi, ts_ongelma, ongelman_kuvaus
 insert into Ongelma values
@@ -104,6 +105,7 @@ insert into Tilattu_tuote ( tilaus_id, tuotetyyppi_id, tuoteversio, lukumaara )
 	values
 	( 1, 1, 'iso', 1 ),
 	( 1, 2, 'tavallinen', 2 ),
+	( 1, 6, 'iso', 5 ),
 	( 2, 1, 'iso', 1 ),
 	( 3, 1, 'iso', 1 ),
 	( 4, 1, 'iso', 1 ),
@@ -111,7 +113,9 @@ insert into Tilattu_tuote ( tilaus_id, tuotetyyppi_id, tuoteversio, lukumaara )
 	( 6, 3, 'tavallinen', 1 ),
 	( 6, 4, 'tavallinen', 1 ),
 	( 7, 2, 'tavallinen', 2 ),
-	( 8, 4, 'tavallinen', 1 );
+	( 8, 4, 'tavallinen', 1 ),
+	( 9, 1, 'iso', 1 ),
+	( 9, 4, 'tavallinen', 1 );
 
 /*
 -- 'valkosipuli', 'oregano', 'chili'

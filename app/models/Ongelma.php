@@ -51,4 +51,32 @@ class Ongelma extends BaseModel {
 
 		return $ongelmat;
 	}
+
+	// Jokainen ongelma liittyy suoranaisesti vain tiettyyn tilaukseen,
+	// mutta toisaalta jokaiseen tilaukseen liittyy tietty asiakas.
+	public static function hae_asiakkaaseen_liittyvat_ongelmat( $ktunnus ) {
+		$asiakkaan_kaikki_tilaukset
+			= Tilaus::hae_asiakkaan_tilaukset( $ktunnus );
+		// Jos ei ole tilauksia, ei voi myöskään olla ongelmia
+		if( count( $asiakkaan_kaikki_tilaukset ) == 0 ) {
+			return array();
+		}
+
+		$asiakkaaseen_liittyvat_ongelmat = array();
+		$kaikki_ongelmat = self::hae_kaikki();
+		$asiakkaan_kaikki_tilaukset = Tilaus::hae_asiakkaan_tilaukset( $ktunnus );
+
+		// Käydään jokainen ongelma yksi kerrallaan lävitse ja katsotaan,
+		// liittyykö se johonkin asiakkaan tilauksista
+		foreach( $kaikki_ongelmat as $ongelma ) {
+			foreach( $asiakkaan_kaikki_tilaukset as $asiakkaan_tilaus ) {
+				if( $ongelma->tilausviite->tilaus_id
+					== $asiakkaan_tilaus->tilaus_id ) {
+					$asiakkaaseen_liittyvat_ongelmat[] = $ongelma;
+				}
+			}
+		}
+
+		return $asiakkaaseen_liittyvat_ongelmat;
+	}
 }

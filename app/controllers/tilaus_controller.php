@@ -153,6 +153,9 @@ class TilausController extends BaseController {
 		}
 
 		View::make( 'tilaus/esittely.html', array(
-			'tilaus' => $tilaus, 'tilatut_tuotteet' => $tilatut_tuotteet ) );
+			'tilaus' => $tilaus,
+			'tilatut_tuotteet' => $tilatut_tuotteet,
+			'tilauksen_kokonaishinta'
+				=> $tilaus->laske_tilauksen_kokonaishinta() ) );
 	}
 }

@@ -86,12 +86,22 @@ class AsiakasController extends BaseController {
 		$asiakkaan_osoitekirja = Osoite::hae_asiakkaan_osoitteet( $ktunnus );
 		$asiakkaan_toimittamattomat_tilaukset
 			= Tilaus::hae_asiakkaan_toimittamattomat_tilaukset( $ktunnus );
+		$asiakkaan_tilaukset = Tilaus::hae_asiakkaan_tilaukset( $ktunnus );
+		$asiakkaaseen_liittyvat_ongelmat
+			= Ongelma::hae_asiakkaaseen_liittyvat_ongelmat( $ktunnus );
 
 		View::make( 'asiakas/esittely.html', array(
 			'asiakas' => $asiakas,
 			'asiakkaan_osoitekirja' => $asiakkaan_osoitekirja,
 			'asiakkaan_toimittamattomat_tilaukset'
-				=> $asiakkaan_toimittamattomat_tilaukset ) );
+				=> $asiakkaan_toimittamattomat_tilaukset,
+			'toimittamattomien_tilausten_lkm'
+				=> count( $asiakkaan_toimittamattomat_tilaukset ),
+			'toimitettujen_tilausten_lkm'
+				=> count( $asiakkaan_tilaukset )
+				- count( $asiakkaan_toimittamattomat_tilaukset ),
+			'asiakkaaseen_liittyvien_ongelmien_lkm'
+				=> count( $asiakkaaseen_liittyvat_ongelmat ) ) );
 	}
 
 	// Asiakastilin poistaminen tietokannasta

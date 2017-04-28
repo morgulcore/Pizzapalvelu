@@ -23,6 +23,10 @@ class Tilaus extends BaseModel {
 		}
 	}
 
+	public function laske_tilauksen_kokonaishinta() {
+		return -1.0;
+	}
+
 	public function validoi_ts_tak_toivottu() {
 		// Toivottu toimitusajankohta saa olla tyhjä merkkijono, jolloin
 		// sen merkitys on "mahdollisimman pian".
