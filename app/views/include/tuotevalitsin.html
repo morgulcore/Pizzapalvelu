@@ -1,0 +1,46 @@
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>Tuote</th>
+			<th>Versio</th>
+			<th>Hinta</th>
+			<th>Lukumäärä</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for tuote in kaikki_tuotteet %}
+			{% set tuote_kuuluu_tilattuihin = 0 %}
+			{% set tilatun_tuotteen_lkm = 0 %}
+			{% if tilaukseen_liittyvat_tuotteet %}
+				{% for tilaukseen_liittyva_tuote in tilaukseen_liittyvat_tuotteet %}
+					{% if tuote.tuotetyyppiviite.tuotetyyppi_id
+						== tilaukseen_liittyva_tuote.tuoteviite.tuotetyyppiviite.tuotetyyppi_id
+						and tuote.tuoteversio == tilaukseen_liittyva_tuote.tuoteviite.tuoteversio %}
+						{% set tuote_kuuluu_tilattuihin = 1 %}
+						{% set tilatun_tuotteen_lkm = tilaukseen_liittyva_tuote.lukumaara %}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+			<!-- Pizzerian tuotteiden lukumäärä ei ole mikään kiveenhakattu vakio,
+				joten myös rivien lukumäärä listauksessa ei ole vakio. Tämän vuoksi
+				lukumääriä ilmaisevat kentät on nimettävä "dynaamisesti". -->
+			{% set lkm_kentta_nimi = tuote.tuotetyyppiviite.tuotetyyppi_id ~ '/' ~ tuote.tuoteversio %}
+			<tr>
+				<td><a href="#">{{tuote.tuotetyyppiviite.tuotenimi}}</a></td>
+				<td>{{tuote.tuoteversio}}</td>
+				<td>{{tuote.hinta}}</td>
+				<td>
+					<select class="form-control" name="{{lkm_kentta_nimi}}">
+						{% for i in 0..10 %}
+							{% if tuote_kuuluu_tilattuihin == 1 and i == tilatun_tuotteen_lkm %}
+								<option selected value="{{i}}">{{i}}</option>
+							{% else %}
+								<option value="{{i}}">{{i}}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

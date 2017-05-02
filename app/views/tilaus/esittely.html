@@ -1,3 +1,4 @@
+{% import "macros/forms.html" as forms %}
 {% extends "base.html" %}
 {% block content %}
 
@@ -10,6 +11,19 @@
 			{{tilaus.osoiteviite.postitoimipaikka}}
 		</p>
 	</div>
+
+	{% if paivitys_onnistui_viesti is defined %}
+		<div class="alert alert-success">{{paivitys_onnistui_viesti}}</div>
+	{% endif %}
+
+	<p>
+		{% if user_logged_in.on_paakayttaja %}
+			{{ forms.lisaa_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/merkitse_toimitetuksi",
+				"Merkitse toimitetuksi" ) }}
+		{% endif %}
+		{{ forms.muokkaa_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/muokkaa" ) }}
+		{{ forms.poista_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/poista" ) }}
+	</p>
 
 	<ul>
 		<li><strong>Tilaus tehty: </strong>{{tilaus.ts_tilauksen_teko}}</li>
@@ -34,10 +48,10 @@
 				<th>Lukumäärä</th>
 				<th>Kappalehinta</th>
 				<th>Kokonaishinta</th>
-				<th>Kokonaishinta (PHP)</th>
 			</tr>
 		</thead>
 		<tbody>
+			<!-- Ei tarvita enää, rivi- ja kokonaishinnat lasketaan nyt muualla -->
 			{% set tilauksen_kokonaishinta_twig = 0 %}
 			{% for tilattu_tuote in tilatut_tuotteet %}
 				{% set rivihinta
@@ -49,7 +63,6 @@
 					<td>{{tilattu_tuote.tuoteviite.tuoteversio}}</td>
 					<td>{{tilattu_tuote.lukumaara}}</td>
 					<td>{{tilattu_tuote.tuoteviite.hinta}} €</td>
-					<td>{{rivihinta}} €</td>
 					<td>{{tilattu_tuote.rivihinta}} €</td>
 				</tr>
 			{% endfor %}
@@ -60,8 +73,7 @@
 				<td></td>
 				<td></td>
 				<td></td>
-				<td><strong>{{tilauksen_kokonaishinta_twig}} €</strong></td>
-				<td><strong>{{tilauksen_kokonaishinta}} €</strong></td>
+				<td><strong>{{tilaus.tilauksen_kokonaishinta}} €</strong></td>
 			</tr>
 		</tbody>
 	</table>

@@ -8,7 +8,8 @@ class Tilaus extends BaseModel {
 		$ts_tilauksen_teko,
 		$ts_tak_toivottu,
 		$ts_tak_toteutunut,
-		$osoiteviite;
+		$osoiteviite,
+		$tilauksen_kokonaishinta;
 
 	// Konstruktori
 	public function __construct( $attribuutit ) {
@@ -21,10 +22,28 @@ class Tilaus extends BaseModel {
 		if( $this->ts_tak_toivottu == '' ) {
 			$this->ts_tak_toivottu = null;
 		}
+
+		// Tilattuja tuotteita ei tässä vaiheessa ole vielä liitetty
+		// tilaukseen, joten kokonaishinta lasketaan vasta myöhemmin
+		// (tarvittaessa)
+		$this->tilauksen_kokonaishinta = -1.0;
 	}
 
-	public function laske_tilauksen_kokonaishinta() {
-		return -1.0;
+	// Asettaa attribuutille $this->tilauksen_kokonaishinta sen oikean
+	// arvon. Tilaus-olio luodaan ennen Tilattu_tuote-olioita, joten
+	// tilauksen kokonaishintaa ei voida laskea vielä Tilaus-olion
+	// luomisen yhteydessä.
+	public function aseta_tilauksen_kokonaishinta() {
+		$tilaukseen_liittyvat_tuotteet
+			= Tilattu_tuote::hae_tilaukseen_liittyvat_tuotteet(
+			$this->tilaus_id );
+		$tilauksen_kokonaishinta = 0.0;
+
+		foreach( $tilaukseen_liittyvat_tuotteet as $tilattu_tuote ) {
+			$tilauksen_kokonaishinta += $tilattu_tuote->rivihinta;
+		}
+
+		$this->tilauksen_kokonaishinta = $tilauksen_kokonaishinta;
 	}
 
 	public function validoi_ts_tak_toivottu() {
@@ -71,6 +90,19 @@ class Tilaus extends BaseModel {
 			'ts_tak_toivottu' => $this->ts_tak_toivottu,
 			'ts_tak_toteutunut' => $this->ts_tak_toteutunut,
 			'osoite_id' => $this->osoiteviite->osoite_id
+		) );
+	}
+
+	// Oletus on, että kenttien ts_tak_toivottu ja osoite_id arvot on
+	// validoitu ennen tämän funktion kutsumista.
+	public function paivita_ts_tak_toivottu_ja_osoite_id() {
+		$kysely = DB::connection()->prepare(
+			'update Tilaus set ts_tak_toivottu = :ts_tak_toivottu, '
+			. 'osoite_id = :osoite_id where tilaus_id = :tilaus_id;' );
+		$kysely->execute( array(
+			'ts_tak_toivottu' => $this->ts_tak_toivottu,
+			'osoite_id' => $this->osoiteviite->osoite_id,
+			'tilaus_id' => $this->tilaus_id
 		) );
 	}
 

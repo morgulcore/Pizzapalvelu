@@ -8,7 +8,12 @@ class TilausController extends BaseController {
 		}
 
 		$tilaukset = Tilaus::hae_kaikki();
-		View::make( 'tilaus/index.html', array( 'tilaukset' => $tilaukset ) );
+		foreach( $tilaukset as $tilaus ) {
+			$tilaus->aseta_tilauksen_kokonaishinta();
+		}
+
+		View::make( 'tilaus/index.html', array(
+			'tilaukset' => $tilaukset ) );
 	}
 
 	public static function uusi_tilaus( $virheilmoitukset, $jo_taytetyt_kentat ) {
@@ -52,17 +57,10 @@ class TilausController extends BaseController {
 			return;
 		}
 
-		// Format: 2001-03-10 17:16:18
-		$ts_tilauksen_teko = date("Y-m-d H:i:s");
+		$uusi_tilaus = self::luo_uusi_tilaus_olio( null, $_POST[ 'ktunnus' ],
+			date( "Y-m-d H:i:s" ), $_POST[ 'toivottu_toimitusajankohta' ],
+			$_POST[ 'toimitusosoite' ] );
 
-		$attribuutit = array(
-			'ktunnus' => $_POST[ 'ktunnus' ],
-			'ts_tilauksen_teko' => $ts_tilauksen_teko,
-			'ts_tak_toivottu' => $_POST[ 'toivottu_toimitusajankohta' ],
-			'osoite_id' => $_POST[ 'toimitusosoite' ]
-		);
-
-		$uusi_tilaus = new Tilaus( $attribuutit );
 		$virheilmoitukset = $uusi_tilaus->virheilmoitukset();
 		$jo_taytetyt_kentat = array(
 			'toivottu_toimitusajankohta'
@@ -117,7 +115,7 @@ class TilausController extends BaseController {
 
 		$uusi_tilaus->tallenna();
 		$uusi_tilaus_id = Tilaus::hae_tilaus_id(
-			$_POST[ 'ktunnus' ], $ts_tilauksen_teko );
+			$_POST[ 'ktunnus' ], $uusi_tilaus->ts_tilauksen_teko );
 		$uusi_tilaus->tilaus_id = $uusi_tilaus_id;
 
 		foreach( $tilatut_tuotteet as $tilattu_tuote ) {
@@ -152,10 +150,83 @@ class TilausController extends BaseController {
 				. ' ei liity yhtään tilattua tuotetta' );
 		}
 
+		$tilaus->aseta_tilauksen_kokonaishinta();
+
 		View::make( 'tilaus/esittely.html', array(
 			'tilaus' => $tilaus,
-			'tilatut_tuotteet' => $tilatut_tuotteet,
-			'tilauksen_kokonaishinta'
-				=> $tilaus->laske_tilauksen_kokonaishinta() ) );
+			'tilatut_tuotteet' => $tilatut_tuotteet ) );
+	}
+
+	// Tilauksen tietojen muokkaus (lomakkeen esittäminen)
+	public static function muokkaa( $tilaus_id, $virheilmoitukset,
+		$jo_taytetyt_kentat ) {
+		$tilaus = Tilaus::hae( $tilaus_id );
+
+		if( ! self::check_logged_in() ) {
+			return;
+		} else if( self::kayttajalle_kuulumaton_asia(
+			$tilaus->asiakasviite->ktunnus,
+			'Tavallisena käyttäjänä voit muokata vain omia tilauksiasi' ) ) {
+			return;
+		}
+
+		$tilaukseen_liittyvat_tuotteet
+			= Tilattu_tuote::hae_tilaukseen_liittyvat_tuotteet( $tilaus_id );
+		$kaikki_tuotteet = Tuote::hae_kaikki();
+		$asiakkaan_osoitteet
+			= Osoite::hae_asiakkaan_osoitteet( $tilaus->asiakasviite->ktunnus );
+
+		View::make( 'tilaus/muokkaa.html', array(
+			'tilaus' => $tilaus,
+			'tilaukseen_liittyvat_tuotteet' => $tilaukseen_liittyvat_tuotteet,
+			'kaikki_tuotteet' => $kaikki_tuotteet,
+			'asiakkaan_osoitteet' => $asiakkaan_osoitteet,
+			'valittu_osoite' => $tilaus->osoiteviite,
+			'virheilmoitukset' => $virheilmoitukset,
+			'jo_taytetyt_kentat' => $jo_taytetyt_kentat ) );
+	}
+
+	public static function paivita() {
+		if( ! self::check_logged_in() ) {
+			return;
+		} else if( self::kayttajalle_kuulumaton_asia(
+			$_POST[ 'ktunnus' ],
+			'Tavallisena käyttäjänä voit muokata vain omia tilauksiasi' ) ) {
+			return;
+		}
+
+		$uusi_tilaus = self::luo_uusi_tilaus_olio( $_POST[ 'tilaus_id' ],
+			$_POST[ 'ktunnus' ], $_POST[ 'ts_tilauksen_teko' ],
+			$_POST[ 'toivottu_toimitusajankohta' ], $_POST[ 'toimitusosoite' ] );
+
+		$virheilmoitukset = $uusi_tilaus->virheilmoitukset();
+		if( count( $virheilmoitukset ) > 0 ) {
+			$jo_taytetyt_kentat = array(
+				'toivottu_toimitusajankohta'
+				=> $_POST[ 'toivottu_toimitusajankohta' ] );
+			self::muokkaa( $_POST[ 'tilaus_id' ], $virheilmoitukset,
+				$jo_taytetyt_kentat );
+			return;
+		}
+
+		$uusi_tilaus->paivita_ts_tak_toivottu_ja_osoite_id();
+
+		Redirect::to( '/tilaus/' . $uusi_tilaus->tilaus_id,
+			array( 'paivitys_onnistui_viesti'
+			=> 'Tilaustietojen päivitys onnistui' ) );
+	}
+
+	// Copy-paste-koodin eliminointia
+	private static function luo_uusi_tilaus_olio(
+		$tilaus_id, $ktunnus, $ts_tilauksen_teko, $ts_tak_toivottu, $osoite_id ) {
+		$attribuutit = array(
+			'tilaus_id' => $tilaus_id,
+			'ktunnus' => $ktunnus,
+			'ts_tilauksen_teko' => $ts_tilauksen_teko,
+			'ts_tak_toivottu' => $ts_tak_toivottu,
+			'osoite_id' => $osoite_id
+		);
+
+		return new Tilaus( $attribuutit );
 	}
 }

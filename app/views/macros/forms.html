@@ -1,0 +1,17 @@
+{% macro poista_painike( toiminto, teksti ) %}
+	<form method="post" action="{{toiminto}}" style="display: inline-block;">
+		<button type="submit" class="btn btn-danger">{{teksti|default('Poista')}}</button>
+	</form>
+{% endmacro %}
+
+{% macro muokkaa_painike( toiminto, teksti ) %}
+	<form method="get" action="{{toiminto}}" style="display: inline-block;">
+		<button type="submit" class="btn btn-default">{{teksti|default('Muokkaa')}}</button>
+	</form>
+{% endmacro %}
+
+{% macro lisaa_painike( toiminto, teksti ) %}
+	<form method="get" action="{{toiminto}}" style="display: inline-block;">
+		<button type="submit" class="btn btn-success">{{teksti|default('Lisää')}}</button>
+	</form>
+{% endmacro %}

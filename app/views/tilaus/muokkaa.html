@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+	{% if tilaus %}
+
+		<div class="page-header">
+			<h1>Muokkaa tilausta #{{tilaus.tilaus_id}}</h1>
+		</div>
+
+		{% if virheilmoitukset %}
+			<div class="alert alert-danger">
+				<ul>
+					{% for virheilmoitus in virheilmoitukset %}
+						<li>{{virheilmoitus}}</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+
+		<form method="post" action="{{base_path}}/tilaus/{{tilaus.tilaus_id}}/paivita">
+			<div class="form-group">
+				<h2>Muokkaa tuotevalintoja</h2>
+				{{ include( 'include/tuotevalitsin.html' ) }}
+			</div>
+
+			<div class="form-group">
+				<h2>Muokkaa osoitetta ja toivottua toimitusajankohtaa</h2>
+				{{ include( 'include/osoite_ja_toivottu_tak_valitsin.html' ) }}
+			</div>
+
+			<div class="form-group">
+				<input name="tilaus_id" value="{{tilaus.tilaus_id}}" type="hidden">
+				<input name="ktunnus" value="{{tilaus.asiakasviite.ktunnus}}" type="hidden">
+				<input name="ts_tilauksen_teko" value="{{tilaus.ts_tilauksen_teko}}" type="hidden">
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Päivitä tiedot</button>
+			</div>
+		</form>
+
+	{% else %}
+		<p>Muuttuja 'tilaus' on määrittelemättä!</p>
+	{% endif %}
+
+{% endblock %}
