@@ -50,8 +50,6 @@ class TilausController extends BaseController {
 			'jo_taytetyt_kentat' => $jo_taytetyt_kentat ) );
 	}
 
-	// Ymmärrän, että tämä funktio on aivan liian pitkä. Refaktoroin sen
-	// ennen lopullista palautusta.
 	public static function tee_tilaus() {
 		if( ! self::check_logged_in() ) {
 			return;
@@ -71,40 +69,9 @@ class TilausController extends BaseController {
 			return;
 		}
 
-		// Funktio -->
-		//
-		// Ollaan lähinnä kiinnostuneita avaimista, jotka ovat muotoa
-		// <luonnollinen luku>/<merkkijono>. Esimerkkinä "6/iso"
-		// tai "2/tavallinen".
-		$post_avaimet = array_keys( $_POST );
-		$tilatut_tuotteet = array();
-		$tuotelaskuri = 0;
-
-		foreach( $post_avaimet as $avain ) {
-			if( preg_match( '/\A[1-9][0-9]*\/[a-z]+\z/', $avain ) === 1
-				&& $_POST[ $avain ] > 0 ) {
-				$tuotelaskuri++;
-				// Esim. "6/iso" jakaantuu tässä merkkijonoihin "6" ja "iso"
-				$kaksi_mjonoa = explode( '/', $avain );
-				// Bugtrap
-				if( count( $kaksi_mjonoa ) != 2 ) {
-					exit( 'TilausController.tee_tilaus() – Lukumäärävirhe' );
-				}
-
-				$tuotetyyppi_id = $kaksi_mjonoa[ 0 ];
-				$tuoteversio = $kaksi_mjonoa[ 1 ];
-
-				$tilattu_tuote = new Tilattu_tuote( array(
-					'tilausviite' => $uusi_tilaus,
-					'tuotelaskuri' => $tuotelaskuri,
-					'tuotetyyppi_id' => $tuotetyyppi_id,
-					'tuoteversio' => $tuoteversio,
-					'lukumaara' => $_POST[ $avain ] ) );
-
-				$tilatut_tuotteet[] = $tilattu_tuote;
-			}
-		}
-		// <-- Funktio
+		$tilatut_tuotteet
+			= self::luo_tilatut_tuotteet_taulukko( array_keys( $_POST ),
+			$uusi_tilaus );
 
 		if( count( $tilatut_tuotteet ) < 1 ) {
 			$virheilmoitukset[]
@@ -199,17 +166,35 @@ class TilausController extends BaseController {
 			$_POST[ 'ktunnus' ], $_POST[ 'ts_tilauksen_teko' ],
 			$_POST[ 'toivottu_toimitusajankohta' ], $_POST[ 'toimitusosoite' ] );
 
+		$jo_taytetyt_kentat = array(
+			'toivottu_toimitusajankohta'
+			=> $_POST[ 'toivottu_toimitusajankohta' ] );
+
 		$virheilmoitukset = $uusi_tilaus->virheilmoitukset();
 		if( count( $virheilmoitukset ) > 0 ) {
-			$jo_taytetyt_kentat = array(
-				'toivottu_toimitusajankohta'
-				=> $_POST[ 'toivottu_toimitusajankohta' ] );
 			self::muokkaa( $_POST[ 'tilaus_id' ], $virheilmoitukset,
 				$jo_taytetyt_kentat );
 			return;
 		}
 
+		$tilatut_tuotteet
+			= self::luo_tilatut_tuotteet_taulukko( array_keys( $_POST ),
+			$uusi_tilaus );
+
+		if( count( $tilatut_tuotteet ) < 1 ) {
+			$virheilmoitukset[]
+				= 'Tilaukseen on kuuluttava ainakin yksi tilattu tuote';
+			self::uusi_tilaus( $virheilmoitukset, $jo_taytetyt_kentat );
+			return;
+		}
+
 		$uusi_tilaus->paivita_ts_tak_toivottu_ja_osoite_id();
+		// Poistetaan kaikki tilaukseen liittyvät tilatut tuotteet
+		Tilattu_tuote::poista( $uusi_tilaus->tilaus_id );
+
+		foreach( $tilatut_tuotteet as $tilattu_tuote ) {
+			$tilattu_tuote->tallenna();
+		}
 
 		Redirect::to( '/tilaus/' . $uusi_tilaus->tilaus_id,
 			array( 'paivitys_onnistui_viesti'
@@ -228,5 +213,41 @@ class TilausController extends BaseController {
 		);
 
 		return new Tilaus( $attribuutit );
+	}
+
+	private static function luo_tilatut_tuotteet_taulukko(
+		$post_avaimet, $uusi_tilaus ) {
+		// Ollaan lähinnä kiinnostuneita avaimista, jotka ovat muotoa
+		// <luonnollinen luku>/<merkkijono>. Esimerkkinä "6/iso"
+		// tai "2/tavallinen".
+		$tilatut_tuotteet = array();
+		$tuotelaskuri = 0;
+
+		foreach( $post_avaimet as $avain ) {
+			if( preg_match( '/\A[1-9][0-9]*\/[a-z]+\z/', $avain ) === 1
+				&& $_POST[ $avain ] > 0 ) {
+				$tuotelaskuri++;
+				// Esim. "6/iso" jakaantuu tässä merkkijonoihin "6" ja "iso"
+				$kaksi_mjonoa = explode( '/', $avain );
+				// Bugtrap
+				if( count( $kaksi_mjonoa ) != 2 ) {
+					exit( 'TilausController.tee_tilaus() – Lukumäärävirhe' );
+				}
+
+				$tuotetyyppi_id = $kaksi_mjonoa[ 0 ];
+				$tuoteversio = $kaksi_mjonoa[ 1 ];
+
+				$tilattu_tuote = new Tilattu_tuote( array(
+					'tilausviite' => $uusi_tilaus,
+					'tuotelaskuri' => $tuotelaskuri,
+					'tuotetyyppi_id' => $tuotetyyppi_id,
+					'tuoteversio' => $tuoteversio,
+					'lukumaara' => $_POST[ $avain ] ) );
+
+				$tilatut_tuotteet[] = $tilattu_tuote;
+			}
+		}
+
+		return $tilatut_tuotteet;
 	}
 }
