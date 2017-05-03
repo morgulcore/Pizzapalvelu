@@ -30,7 +30,9 @@
 
 			<div class="form-group">
 				<input name="tilaus_id" value="{{tilaus.tilaus_id}}" type="hidden">
-				<input name="ktunnus" value="{{tilaus.asiakasviite.ktunnus}}" type="hidden">
+				{% if not user_logged_in.on_paakayttaja %}
+					<input name="ktunnus" value="{{tilaus.asiakasviite.ktunnus}}" type="hidden">
+				{% endif %}
 				<input name="ts_tilauksen_teko" value="{{tilaus.ts_tilauksen_teko}}" type="hidden">
 			</div>
 

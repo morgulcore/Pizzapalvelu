@@ -218,7 +218,8 @@ class Asiakas extends BaseModel {
 
 	// Haetaan tietokannasta kaikki Asiakas-oliot
 	public static function hae_kaikki() {
-		$kysely = DB::connection()->prepare( 'select * from Asiakas;' );
+		$kysely = DB::connection()->prepare( 'select * from Asiakas order by '
+			. 'on_paakayttaja desc, ktunnus;' );
 		$kysely->execute();
 		$rivit = $kysely->fetchAll();
 

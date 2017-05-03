@@ -22,13 +22,15 @@
 		</div>
 
 		<div class="form-group">
-			<h2>Valitse osoite ja tilauksen toimitusajankohta</h2>
+			<h2>Valitse asiakas, osoite ja toimitusajankohta</h2>
 			{{ include( 'include/osoite_ja_toivottu_tak_valitsin.html' ) }}
 		</div>
 
-		<div class="form-group">
-			<input name="ktunnus" value="{{user_logged_in.ktunnus}}" type="hidden" />
-		</div>
+		{% if not user_logged_in.on_paakayttaja %}
+			<div class="form-group">
+				<input name="ktunnus" value="{{user_logged_in.ktunnus}}" type="hidden">
+			</div>
+		{% endif %}
 
 		<div class="form-group">
 			<button type="submit" class="btn btn-primary">Lähetä tilaus</button>

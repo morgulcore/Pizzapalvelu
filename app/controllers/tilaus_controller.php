@@ -24,29 +24,32 @@ class TilausController extends BaseController {
 		$kaikki_tuotteet = Tuote::hae_kaikki();
 		// Bugtrap
 		if( $kaikki_tuotteet == null ) {
-			exit( 'TilausController.uusi_tilaus() – Null-viite (1)' );
+			exit( 'TilausController.uusi_tilaus() – Null-viite' );
 		}
 
-		$asiakas = self::get_user_logged_in();
-		if( $asiakas == null ) {
-			exit( 'TilausController.uusi_tilaus() – Null-viite (2)' );
-		}
-
-		$asiakkaan_osoitteet
-			= Osoite::hae_asiakkaan_osoitteet( $asiakas->ktunnus );
+		$osoitteet = self::get_user_logged_in()->on_paakayttaja
+			? Osoite::hae_kaikki()
+			: Osoite::hae_asiakkaan_osoitteet( self::get_user_logged_in()->ktunnus );
 		// Bugtrap
-		if( $asiakkaan_osoitteet == null ) {
+		if( $osoitteet == null ) {
 			exit( 'TilausController.uusi_tilaus() – Uuden käyttäjän osoitekirja on tyhjä, joten hän ei voi tilata pizzaa :( Ongelmaa korjataan... Sillä välin voit kirjautua sisään käyttäjätunnuksella mruusu ja salasanalla Tsoh4, jos haluat tehdä tilauksen' );
 		}
+
+		$asiakkaat = self::get_user_logged_in()->on_paakayttaja
+			? Asiakas::hae_kaikki() : null;
 
 		$nyt = new DateTime(); // Nykyinen pvm ja kellonaika
 		$nyt_plus_tunti = $nyt->modify( "+1 hour" ); // Tunti tulevaisuudessa
 
 		View::make( 'tilaus/uusi.html', array(
 			'kaikki_tuotteet' => $kaikki_tuotteet,
-			'asiakkaan_osoitteet' => $asiakkaan_osoitteet,
+			'asiakkaat' => $asiakkaat,
+			'osoitteet' => $osoitteet,
 			'nyt_plus_tunti' => $nyt_plus_tunti->format( "Y-m-d H:i:s" ),
 			'virheilmoitukset' => $virheilmoitukset,
+			'tilaukseen_liittyvat_tuotteet' => $jo_taytetyt_kentat
+				? $jo_taytetyt_kentat[ 'tilaukseen_liittyvat_tuotteet' ]
+				: null,
 			'jo_taytetyt_kentat' => $jo_taytetyt_kentat ) );
 	}
 
@@ -59,19 +62,21 @@ class TilausController extends BaseController {
 			date( "Y-m-d H:i:s" ), $_POST[ 'toivottu_toimitusajankohta' ],
 			$_POST[ 'toimitusosoite' ] );
 
+		$tilatut_tuotteet
+			= self::luo_tilatut_tuotteet_taulukko( array_keys( $_POST ),
+			$uusi_tilaus );
+
 		$virheilmoitukset = $uusi_tilaus->virheilmoitukset();
 		$jo_taytetyt_kentat = array(
-			'toivottu_toimitusajankohta'
-			=> $_POST[ 'toivottu_toimitusajankohta' ] );
+			'toivottu_toimitusajankohta' => $_POST[ 'toivottu_toimitusajankohta' ],
+			'valittu_osoite_id' => $_POST[ 'toimitusosoite' ],
+			'valittu_ktunnus' => $_POST[ 'ktunnus' ],
+			'tilaukseen_liittyvat_tuotteet' => $tilatut_tuotteet );
 
 		if( count( $virheilmoitukset ) > 0 ) {
 			self::uusi_tilaus( $virheilmoitukset, $jo_taytetyt_kentat );
 			return;
 		}
-
-		$tilatut_tuotteet
-			= self::luo_tilatut_tuotteet_taulukko( array_keys( $_POST ),
-			$uusi_tilaus );
 
 		if( count( $tilatut_tuotteet ) < 1 ) {
 			$virheilmoitukset[]
@@ -140,14 +145,20 @@ class TilausController extends BaseController {
 		$tilaukseen_liittyvat_tuotteet
 			= Tilattu_tuote::hae_tilaukseen_liittyvat_tuotteet( $tilaus_id );
 		$kaikki_tuotteet = Tuote::hae_kaikki();
-		$asiakkaan_osoitteet
-			= Osoite::hae_asiakkaan_osoitteet( $tilaus->asiakasviite->ktunnus );
+
+		$kirjautunut_kayttaja = self::get_user_logged_in();
+
+		$osoitteet = $kirjautunut_kayttaja->on_paakayttaja ? Osoite::hae_kaikki()
+			: Osoite::hae_asiakkaan_osoitteet( $tilaus->asiakasviite->ktunnus );
+		$asiakkaat = $kirjautunut_kayttaja->on_paakayttaja ? Asiakas::hae_kaikki()
+			: null;
 
 		View::make( 'tilaus/muokkaa.html', array(
 			'tilaus' => $tilaus,
 			'tilaukseen_liittyvat_tuotteet' => $tilaukseen_liittyvat_tuotteet,
 			'kaikki_tuotteet' => $kaikki_tuotteet,
-			'asiakkaan_osoitteet' => $asiakkaan_osoitteet,
+			'asiakkaat' => $asiakkaat,
+			'osoitteet' => $osoitteet,
 			'valittu_osoite' => $tilaus->osoiteviite,
 			'virheilmoitukset' => $virheilmoitukset,
 			'jo_taytetyt_kentat' => $jo_taytetyt_kentat ) );
@@ -167,8 +178,9 @@ class TilausController extends BaseController {
 			$_POST[ 'toivottu_toimitusajankohta' ], $_POST[ 'toimitusosoite' ] );
 
 		$jo_taytetyt_kentat = array(
-			'toivottu_toimitusajankohta'
-			=> $_POST[ 'toivottu_toimitusajankohta' ] );
+			'toivottu_toimitusajankohta' => $_POST[ 'toivottu_toimitusajankohta' ],
+			'valittu_osoite_id' => $_POST[ 'toimitusosoite' ],
+			'valittu_ktunnus' => $_POST[ 'ktunnus' ] );
 
 		$virheilmoitukset = $uusi_tilaus->virheilmoitukset();
 		if( count( $virheilmoitukset ) > 0 ) {
@@ -184,7 +196,9 @@ class TilausController extends BaseController {
 		if( count( $tilatut_tuotteet ) < 1 ) {
 			$virheilmoitukset[]
 				= 'Tilaukseen on kuuluttava ainakin yksi tilattu tuote';
-			self::uusi_tilaus( $virheilmoitukset, $jo_taytetyt_kentat );
+			//self::uusi_tilaus( $virheilmoitukset, $jo_taytetyt_kentat );
+			self::muokkaa( $uusi_tilaus->tilaus_id, $virheilmoitukset,
+				$jo_taytetyt_kentat );
 			return;
 		}
 

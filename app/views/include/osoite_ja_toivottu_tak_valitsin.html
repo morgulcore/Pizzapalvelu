@@ -1,10 +1,29 @@
 <table class="table table-striped table-bordered">
 	<tbody>
 		<tr>
+			{% if user_logged_in.on_paakayttaja %}
+				<td>
+					<select class="form-control" name="ktunnus">
+						{% for asiakas in asiakkaat %}
+							{% if asiakas.ktunnus == valittu_asiakas.ktunnus
+								or asiakas.ktunnus == jo_taytetyt_kentat.valittu_ktunnus %}
+								<option selected value="{{asiakas.ktunnus}}">
+									{{asiakas.etunimi}} {{asiakas.sukunimi}}
+									({{asiakas.ktunnus}})</option>
+							{% else %}
+								<option value="{{asiakas.ktunnus}}">
+									{{asiakas.etunimi}} {{asiakas.sukunimi}}
+									({{asiakas.ktunnus}})</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</td>
+			{% endif %}
 			<td>
 				<select class="form-control" name="toimitusosoite">
-					{% for osoite in asiakkaan_osoitteet %}
-						{% if osoite.osoite_id == valittu_osoite.osoite_id %}
+					{% for osoite in osoitteet %}
+						{% if osoite.osoite_id == valittu_osoite.osoite_id
+							or osoite.osoite_id == jo_taytetyt_kentat.valittu_osoite_id %}
 							<option selected value="{{osoite.osoite_id}}">
 								{{osoite.lahiosoite}}, {{osoite.postinumero}}
 								{{osoite.postitoimipaikka}}</option>

@@ -2,7 +2,7 @@ insert into Asiakas values
 	( 'admin', true, 'Tsoh4', 'Gizza', 'Admin', '050 123 1198', 'admin@gizza.fi' ),
     ( 'mruusu', false, 'Tsoh4', 'Minna', 'Ruusu', null, null ),
     ( 'jporkkana', false, 'Tsoh4', 'Juuso', 'Porkkana', '040 123 4567', null ),
-    ( 'skurpitsa', false, 'Tsoh4', 'Santeri', 'Kurpitsa', null, 'santeri.kurpitsa@virasto.fi' ),
+    ( 'skurpitsa', true, 'Tsoh4', 'Santeri', 'Kurpitsa', null, 'santeri.kurpitsa@virasto.fi' ),
     ( 'nvadelma', false, 'Tsoh4', 'Niko', 'Vadelma', null, 'vattu@pikaposti.fi' ),
     ( 'therne', false, 'Tsoh4', 'Tauno', 'Herne', null, null ),
     ( 'tmansikka', false, 'Tsoh4', 'Tero', 'Mansikka', '040 321 6543', 'tero.mansikka@mansikka.fi' ),
