@@ -2,7 +2,11 @@
 {% block content %}
 
 	<div class="page-header">
-		<h1>Tilaukset</h1>
+		{% if user_logged_in.on_paakayttaja %}
+			<h1>Tilaukset</h1>
+		{% else %}
+			<h1>Oma tilaushistoriani</h1>
+		{% endif %}
 		<p>Voit tarkastella yksittäistä tilausta klikkaamalla sen tilaus_id:tä</p>
 	</div>
 

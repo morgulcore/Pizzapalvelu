@@ -40,6 +40,9 @@
 						<!-- Navigaation linkit -->
 						{% if user_logged_in and not user_logged_in.on_paakayttaja %}
 							<li><a href="{{base_path}}/tilaus/uusi">Tilaa pizzaa!</a></li>
+							<li><a href="{{base_path}}/tilaus">Tilaushistoria</a></li>
+							<li><a href="{{base_path}}/asiakas/{{user_logged_in.ktunnus}}">
+								Omat tiedot</a></li>
 						{% endif %}
 						{% if user_logged_in.on_paakayttaja %}
 							<li><a href="{{base_path}}/asiakas">Asiakasrekisteri</a></li>

@@ -100,6 +100,7 @@ class AsiakasController extends BaseController {
 			'toimitettujen_tilausten_lkm'
 				=> count( $asiakkaan_tilaukset )
 				- count( $asiakkaan_toimittamattomat_tilaukset ),
+			'toimitettujen_tilausten_kokonaisarvo' => 1234.56,
 			'asiakkaaseen_liittyvien_ongelmien_lkm'
 				=> count( $asiakkaaseen_liittyvat_ongelmat ) ) );
 	}
@@ -165,6 +166,12 @@ class AsiakasController extends BaseController {
 
 		// Tallennetaan Asiakas-olio tietokantaan
 		$uusi_asiakas->tallenna();
+
+		// Jokaiselle uudelle asiakkaalle lisätään "oletusosoite". Tässä
+		// ei ole muuta järkeä kuin se, etten ainakaan toiseksi viimeisenä
+		// iltana (3.5.) ollut saanut aikaiseksi mekanismia, jolla asiakas
+		// voi lisätä osoitteita osoitekirjaansa.
+		// Osoite::lisaa_asiakas_osoite_pari( $uusi_asiakas->ktunnus, 11 );
 
 		// Ohjataan käyttäjä kirjautumissivulle, jotta hän voi kirjautua
 		// sisään juuri luomallaan käyttäjätunnuksella

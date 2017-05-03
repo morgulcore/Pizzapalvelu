@@ -48,3 +48,5 @@ $routes->get( '/tilaus/:tilaus_id/muokkaa/',
 	function( $tilaus_id ) { TilausController::muokkaa( $tilaus_id, null, null ); } );
 $routes->post( '/tilaus/:tilaus_id/paivita/',
 	function() { TilausController::paivita(); } );
+$routes->post( '/tilaus/:tilaus_id/poista/',
+	function( $tilaus_id ) { TilausController::poista( $tilaus_id ); } );

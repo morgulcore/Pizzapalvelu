@@ -134,6 +134,18 @@ class Tilaus extends BaseModel {
 		$kysely->execute( array( 'ktunnus' => $ktunnus ) );
 	}
 
+	// Poistaa Tilaus-ilmentymää vastaavan rivin taulusta Tilaus. Ensin
+	// poistetaan tarpeen mukaan rivejä tauluista Tilattu_tuote ja Ongelma
+	// (viite-eheyden takaamiseksi).
+	public function poista() {
+		Ongelma::poista( $this->tilaus_id );
+		Tilattu_tuote::poista( $this->tilaus_id );
+
+		$kysely = DB::connection()->prepare(
+			'delete from Tilaus where tilaus_id = :tilaus_id;' );
+		$kysely->execute( array( 'tilaus_id' => $this->tilaus_id ) );
+	}
+
 	// Hakee taulusta Tilaus yksittäisen asiakkaan kaikki tilaukset
 	public static function hae_asiakkaan_tilaukset( $ktunnus ) {
 		$kaikki_tilaukset = self::hae_kaikki();

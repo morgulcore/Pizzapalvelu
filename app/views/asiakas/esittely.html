@@ -16,6 +16,9 @@
 		{% if paivitys_onnistui_viesti is defined %}
 			<div class="alert alert-success">{{paivitys_onnistui_viesti}}</div>
 		{% endif %}
+		{% if tyhja_osoitekirja_viesti is defined %}
+			<div class="alert alert-danger">{{tyhja_osoitekirja_viesti}}</div>
+		{% endif %}
 
 		<p>
 			{{ forms.poista_painike( "#{base_path}/asiakas/#{asiakas.ktunnus}/poista" ) }}
@@ -25,7 +28,7 @@
 		<ul>
 			<li>
 				{% if toimittamattomien_tilausten_lkm > 0 %}
-					<strong>Toimittamattomat tilaukset:</strong>
+					<strong>Linkit toimittamattomiin tilauksiin:</strong>
 					{% for tilaus in asiakkaan_toimittamattomat_tilaukset %}
 						<a href="{{base_path}}/tilaus/{{tilaus.tilaus_id}}">{{tilaus.tilaus_id}}</a>
 					{% endfor %}
@@ -35,20 +38,23 @@
 			</li>
 			<li><strong>Toimitettuja tilauksia yhteensä:</strong>
 				{{toimitettujen_tilausten_lkm}}</li>
-			<li><strong>Toimitettujen tilausten kokonaisarvo:</strong></li>
-			<li>
-				<strong>Ongelmia yhteensä:</strong>
-				{% if asiakkaaseen_liittyvien_ongelmien_lkm > 0 %}
-					<label class="label label-danger">
-						{{asiakkaaseen_liittyvien_ongelmien_lkm}}</label>
-				{% else %}
-					<label class="label label-success">
-						{{asiakkaaseen_liittyvien_ongelmien_lkm}}</label>
-				{% endif %}
-			</li>
+			<li><strong>Toimitettujen tilausten kokonaisarvo:</strong>
+				{{toimitettujen_tilausten_kokonaisarvo}} €</li>
+			{% if user_logged_in.on_paakayttaja %}
+				<li>
+					<strong>Ongelmia yhteensä:</strong>
+					{% if asiakkaaseen_liittyvien_ongelmien_lkm > 0 %}
+						<label class="label label-danger">
+							{{asiakkaaseen_liittyvien_ongelmien_lkm}}</label>
+					{% else %}
+						<label class="label label-success">
+							{{asiakkaaseen_liittyvien_ongelmien_lkm}}</label>
+					{% endif %}
+				</li>
+			{% endif %}
 		</ul>
 
-		{% if asiakkaaseen_liittyvien_ongelmien_lkm > 0 %}
+		{% if user_logged_in.on_paakayttaja and asiakkaaseen_liittyvien_ongelmien_lkm > 0 %}
 			<p>Siirry tarkastelemaan asiakkaaseen liittyviä <a href="#">ongelmia</a></p>
 		{% endif %}
 

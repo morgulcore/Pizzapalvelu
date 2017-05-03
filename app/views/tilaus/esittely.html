@@ -10,6 +10,10 @@
 			{{tilaus.osoiteviite.postinumero}},
 			{{tilaus.osoiteviite.postitoimipaikka}}
 		</p>
+		{% if tilaus.ts_tak_toteutunut != null %}
+			<p>Tilaus on jo merkitty toimitetuksi asiakkaalle, joten sitä ei
+			voi enää muokata</p>
+		{% endif %}
 	</div>
 
 	{% if paivitys_onnistui_viesti is defined %}
@@ -21,7 +25,9 @@
 			{{ forms.lisaa_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/merkitse_toimitetuksi",
 				"Merkitse toimitetuksi" ) }}
 		{% endif %}
-		{{ forms.muokkaa_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/muokkaa" ) }}
+		{% if tilaus.ts_tak_toteutunut == null %}
+			{{ forms.muokkaa_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/muokkaa" ) }}
+		{% endif %}
 		{{ forms.poista_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/poista" ) }}
 	</p>
 

@@ -3,11 +3,17 @@
 class TilausController extends BaseController {
 
 	public static function index() {
-		if( ! self::kayttaja_on_yllapitaja() ) {
+		if( ! self::check_logged_in() ) {
 			return;
 		}
 
-		$tilaukset = Tilaus::hae_kaikki();
+		$kirjautunut_kayttaja = self::get_user_logged_in();
+
+		// Haetaan vain käyttäjän omat tilaukset, jos pääkäyttäjän oikeuksia
+		// ei ole
+		$tilaukset = $kirjautunut_kayttaja->on_paakayttaja ? Tilaus::hae_kaikki()
+			: Tilaus::hae_asiakkaan_tilaukset( $kirjautunut_kayttaja->ktunnus );
+
 		foreach( $tilaukset as $tilaus ) {
 			$tilaus->aseta_tilauksen_kokonaishinta();
 		}
@@ -30,9 +36,12 @@ class TilausController extends BaseController {
 		$osoitteet = self::get_user_logged_in()->on_paakayttaja
 			? Osoite::hae_kaikki()
 			: Osoite::hae_asiakkaan_osoitteet( self::get_user_logged_in()->ktunnus );
-		// Bugtrap
+		// Asiakkaalla ei välttämättä ole yhtään osoitetta liitettynä häneen
 		if( $osoitteet == null ) {
-			exit( 'TilausController.uusi_tilaus() – Uuden käyttäjän osoitekirja on tyhjä, joten hän ei voi tilata pizzaa :( Ongelmaa korjataan... Sillä välin voit kirjautua sisään käyttäjätunnuksella mruusu ja salasanalla Tsoh4, jos haluat tehdä tilauksen' );
+			Redirect::to( '/asiakas/' . self::get_user_logged_in()->ktunnus,
+				array( 'tyhja_osoitekirja_viesti' =>
+					'Et voi tehdä tilausta, koska osoitekirjasi on tyhjä. '
+					. 'Voit pyytää ylläpitäjää lisäämään sinulle osoitteita.' ) );
 		}
 
 		$asiakkaat = self::get_user_logged_in()->on_paakayttaja
@@ -142,6 +151,13 @@ class TilausController extends BaseController {
 			return;
 		}
 
+		// Muokkaus-nappi on piilotettu jo toimitettujen tilausten osalta,
+		// joten tämä on lähinnä toissijainen varmistus
+		if( $tilaus->ts_tak_toteutunut ) {
+			exit( 'Suoritus keskeytetty: yritettiin muokata tilausta, joka on '
+			. 'jo toimitettu asiakkaalle' );
+		}
+
 		$tilaukseen_liittyvat_tuotteet
 			= Tilattu_tuote::hae_tilaukseen_liittyvat_tuotteet( $tilaus_id );
 		$kaikki_tuotteet = Tuote::hae_kaikki();
@@ -224,6 +240,29 @@ class TilausController extends BaseController {
 		Redirect::to( '/tilaus/' . $uusi_tilaus->tilaus_id,
 			array( 'paivitys_onnistui_viesti'
 			=> 'Tilaustietojen päivitys onnistui' ) );
+	}
+
+	// Yksittäisen tilauksen poistaminen
+	public static function poista( $tilaus_id ) {
+		$tilaus = Tilaus::hae( $tilaus_id );
+		// Vain varmuuden vuoksi. Tilanteen ei normaalikäytössä pitäisi toteutua.
+		if( ! $tilaus ) {
+			exit( 'TilausController.poista() – yritettiin poistaa olematonta tilausta' );
+		}
+
+		if( ! self::check_logged_in() ) {
+			return;
+		} else if( self::kayttajalle_kuulumaton_asia(
+			$tilaus->asiakasviite->ktunnus,
+			'Tavallisena käyttäjänä voit poistaa vain omia tilauksiasi' ) ) {
+			return;
+		}
+
+		$tilaus->poista();
+
+		Redirect::to( '/tilaus', array(
+			'poisto_onnistui' => 'Tilauksen #' . $tilaus->tilaus_id
+			. ' poisto onnistui' ) );
 	}
 
 	// Copy-paste-koodin eliminointia
