@@ -155,11 +155,17 @@ class TilausController extends BaseController {
 
 		View::make( 'tilaus/muokkaa.html', array(
 			'tilaus' => $tilaus,
-			'tilaukseen_liittyvat_tuotteet' => $tilaukseen_liittyvat_tuotteet,
+			//'tilaukseen_liittyvat_tuotteet' => $tilaukseen_liittyvat_tuotteet,
+			'tilaukseen_liittyvat_tuotteet' => $jo_taytetyt_kentat
+				? $jo_taytetyt_kentat[ 'tilaukseen_liittyvat_tuotteet' ]
+				: $tilaukseen_liittyvat_tuotteet,
 			'kaikki_tuotteet' => $kaikki_tuotteet,
 			'asiakkaat' => $asiakkaat,
 			'osoitteet' => $osoitteet,
-			'valittu_osoite' => $tilaus->osoiteviite,
+			'valittu_asiakas' => $jo_taytetyt_kentat ? null : $tilaus->asiakasviite,
+			'valittu_osoite' => ( $jo_taytetyt_kentat && array_key_exists(
+				'valittu_osoite_id', $jo_taytetyt_kentat ) ) ? null
+				: $tilaus->osoiteviite,
 			'virheilmoitukset' => $virheilmoitukset,
 			'jo_taytetyt_kentat' => $jo_taytetyt_kentat ) );
 	}
@@ -177,10 +183,15 @@ class TilausController extends BaseController {
 			$_POST[ 'ktunnus' ], $_POST[ 'ts_tilauksen_teko' ],
 			$_POST[ 'toivottu_toimitusajankohta' ], $_POST[ 'toimitusosoite' ] );
 
+		$tilatut_tuotteet
+			= self::luo_tilatut_tuotteet_taulukko( array_keys( $_POST ),
+			$uusi_tilaus );
+
 		$jo_taytetyt_kentat = array(
 			'toivottu_toimitusajankohta' => $_POST[ 'toivottu_toimitusajankohta' ],
 			'valittu_osoite_id' => $_POST[ 'toimitusosoite' ],
-			'valittu_ktunnus' => $_POST[ 'ktunnus' ] );
+			'valittu_ktunnus' => $_POST[ 'ktunnus' ],
+			'tilaukseen_liittyvat_tuotteet' => $tilatut_tuotteet );
 
 		$virheilmoitukset = $uusi_tilaus->virheilmoitukset();
 		if( count( $virheilmoitukset ) > 0 ) {
@@ -188,10 +199,6 @@ class TilausController extends BaseController {
 				$jo_taytetyt_kentat );
 			return;
 		}
-
-		$tilatut_tuotteet
-			= self::luo_tilatut_tuotteet_taulukko( array_keys( $_POST ),
-			$uusi_tilaus );
 
 		if( count( $tilatut_tuotteet ) < 1 ) {
 			$virheilmoitukset[]
@@ -203,6 +210,10 @@ class TilausController extends BaseController {
 		}
 
 		$uusi_tilaus->paivita_ts_tak_toivottu_ja_osoite_id();
+		if( self::get_user_logged_in()->on_paakayttaja ) {
+			$uusi_tilaus->paivita_ktunnus();
+		}
+
 		// Poistetaan kaikki tilaukseen liittyvät tilatut tuotteet
 		Tilattu_tuote::poista( $uusi_tilaus->tilaus_id );
 

@@ -5,6 +5,13 @@
 
 		<div class="page-header">
 			<h1>Muokkaa tilausta #{{tilaus.tilaus_id}}</h1>
+			{% if user_logged_in.on_paakayttaja %}
+				<p>Olet ylläpitäjänä muokkaamassa asiakkaan {{tilaus.asiakasviite.etunimi}} {{tilaus.asiakasviite.sukunimi}} ({{tilaus.asiakasviite.ktunnus}})
+				tilausta</p>
+			{% else %}
+				<p>Olet asiakkaan {{tilaus.asiakasviite.etunimi}} {{tilaus.asiakasviite.sukunimi}} ({{tilaus.asiakasviite.ktunnus}})
+				roolissa muokkaamassa hänelle kuuluvaa tilausta</p>
+			{% endif %}
 		</div>
 
 		{% if virheilmoitukset %}
@@ -24,7 +31,11 @@
 			</div>
 
 			<div class="form-group">
-				<h2>Muokkaa osoitetta ja toivottua toimitusajankohtaa</h2>
+				{% if user_logged_in.on_paakayttaja %}
+					<h2>Muokkaa valittua asiakasta, osoitetta ja toimitusajankohtaa</h2>
+				{% else %}
+					<h2>Muokkaa osoitetta ja toivottua toimitusajankohtaa</h2>
+				{% endif %}
 				{{ include( 'include/osoite_ja_toivottu_tak_valitsin.html' ) }}
 			</div>
 

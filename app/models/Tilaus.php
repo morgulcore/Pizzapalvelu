@@ -106,6 +106,17 @@ class Tilaus extends BaseModel {
 		) );
 	}
 
+	// Oletus on, että $this->asiakasviite->ktunnus on validoitu ennen
+	// tämän funktion kutsumista
+	public function paivita_ktunnus() {
+		$kysely = DB::connection()->prepare(
+			'update Tilaus set ktunnus = :ktunnus where tilaus_id = :tilaus_id;' );
+		$kysely->execute( array(
+			'ktunnus' => $this->asiakasviite->ktunnus,
+			'tilaus_id' => $this->tilaus_id
+		) );
+	}
+
 	// Poistaa taulusta Tilaus kaikki tiettyyn asiakkaaseen liittyvät tilaukset
 	public static function poista_asiakkaan_tilaukset( $ktunnus ) {
 		// Taulun Tilaus pääavain tilaus_id on tauluissa Ongelma
@@ -181,7 +192,8 @@ class Tilaus extends BaseModel {
 	// Hae kaikki rivit taulusta Tilaus ja palauta ne taulukkona olioita
 	public static function hae_kaikki() {
 		$kysely = DB::connection()->prepare(
-			'select * from Tilaus;' );
+			'select * from Tilaus order by ts_tak_toteutunut desc, '
+			. 'ts_tilauksen_teko desc;' );
 		$kysely->execute();
 		$rivit = $kysely->fetchAll();
 
