@@ -161,6 +161,21 @@ class Tilaus extends BaseModel {
 		return $asiakkaan_tilaukset;
 	}
 
+	public static function laske_asiakkaan_toimitettujen_tilausten_kokonaisarvo(
+		$ktunnus ) {
+		$asiakkaan_tilaukset = self::hae_asiakkaan_tilaukset( $ktunnus );
+
+		$kokonaisarvo = 0.0;
+		foreach( $asiakkaan_tilaukset as $tilaus ) {
+			if( $tilaus->ts_tak_toteutunut ) {
+				$tilaus->aseta_tilauksen_kokonaishinta();
+				$kokonaisarvo += $tilaus->tilauksen_kokonaishinta;
+			}
+		}
+
+		return $kokonaisarvo;
+	}
+
 	// Hakee taulusta Tilaus yksittäisen asiakkaan toimittamattomat tilaukset
 	public static function hae_asiakkaan_toimittamattomat_tilaukset(
 		$ktunnus ) {

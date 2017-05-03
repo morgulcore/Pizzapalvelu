@@ -9,6 +9,7 @@
 		<thead>
 			<tr>
 				<th>Tilaus_ID</th>
+				<th>Asiakas</th>
 				<th>Luokitus</th>
 				<th>Ajankohta</th>
 				<th>Kuvaus</th>
@@ -19,6 +20,9 @@
 				<tr>
 					<td><a href="{{base_path}}/tilaus/{{ongelma.tilausviite.tilaus_id}}">
 						{{ongelma.tilausviite.tilaus_id}}</a></td>
+					<td><a href="{{base_path}}/asiakas/{{ongelma.tilausviite.asiakasviite.ktunnus}}">
+						{{ongelma.tilausviite.asiakasviite.etunimi}}
+						{{ongelma.tilausviite.asiakasviite.sukunimi}}</a></td>
 					<td>{{ongelma.ongelman_tyyppi}}</td>
 					<td>{{ongelma.ts_ongelma}}</td>
 					<td>{{ongelma.ongelman_kuvaus}}</td>

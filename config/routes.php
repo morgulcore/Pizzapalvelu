@@ -27,7 +27,9 @@ $routes->post( '/asiakas/:ktunnus/poista/',
 	function( $ktunnus ) { AsiakasController::poista( $ktunnus ); } );
 
 $routes->get( '/ongelma/',
-	function() { OngelmaController::index(); } );
+	function() { OngelmaController::index( null ); } );
+$routes->get( '/ongelma/:ktunnus/',
+	function( $ktunnus ) { OngelmaController::index( $ktunnus ); } );
 
 $routes->get( '/osoite/',
 	function() { OsoiteController::index( null ); } );

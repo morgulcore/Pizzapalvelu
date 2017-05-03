@@ -55,7 +55,8 @@
 		</ul>
 
 		{% if user_logged_in.on_paakayttaja and asiakkaaseen_liittyvien_ongelmien_lkm > 0 %}
-			<p>Siirry tarkastelemaan asiakkaaseen liittyviä <a href="#">ongelmia</a></p>
+			<p>Siirry tarkastelemaan asiakkaaseen liittyviä
+				<a href="{{base_path}}/ongelma/{{asiakas.ktunnus}}">ongelmia</a></p>
 		{% endif %}
 
 		{% if asiakkaan_osoitekirja %}

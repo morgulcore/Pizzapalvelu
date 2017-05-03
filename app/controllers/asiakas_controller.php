@@ -100,7 +100,9 @@ class AsiakasController extends BaseController {
 			'toimitettujen_tilausten_lkm'
 				=> count( $asiakkaan_tilaukset )
 				- count( $asiakkaan_toimittamattomat_tilaukset ),
-			'toimitettujen_tilausten_kokonaisarvo' => 1234.56,
+			'toimitettujen_tilausten_kokonaisarvo'
+				=> Tilaus::laske_asiakkaan_toimitettujen_tilausten_kokonaisarvo(
+				$ktunnus ),
 			'asiakkaaseen_liittyvien_ongelmien_lkm'
 				=> count( $asiakkaaseen_liittyvat_ongelmat ) ) );
 	}
