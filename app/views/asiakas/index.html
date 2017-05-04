@@ -10,7 +10,8 @@
 		<div class="alert alert-success">{{poisto_onnistui}}</div>
 	{% endif %}
 
-	<p>{{ forms.lisaa_painike( "#{base_path}/asiakas/uusi", "Lisää asiakas" ) }}</p>
+	<p>{{ forms.lisaa_painike( "get", "#{base_path}/asiakas/uusi",
+		"Lisää asiakas" ) }}</p>
 
 	<table class="table table-striped table-bordered">
 		<thead>

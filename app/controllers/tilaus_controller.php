@@ -265,6 +265,28 @@ class TilausController extends BaseController {
 			. ' poisto onnistui' ) );
 	}
 
+	public static function merkitse_toimitetuksi( $tilaus_id ) {
+		// Vain ylläpitäjä voi merkitä tilauksia toimitetuiksi
+		if( ! self::kayttaja_on_yllapitaja() ) {
+			return;
+		}
+
+		$tilaus = Tilaus::hae( $tilaus_id );
+		if( ! $tilaus ) {
+			exit( 'TilausController.merkitse_toimitetuksi() – yritettiin '
+				. 'käsitellä olematonta tilausta' );
+		}
+
+		// Jos kaikki menee hyvin, paluuarvo on nykyhetkeä vastaava timestamp
+		$nyt = $tilaus->merkitse_toimitetuksi();
+		$viestin_sisalto = $nyt
+			? 'Tilaus merkittiin toimitetuksi ' . $nyt->format( "Y-m-d H:i:s" )
+			: 'Yritettiin merkitä toimitetuksi jo toimitettua tilausta!';
+
+		Redirect::to( '/tilaus/' . $tilaus_id, array(
+			'merkittiin_toimitetuksi_viesti' => $viestin_sisalto ) );
+	}
+
 	// Copy-paste-koodin eliminointia
 	private static function luo_uusi_tilaus_olio(
 		$tilaus_id, $ktunnus, $ts_tilauksen_teko, $ts_tak_toivottu, $osoite_id ) {

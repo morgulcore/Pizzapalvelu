@@ -52,3 +52,5 @@ $routes->post( '/tilaus/:tilaus_id/paivita/',
 	function() { TilausController::paivita(); } );
 $routes->post( '/tilaus/:tilaus_id/poista/',
 	function( $tilaus_id ) { TilausController::poista( $tilaus_id ); } );
+$routes->post( '/tilaus/:tilaus_id/merkitse_toimitetuksi/',
+	function( $tilaus_id ) { TilausController::merkitse_toimitetuksi( $tilaus_id ); } );

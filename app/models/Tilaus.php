@@ -146,6 +146,27 @@ class Tilaus extends BaseModel {
 		$kysely->execute( array( 'tilaus_id' => $this->tilaus_id ) );
 	}
 
+	// Merkitsee tilauksen toimitetuksi. Tämä tarkoittaa sitä, että
+	// attribuutin ts_tak_toteutunut arvo vaihdetaan nullista nykyhetkeen.
+	public function merkitse_toimitetuksi() {
+		if( $this->ts_tak_toteutunut ) { // Tilaus on jo merkitty toimitetuksi
+			return null;
+		}
+
+		$nyt = new DateTime(); // Nykyinen pvm ja kellonaika
+		$this->ts_tak_toteutunut = $nyt->format( "Y-m-d H:i:s" );
+
+		$kysely = DB::connection()->prepare(
+			'update Tilaus set ts_tak_toteutunut = :ts_tak_toteutunut where '
+				. 'tilaus_id = :tilaus_id;' );
+		$kysely->execute( array(
+			'ts_tak_toteutunut' => $nyt->format( "Y-m-d H:i:s" ),
+			'tilaus_id' => $this->tilaus_id
+		) );
+
+		return $nyt;
+	}
+
 	// Hakee taulusta Tilaus yksittäisen asiakkaan kaikki tilaukset
 	public static function hae_asiakkaan_tilaukset( $ktunnus ) {
 		$kaikki_tilaukset = self::hae_kaikki();

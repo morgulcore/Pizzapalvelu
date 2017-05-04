@@ -1,9 +1,11 @@
-# Pizzapalvelu-nimisen tietokantasovelluksen esittelysivu
+# Esittelysivu: Gizza, pizzapalveluun liittyvä tietokantasovellus
 
 ## Sisäänkirjautumiseen tarvittavat tiedot
 * Ylläpitäjän käyttäjätunnus: admin
+* Varaylläpitäjän käyttäjätunnus: skurpitsa
 * Erään tavallisen käyttäjän (asiakkaan) käyttäjätunnus: mruusu
-* Molempien käyttäjien salasana: Tsoh4
+* Kaikkien kolmen käyttäjätunnuksen salasana: Tsoh4
+* Mainittu salasana käy kaikkiin Gizzan valmiiksi asennettuihin käyttäjätileihin
 * [Sisäänkirjautumissivu](http://xhexhex.users.cs.helsinki.fi/pizzapalvelu/asiakas/kirjaudu)
 
 ## Yleisiä linkkejä

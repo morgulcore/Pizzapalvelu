@@ -10,8 +10,9 @@
 	</form>
 {% endmacro %}
 
-{% macro lisaa_painike( toiminto, teksti ) %}
-	<form method="get" action="{{toiminto}}" style="display: inline-block;">
+<!-- Metodina get tai post -->
+{% macro lisaa_painike( metodi, toiminto, teksti ) %}
+	<form method="{{metodi}}" action="{{toiminto}}" style="display: inline-block;">
 		<button type="submit" class="btn btn-success">{{teksti|default('Lisää')}}</button>
 	</form>
 {% endmacro %}

@@ -19,10 +19,13 @@
 	{% if paivitys_onnistui_viesti is defined %}
 		<div class="alert alert-success">{{paivitys_onnistui_viesti}}</div>
 	{% endif %}
+	{% if merkittiin_toimitetuksi_viesti is defined %}
+		<div class="alert alert-success">{{merkittiin_toimitetuksi_viesti}}</div>
+	{% endif %}
 
 	<p>
-		{% if user_logged_in.on_paakayttaja %}
-			{{ forms.lisaa_painike( "#{base_path}/tilaus/#{tilaus.tilaus_id}/merkitse_toimitetuksi",
+		{% if user_logged_in.on_paakayttaja and tilaus.ts_tak_toteutunut == null %}
+			{{ forms.lisaa_painike( "post", "#{base_path}/tilaus/#{tilaus.tilaus_id}/merkitse_toimitetuksi",
 				"Merkitse toimitetuksi" ) }}
 		{% endif %}
 		{% if tilaus.ts_tak_toteutunut == null %}
