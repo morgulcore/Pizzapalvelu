@@ -3,7 +3,6 @@
 class EtusivuController extends BaseController {
 
 	public static function index() {
-		// self::get_user_logged_in();
 		View::make( 'etusivu.html' );
 	}
 
