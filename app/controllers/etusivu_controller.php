@@ -8,7 +8,6 @@ class EtusivuController extends BaseController {
 	}
 
 	public static function sandbox() {
-		$tilatut_tuotteet = Tilattu_tuote::hae_kaikki();
-		Kint::dump( $tilatut_tuotteet );
+		echo 'PHP version: ' . phpversion();
 	}
 }

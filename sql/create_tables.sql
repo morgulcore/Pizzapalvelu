@@ -50,11 +50,12 @@ create type Tuotekategoria_enum as enum(
 -- Tuotteen hinta kerrotaan tästä löytyvillä kertoimilla. Tuotteista voidaan
 -- veloittaa enemmän öisin ja silloin, jos tilauksen asiakkaaseen tai
 -- osoitteeseen on aiemmin liittynyt ongelmia.
+/*
 create table Hintamuunnos (
 	tuotekategoria Tuotekategoria_enum primary key,
 	yohintakerroin numeric(2,1) not null default 1.0, --yö
 	ongelmahintakerroin numeric(2,1) not null default 1.0
-);
+); */
 
 create table Tuotetyyppi (
 	tuotetyyppi_id serial primary key,
@@ -62,7 +63,8 @@ create table Tuotetyyppi (
 	-- tuotekategoriaan (esim. kategoriat pizza ja vegaani). Yksinkertaisuuden
 	-- nimissä toteutan tuotekategorian kuitenkin pelkkänä kenttänä.
 	-- Huomaa, että tuotekategoria on myös viiteavain tauluun Hintamuunnos.
-	tuotekategoria Tuotekategoria_enum references Hintamuunnos( tuotekategoria ),
+	tuotekategoria Tuotekategoria_enum not null,
+	-- tuotekategoria Tuotekategoria_enum references Hintamuunnos( tuotekategoria ),
 	tuotenimi varchar(50) not null,
 	tuotekuvaus varchar(1000),
 	kuva_tuotteesta varchar(80)

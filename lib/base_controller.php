@@ -8,10 +8,9 @@ class BaseController {
 			$ktunnus = $_SESSION[ 'user' ];
 			$sisaankirjautunut_asiakas = Asiakas::hae( $ktunnus );
 
-			// Bugtrap
 			if( ! $sisaankirjautunut_asiakas ) {
-				exit( 'BaseController::get_user_logged_in() '
-					. '– Tapahtui hirveitä!' );
+				exit( 'BaseController.get_user_logged_in() '
+					. '– Käyttäjätunnus ilmeisesti poistettiin kesken session' );
 			}
 
 			return $sisaankirjautunut_asiakas;

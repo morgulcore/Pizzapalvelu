@@ -59,12 +59,14 @@ insert into Ongelma values
 	( 5, 'customer_not_found', timestamp '2017-02-14 10:45:41', null );
 
 -- Kentät: tuotekategoria, yohintakerroin, ongelmahintakerroin
+/*
 insert into Hintamuunnos values
 	( 'pizza', 1.2, 1.4 ),
 	( 'vegaanipizza', 1.3, 1.4 ),
 	( 'virvoitusjuoma', 1.0, 1.4 ),
 	( 'olut', 1.0, 2.0 ),
 	( 'muu', 1.0, 1.4 );
+*/
 
 -- Kentät: tuotetyyppi_id, tuotekategoria, tuotenimi, tuotekuvaus, kuva_tuotteesta
 insert into Tuotetyyppi values
